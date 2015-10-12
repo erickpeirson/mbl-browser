@@ -74,6 +74,17 @@ WSGI_APPLICATION = 'mbl.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 import dj_database_url
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'mbl',
+        'USER': 'mbl',
+        'PASSWORD': 'mbl',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
+
 DATABASES['default'] =  dj_database_url.config()
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
