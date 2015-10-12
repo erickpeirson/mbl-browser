@@ -3,11 +3,11 @@ body {
     padding-bottom: 20px;
     background-color: #292929;
     font-size: 11pt;
-
 }
 
 a {
     color: rgba(41, 41, 41, 1.0);
+    font-size: 11pt;
 }
 
 a:hover {
@@ -19,6 +19,11 @@ a:focus {
     color: #1a6065;
     text-decoration: none;
 }
+
+p {
+    font-size: 11pt;
+}
+
 
 .navbar-default {
     /*background-color: #4d9ca2;*/
@@ -76,6 +81,10 @@ tfoot {
 
 tbody>tr:hover {
     background-color: rgba(255, 255, 255, 0.7);
+}
+
+td {
+    font-size:11pt;
 }
 
 .alert-mbl {
