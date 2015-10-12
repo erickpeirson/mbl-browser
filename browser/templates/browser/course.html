@@ -1,0 +1,85 @@
+{% extends "browser/base.html" %}
+{% load app_filters %}
+
+{% block main %}
+<div class="alert alert-mbl">
+    Course
+    <h1>{{ course.name }}</h1>
+</div>
+
+<!-- Coursegroups -->
+<div class="panel panel-mbl">
+    <div class="panel-heading">
+        <h3>Part Of</h3>
+        <p class="text text-muted">Click on a course group name to view the complete list of courses in that group.</p>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <td>Year</td>
+                <td>Course Group</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for partof in course.partof_set.all %}
+            <tr>
+                <td>{{ partof.year }}</td>
+                <td><a href="{% url "coursegroup" partof.coursegroup.id %}">{{ partof.coursegroup.name }}</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Attendees -->
+{% with course|get_attendance as attendances %}
+<div class="panel panel-mbl">
+    <div class="panel-heading">
+        <h3>Attendees</h3>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <td>Name</td>
+                <td>Role</td>
+                <td>Location</td>
+                <td>Affiliation</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for attendance in attendances %}
+            <tr>
+                <td>{{ attendance.person.name }}</td>
+                <td>{{ attendance.role }}</td>
+                <td>
+                    <ul class="nobullet">
+                    {% for localization in attendance.person|get_location:attendance.year %}
+                        <li>{{localization.location.name|title}}</li>
+                    {% endfor %}
+                    </ul>
+                </td>
+                <td>
+                    <ul class="nobullet">
+                    {% for affiliation in attendance.person|get_affiliation:attendance.year %}
+                        <li>{{affiliation.institution.name|title}}</li>
+                    {% endfor %}
+                    </ul>
+                </td>
+                <!-- {{ attendance.person|get_affiliation:attendance.year }}</td> -->
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3">{{ attendances|length }} total attendees...</td>
+                <td>...representing {{ course|get_affiliation_count }} institutions.</td>
+
+
+            </tr>
+        </tfoot>
+    </table>
+
+</div>
+{% endwith %}
+{% endblock %}

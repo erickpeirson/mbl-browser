@@ -1,0 +1,46 @@
+{% extends "browser/base.html" %}
+{% load app_filters %}
+
+{% block main %}
+<div class="panel panel-mbl">
+    <table class="table">
+        <thead>
+            <tr>
+                <td>Name</td>
+                <td>Attendees</td>
+            </tr>
+        </thead>
+        <tbody>
+        {% for course in courses %}
+            <tr>
+                <td><a href="{% url "course" course.id %}">{{ course.name }}</a></td>
+                <td>{{ course.attendees.all|length }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div class="panel-footer">
+        <nav>
+            <ul class="pagination pagination-sm">
+                {% if courses.has_previous %}
+                <li>
+                    <a href="?page={{ courses.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+                {% for p in courses.paginator.num_pages|get_range:1 %}
+                <li class="{% if p == courses.number %}active{% endif %}"><a href="?page={{ p }}">{{ p }}</a></li>
+                {% endfor %}
+                {% if courses.has_next %}
+                <li>
+                    <a href="?page={{ courses.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
+{% endblock %}

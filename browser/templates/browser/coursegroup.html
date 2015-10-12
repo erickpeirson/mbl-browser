@@ -1,0 +1,124 @@
+{% extends "browser/base.html" %}
+{% load staticfiles %}
+{% load app_filters %}
+
+{% block extrahead %}
+<link rel="stylesheet" href="{% static "browser/css/bar.css" %}" />
+{% endblock %}
+
+{% block main %}
+<div class="alert alert-mbl">
+    Course Group
+    <h1>{{ coursegroup.name }}</h1>
+</div>
+
+<div class="panel panel-mbl" id="attendanceChart">
+    <div class="panel-heading">
+        <h3>Attendance</h3>
+        <p class="text text-muted">Hover over each bar to see the number of attendees in that year.</p>
+    </div>
+</div>
+
+<!-- coursegroupgroups -->
+<div class="panel panel-mbl">
+    <div class="panel-heading">
+        <h3>Courses</h3>
+        <p class="text text-muted">Click on a course name to view a complete list of participants.</p>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <td>Year</td>
+                <td>Name</td>
+                <td>Attendees</td>
+                <td>Institutions</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for partof in coursegroup|get_partof_set %}
+            <tr>
+                <td>{{ partof.year }}</td>
+                <td><a href="{% url "course" partof.course.id %}">{{ partof.course.name }}</a></td>
+                <td>{{ partof.course|get_attendance|length }}</td>
+                <td>{{ partof.course|get_affiliation_count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4">{{coursegroup|get_coursegroup_attendance_count}} attendees in {{ coursegroup.courses.all|length }} courses during the period {{ coursegroup|get_years }}.</td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+
+<script>
+
+var height = 100;
+
+var margin = {top: 5, right: 10, bottom: 30, left: 40}
+  , width = parseInt(d3.select('#attendanceChart').style('width'), 10)
+  , width = width - margin.left - margin.right
+  , percent = d3.format('%')
+  , widthScaler = 0.85;
+
+var x = d3.scale.ordinal()
+    .rangeRoundBands([0, width], .1);
+
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .ticks(4, "");
+
+var svg = d3.select("#attendanceChart").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+d3.json("{% url "coursegroup_data" coursegroup.id %}", function(error, data) {
+  if (error) throw error;
+
+  x.domain(data.attendance.map(function(d) { return d.year; }));
+  y.domain([0, d3.max(data.attendance, function(d) { return d.attendees; })]);
+
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis);
+
+  svg.selectAll(".bar")
+      .data(data.attendance)
+    .enter().append("rect")
+      .attr("class", "bar")
+      .attr("x", function(d) { return x(d.year) + x.rangeBand()*(1. - widthScaler)/2; })
+      .attr("width", x.rangeBand()*widthScaler)
+      .attr("y", function(d) { return y(d.attendees); })
+      .attr("height", function(d) { return height - y(d.attendees); });
+
+   svg.selectAll(".bar")
+      .attr('data-toggle', 'tooltip')
+      .attr('data-placement', 'top')
+      .append("title")
+        .text(function(d) { return d.attendees; });
+});
+
+function type(d) {
+  d.attendees = +d.attendees;
+  return d;
+}
+
+</script>
+{% endblock %}

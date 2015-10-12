@@ -1,0 +1,48 @@
+{% extends "browser/base.html" %}
+{% load app_filters %}
+
+{% block main %}
+<div class="panel panel-mbl">
+    <table class="table">
+        <thead>
+            <tr>
+                <td>Name</td>
+                <td>Courses</td>
+                <td>Years</td>
+            </tr>
+        </thead>
+        <tbody>
+        {% for coursegroup in coursegroups %}
+            <tr>
+                <td><a href="{% url "coursegroup" coursegroup.id %}">{{ coursegroup.name }}</a></td>
+                <td>{{ coursegroup|get_partof_set|length }}</td>
+                <td>{{ coursegroup|get_years }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div class="panel-footer">
+        <nav>
+            <ul class="pagination pagination-sm">
+                {% if coursegroups.has_previous %}
+                <li>
+                    <a href="?page={{ coursegroups.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+                {% for p in coursegroups.paginator.num_pages|get_range:1 %}
+                <li class="{% if p == coursegroups.number %}active{% endif %}"><a href="?page={{ p }}">{{ p }}</a></li>
+                {% endfor %}
+                {% if coursegroups.has_next %}
+                <li>
+                    <a href="?page={{ coursegroups.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
+{% endblock %}

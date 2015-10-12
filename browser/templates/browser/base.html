@@ -1,0 +1,39 @@
+{% load staticfiles %}
+
+<html>
+    <head>
+        <link rel="stylesheet" href="{% static "browser/css/bootstrap.min.css" %}" />
+        <link rel="stylesheet" href="{% static "browser/css/base.css" %}" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+        <style>
+            body {
+                background-image: url("{% static "browser/img/seal.png" %}");
+                background-repeat: no-repeat;
+                background-size: 534px 529px;
+                background-position: center top;
+            }
+        </style>
+        {% block extrahead %}
+
+        {% endblock %}
+    </head>
+
+    <body>
+        <div class="container">
+            {% include "browser/navbar.html" %}
+            {% block main %}
+            <div class="jumbotron">
+                <h1>The Marine Biological Laboratory</h1>
+                <h2>A Data-Driven History</h2>
+                <p>Bacon ipsum dolor amet short ribs elit filet mignon pork bacon aliquip, pig ea tempor ground round. Corned beef mollit prosciutto t-bone porchetta, aliqua reprehenderit turducken shankle labore. Veniam fugiat pork frankfurter, esse ut pork loin pork chop jerky magna pastrami. Est corned beef spare ribs leberkas ut reprehenderit enim venison frankfurter sint salami t-bone deserunt beef aute. Quis kevin enim, est jowl pork chop aute tongue in qui spare ribs filet mignon sunt.</p>
+                <p>
+                    <a class="btn btn-lg btn-primary" href="{% url "coursegroup_list" %}" role="button">View courses »</a>
+                </p>
+            </div>
+            {% endblock %}
+        </div>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="{% static "browser/js/bootstrap.min.js" %}"></script>
+    </body>
+</html>
