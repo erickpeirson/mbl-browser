@@ -1,0 +1,22 @@
+.bar {
+  fill: #1a6065;
+}
+
+.bar:hover {
+  fill: brown;
+}
+
+.axis {
+  font: 16px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  display: none;
+}

@@ -16,6 +16,14 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 
+from browser import views
+
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^$', views.home, name="home"),
+    url(r'^course/(?P<course_id>[0-9]+)/$', views.course, name="course"),
+    url(r'^course/$', views.course, name="course_list"),
+    url(r'^coursegroup/(?P<coursegroup_id>[0-9]+)/$', views.coursegroup, name="coursegroup"),
+    url(r'^coursegroup/(?P<coursegroup_id>[0-9]+).json$', views.coursegroup_data, name="coursegroup_data"),
+    url(r'^coursegroup/$', views.coursegroup, name="coursegroup_list"),
 ]
