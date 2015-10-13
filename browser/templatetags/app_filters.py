@@ -18,13 +18,16 @@ def get_years(coursegroup):
 
 
 @register.filter
-def get_attendance(course):
+def get_attendance(instance):
     """
     Retrieve :class:`.Attendance` instances associated with a ``course``.
 
     Results are ordered by role.
     """
-    return course.attendance_set.distinct('role', 'person_id').order_by('role', 'person_id')
+    if type(instance) is Course:
+        return instance.attendance_set.distinct('role', 'person_id').order_by('role', 'person_id')
+    elif type(instance) is Person:
+        return instance.attendance_set.distinct('year', 'role', 'course_id').order_by('year', 'role', 'course_id')
 
 
 @register.filter
@@ -36,11 +39,26 @@ def get_affiliation(person, year):
 
 
 @register.filter
+def get_affiliations(person):
+    return person.affiliation_set.distinct('year', 'institution_id').order_by('year')
+
+
+@register.filter
 def get_location(person, year):
     """
     Get all unique :class:`.Localization` isntances for ``person`` in ``year``.
     """
     return person.localization_set.filter(year=year).distinct()
+
+
+@register.filter
+def get_localizations(person):
+    return person.localization_set.distinct('year', 'location_id').order_by('year', 'location_id')
+
+
+@register.filter
+def get_locations(person):
+    return person.locations.distinct('id')
 
 
 @register.filter
@@ -89,3 +107,8 @@ def get_coursegroup_affiliation_count(coursegroup):
 @register.filter
 def get_partof_set(coursegroup):
     return coursegroup.partof_set.distinct('year', 'course_id').order_by('year', 'course_id')
+
+
+@register.filter
+def get_researches(person):
+    return Investigator.objects.filter(person=person).distinct('year', 'id').order_by('year', 'id')
