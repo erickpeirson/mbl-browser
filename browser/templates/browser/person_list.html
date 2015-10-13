@@ -9,7 +9,6 @@
                 <td>Name</td>
                 <td>Courses</td>
                 <td>Affiliations</td>
-                <td>Locations</td>
             </tr>
         </thead>
         <tbody>
@@ -18,7 +17,6 @@
                 <td><a href="{% url "person" person.id %}">{{ person.name }}</a></td>
                 <td>{{ person|get_attendance|length }}</td>
                 <td>{{ person|get_affiliations|length }}</td>
-                <td>{{ person|get_locations|length }}</td>
             </tr>
         {% endfor %}
         </tbody>
