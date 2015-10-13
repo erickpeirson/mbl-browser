@@ -2,12 +2,12 @@ body {
     padding-top: 20px;
     padding-bottom: 20px;
     background-color: #292929;
-    font-size: 11pt;
+    font-size: 9pt;
 }
 
 a {
     color: rgba(41, 41, 41, 1.0);
-    font-size: 11pt;
+    font-size: 9pt;
 }
 
 a:hover {
@@ -21,7 +21,7 @@ a:focus {
 }
 
 p {
-    font-size: 11pt;
+    font-size: 9pt;
 }
 
 
@@ -84,7 +84,8 @@ tbody>tr:hover {
 }
 
 td {
-    font-size:11pt;
+    font-size:9pt;
+    
 }
 
 .alert-mbl {
