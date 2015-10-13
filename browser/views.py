@@ -3,8 +3,11 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse
 
 from browser.models import *
+from django.conf import settings
 
-# Create your views here.
+
+def get_base_context():
+    return { 'git_revision': settings.GIT_REVISION, }
 
 def get_paginator(model, request):
     paginator = Paginator(model.objects.all(), 25)
@@ -21,33 +24,25 @@ def home(request):
     return render(request, "browser/base.html")
 
 def course(request, course_id=None):
+    context = get_base_context()
     if course_id:
-        context = {
-            'course': get_object_or_404(Course, pk=course_id),
-        }
+        context['course'] = get_object_or_404(Course, pk=course_id)
         template = "browser/course.html"
     else:
-        context = {
-            'courses': get_paginator(Course, request),
-        }
+        context['courses'] = get_paginator(Course, request)
         template = "browser/course_list.html"
     return render(request, template, context)
 
 
 def coursegroup(request, coursegroup_id=None):
-
+    context = get_base_context()
     if coursegroup_id:
-        context = {
-            'coursegroup': get_object_or_404(CourseGroup, pk=coursegroup_id),
-        }
+        context['coursegroup'] = get_object_or_404(CourseGroup, pk=coursegroup_id)
         template = "browser/coursegroup.html"
     else:
 
         coursegroups = get_paginator(CourseGroup, request)
-
-        context = {
-            'coursegroups': coursegroups,
-        }
+        context['coursegroups'] = coursegroups
         template = "browser/coursegroup_list.html"
     return render(request, template, context)
 
@@ -55,7 +50,6 @@ def coursegroup(request, coursegroup_id=None):
 def coursegroup_data(request, coursegroup_id=None):
     if coursegroup_id:
         coursegroup = get_object_or_404(CourseGroup, pk=coursegroup_id)
-
 
     data = [{
         'id': partof.course.id,
