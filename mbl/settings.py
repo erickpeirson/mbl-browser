@@ -105,4 +105,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+
 GIT_REVISION = os.environ['HEAD_HASH']
