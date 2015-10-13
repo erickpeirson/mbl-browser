@@ -65,6 +65,11 @@ p {
     border-color: #1a6065;
 }
 
+.panel-mbl-footer {
+    color: #EAEAEA;
+    background-color: rgba(80, 227, 239, 0.5);
+}
+
 thead {
     background-color: #1a6065;
     color: #fff;
@@ -85,7 +90,7 @@ tbody>tr:hover {
 
 td {
     font-size:9pt;
-    
+
 }
 
 .alert-mbl {
