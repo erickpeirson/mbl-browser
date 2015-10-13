@@ -20,10 +20,13 @@ a:focus {
     text-decoration: none;
 }
 
+.link-muted {
+    color: #777;
+}
+
 p {
     font-size: 9pt;
 }
-
 
 .navbar-default {
     /*background-color: #4d9ca2;*/

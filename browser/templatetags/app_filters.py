@@ -53,7 +53,7 @@ def get_affiliation_count(course):
     return Affiliation.objects.filter(
             person__in=course.attendees.distinct('id')
         ).filter(
-            year=course.partof_set.all()[0].year
+            year=course.year
         ).distinct(
             'institution_id'
         ).count()
