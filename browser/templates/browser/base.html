@@ -4,6 +4,8 @@
     <head>
         <link rel="stylesheet" href="{% static "browser/css/bootstrap.min.css" %}" />
         <link rel="stylesheet" href="{% static "browser/css/base.css" %}" />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+        <!-- <link rel="stylesheet" href="{% static "browser/css/font-awesome.min.css" %}" /> -->
         <script src="{% static "browser/js/d3.min.js" %}"></script>
         <style>
             body {
@@ -31,9 +33,16 @@
                 </p>
             </div>
             {% endblock %}
+            <div class="panel panel-mbl-footer">
+                <div class="panel-body">
+                        <a href="https://github.com/erickpeirson/mbl-browser"><i class="fa fa-github fa-2x"></i> Source on GitHub</a>
+                    <p class="pull-right">Another Open-Source Project by <a href="http://aplacecalledup.com/">A Place Called Up Consulting, LLC</a></p>
+                </div>
+            </div>
         </div>
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="{% static "browser/js/bootstrap.min.js" %}"></script>
+
     </body>
 </html>
