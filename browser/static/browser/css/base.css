@@ -73,10 +73,6 @@ p {
     background-color: rgba(80, 227, 239, 0.5);
 }
 
-table < div {
-    overflow-x: auto;
-    white-space: nowrap;
-}
 
 thead {
     background-color: #1a6065;
