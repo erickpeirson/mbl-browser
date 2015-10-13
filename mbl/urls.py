@@ -28,4 +28,8 @@ urlpatterns = [
     url(r'^coursegroup/(?P<coursegroup_id>[0-9]+)/$', views.coursegroup, name="coursegroup"),
     url(r'^coursegroup/(?P<coursegroup_id>[0-9]+).json$', views.coursegroup_data, name="coursegroup_data"),
     url(r'^coursegroup/$', views.coursegroup, name="coursegroup_list"),
+    url(r'^goals/$', views.goals, name="goals"),
+    url(r'^people/$', views.people, name="people"),
+    url(r'^methods/$', views.methods, name="methods"),
+
 ]

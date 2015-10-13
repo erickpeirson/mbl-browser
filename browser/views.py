@@ -73,3 +73,13 @@ def person(request, person_id=None):
         context['persons'] = get_paginator(Person, request, 'last_name', 100)
         template = "browser/person_list.html"
     return render(request, template, context)
+
+
+def goals(request):
+    return render(request, "browser/goals.html", get_base_context())
+
+def people(request):
+    return render(request, "browser/people.html", get_base_context())
+
+def methods(request):
+    return render(request, "browser/methods.html", get_base_context())

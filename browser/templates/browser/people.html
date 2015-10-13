@@ -1,0 +1,64 @@
+{% extends "browser/base.html" %}
+{% load app_filters %}
+{% load staticfiles %}
+
+{% block main %}
+<div class="alert alert-mbl">
+    <h1>People</h1>
+</div>
+
+
+<div class="panel panel-mbl">
+    <div class="panel-body">
+        <div class="media">
+            <div class="media-left media-top">
+                <a href="https://cbs.asu.edu/kate-maccord">
+                    <img class="media-object img-rounded" src="{% static "browser/img/kate.jpg" %}" alt="Kate MacCord">
+                </a>
+            </div>
+            <div class="media-body">
+                <a href="https://cbs.asu.edu/kate-maccord"><h4 class="media-heading">Kate MacCord | <span class="text text-danger">Arizona State University</span></h4></a>
+                Kate’s research interests lie in using historical and philosophical analyses
+                to better understand developmental biology throughout the 20th century (including
+                especially the concepts of differentiation and morphogenesis), teeth as a model
+                system, and developmental evolution. Her work uses an historical lens to understand
+                the practices and epistemology of biological research.
+            </div>
+        </div>
+        <div class="media">
+            <div class="media-left media-top">
+                <a href="http://orcid.org/0000-0002-1077-1680">
+                    <img class="media-object img-rounded" src="{% static "browser/img/john.jpg" %}" alt="John Furfey" width="70">
+                </a>
+            </div>
+            <div class="media-body">
+                <a href="http://orcid.org/0000-0002-1077-1680"><h4 class="media-heading">John Furfey | <span class="text text-danger">Marine Biological Laboratory</span></h4></a>
+                John Furfey is the contact for questions or issues regarding remote access to electronic
+                resources and the content of the MBL Library’s website.  John offers support for citation
+                and bibliographic management and operates the systems tracking the research output of the
+                Woods Hole scientific community.  John can address questions regarding impact factors and
+                altmetrics.  John is the Library liaison to the MBL Bay Paul Center.
+            </div>
+        </div>
+        <div class="media">
+            <div class="media-left media-top">
+                <a href="https://asu.academia.edu/ErickPeirson">
+                    <img class="media-object img-rounded" src="{% static "browser/img/erick.jpg" %}" alt="Erick Peirson" width="70">
+                </a>
+            </div>
+            <div class="media-body">
+                <a href="https://asu.academia.edu/ErickPeirson"><h4 class="media-heading">Erick Peirson | <span class="text text-danger">Arizona State University</span></h4></a>
+                Erick Peirson is a postdoctoral research associate in the
+                <a href="http://devo-evo.lab.asu.edu">Laubichler Lab at ASU</a>, head of research in the
+                <a href="http://diging.asu.edu">ASU Digital Innovation Group</a>, and a software developer
+                for <a href="http://www.aplacecalledup.com">A Place Called Up Consulting, LLC</a>.
+                As a historian, Erick studies the conceptual and epistemological evolution of 20th-century
+                ecology, with an emphasis on ecological genetics and British agriculture. As a developer
+                and data scientist, he is interested in generating strategies and tools to document and
+                analyze historical processes in a computational framework.
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
