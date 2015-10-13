@@ -14,7 +14,7 @@
         {% for course in courses %}
             <tr>
                 <td><a href="{% url "course" course.id %}">{{ course.name }}</a></td>
-                <td>{{ course.attendees.all|length }}</td>
+                <td>{{ course|get_attendance|length }}</td>
             </tr>
         {% endfor %}
         </tbody>

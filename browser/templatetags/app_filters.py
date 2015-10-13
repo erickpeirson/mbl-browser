@@ -1,4 +1,5 @@
 from django.template import Library
+from browser.models import *
 
 register = Library()
 
@@ -48,9 +49,14 @@ def get_affiliation_count(course):
     Calculate the number of :class:`.Institution`\s associated with a
     ``course``.
     """
-    affiliations = [aff for att in get_attendance(course)
-                    for aff in get_affiliation(att.person, att.year)]
-    return len(affiliations)
+
+    return Affiliation.objects.filter(
+            person__in=course.attendees.distinct('id')
+        ).filter(
+            year=course.partof_set.all()[0].year
+        ).distinct(
+            'institution_id'
+        ).count()
 
 
 @register.filter
@@ -62,7 +68,22 @@ def get_coursegroup_attendance_count(coursegroup):
     TODO: This should count _unique_ people, not sum the course attendance
     counts.
     """
-    return sum([get_attendance(course).count() for course in coursegroup.courses.all()])
+    return Attendance.objects.filter(course__in=coursegroup.courses.all()).distinct('person').count()
+
+
+@register.filter
+def get_coursegroup_attendance(coursegroup):
+    return Attendance.objects.filter(course__in=coursegroup.courses.all())
+
+
+@register.filter
+def get_coursegroup_attendees(coursegroup):
+    return Person.objects.filter(attendance_set__in=get_coursegroup_attendance(coursegroup)).distinct('id')
+
+
+@register.filter
+def get_coursegroup_affiliation_count(coursegroup):
+    return Affiliation.objects.filter(person__in=get_coursegroup_attendees(coursegroup))
 
 
 @register.filter
