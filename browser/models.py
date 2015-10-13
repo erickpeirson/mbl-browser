@@ -25,7 +25,7 @@ class NameMixin(models.Model):
         return self.name
 
 
-class Course(URIMixin, NameMixin):
+class Course(URIMixin, NameMixin, YearMixin):
     attendees = models.ManyToManyField('Person', through='Attendance',
                                        related_name='courses')
     is_part_of = models.ManyToManyField('CourseGroup', through='PartOf',
