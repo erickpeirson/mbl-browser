@@ -51,7 +51,6 @@
                 <td>Year</td>
                 <td>Role</td>
                 <td>Course</td>
-                <td>Course Group</td>
             </tr>
         </thead>
         <tbody>
@@ -60,7 +59,6 @@
                 <td>{{ attendance.year }}</td>
                 <td>{{ attendance.role }}</td>
                 <td><a href="{% url "course" attendance.course.id %}">{{ attendance.course.name }}</a></td>
-                <td><a href="{% url "coursegroup" attendance.course.primary_coursegroup.id %}">{{ attendance.course.primary_coursegroup.name }}</a></td>
             </tr>
             {% endfor %}
         </tbody>
