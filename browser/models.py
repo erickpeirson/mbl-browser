@@ -31,6 +31,10 @@ class Course(URIMixin, NameMixin, YearMixin):
     is_part_of = models.ManyToManyField('CourseGroup', through='PartOf',
                                         related_name='courses')
 
+    @property
+    def primary_coursegroup(self):
+        return self.is_part_of.all()[0]
+
 
 class CourseGroup(URIMixin, NameMixin):
     pass

@@ -50,7 +50,7 @@
         <tbody>
             {% for attendance in attendances %}
             <tr>
-                <td>{{ attendance.person.name }}</td>
+                <td><a href="{% url "person" attendance.person.id %}">{{ attendance.person.name }}</a></td>
                 <td>{{ attendance.role }}</td>
                 <td>
                     <ul class="nobullet">

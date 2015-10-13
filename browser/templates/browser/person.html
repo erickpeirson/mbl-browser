@@ -1,0 +1,132 @@
+{% extends "browser/base.html" %}
+{% load app_filters %}
+
+{% block main %}
+<div class="alert alert-mbl">
+    Person
+    <h1>{{ person.name }}</h1>
+</div>
+
+<!-- Affiliations -->
+{% with person|get_affiliations as affiliations %}
+{% if affiliations|length > 0 %}
+<div class="panel panel-mbl">
+    <div class="panel-heading">
+        <h3>Affiliations</h3>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <td>Year</td>
+                <td>Role</td>
+                <td>Institution</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for affiliation in affiliations %}
+            <tr>
+                <td>{{ affiliation.year }}</td>
+                <td>{{ affiliation.role }}</td>
+                <td>{{ affiliation.institution.name }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endwith %}
+
+<!-- Courses -->
+{% with person|get_attendance as attendances %}
+{% if attendances|length > 0 %}
+<div class="panel panel-mbl">
+    <div class="panel-heading">
+        <h3>Courses</h3>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <td>Year</td>
+                <td>Role</td>
+                <td>Course</td>
+                <td>Course Group</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for attendance in attendances %}
+            <tr>
+                <td>{{ attendance.year }}</td>
+                <td>{{ attendance.role }}</td>
+                <td><a href="{% url "course" attendance.course.id %}">{{ attendance.course.name }}</a></td>
+                <td><a href="{% url "coursegroup" attendance.course.primary_coursegroup.id %}">{{ attendance.course.primary_coursegroup.name }}</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endwith %}
+
+
+<!-- Research -->
+{% with person|get_researches as researches %}
+{% if researches|length > 0 %}
+<div class="panel panel-mbl">
+    <div class="panel-heading">
+        <h3>Research at the MBL</h3>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <td>Year</td>
+                <td>Subject</td>
+                <td>Role</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for research in researches %}
+            <tr>
+                <td>{{ research.year }}</td>
+                <td>{{ research.subject }}</td>
+                <td>{{ research.role }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endwith %}
+
+
+<!-- Locations -->
+{% with person|get_localizations as localizations %}
+{% if localizations|length > 0 %}
+<div class="panel panel-mbl">
+    <div class="panel-heading">
+        <h3>Locations</h3>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <td>Year</td>
+                <td>Location</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for localization in localizations %}
+            <tr>
+                <td>{{ localization.year }}</td>
+                <td>{{ localization.location.name }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endwith %}
+
+{% endblock %}

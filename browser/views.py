@@ -9,8 +9,11 @@ from django.conf import settings
 def get_base_context():
     return { 'git_revision': settings.GIT_REVISION, }
 
-def get_paginator(model, request):
-    paginator = Paginator(model.objects.all(), 25)
+def get_paginator(model, request, order_by=None, pagesize=25):
+    queryset = model.objects.all()
+    if order_by:
+        queryset = queryset.order_by(order_by)
+    paginator = Paginator(queryset, pagesize)
     page = request.GET.get('page')
     try:
         instances = paginator.page(page)
@@ -20,8 +23,10 @@ def get_paginator(model, request):
         instances = paginator.page(paginator.num_pages)
     return instances
 
+
 def home(request):
     return render(request, "browser/base.html")
+
 
 def course(request, course_id=None):
     context = get_base_context()
@@ -57,3 +62,14 @@ def coursegroup_data(request, coursegroup_id=None):
         'attendees': partof.course.attendance_set.distinct('role', 'person_id').order_by('role', 'person_id').count()
     } for partof in coursegroup.partof_set.all()]
     return JsonResponse({'attendance': data})
+
+
+def person(request, person_id=None):
+    context = get_base_context()
+    if person_id:
+        context['person'] = get_object_or_404(Person, pk=person_id)
+        template = "browser/person.html"
+    else:
+        context['persons'] = get_paginator(Person, request, 'last_name', 100)
+        template = "browser/person_list.html"
+    return render(request, template, context)

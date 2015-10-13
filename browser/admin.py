@@ -55,7 +55,11 @@ class LocalizationInline(admin.TabularInline):
 class PersonAdmin(admin.ModelAdmin):
     fields = ('uri', 'name', 'first_name', 'last_name', 'authority')
     readonly_fields = ('uri', 'name', 'first_name', 'last_name')
-    inlines = (AttendanceInline, AffiliationInline, InvestigatorInline, LocalizationInline)
+    search_fields = ('last_name', 'first_name')
+    inlines = (AttendanceInline,
+               AffiliationInline,
+               InvestigatorInline,
+               LocalizationInline)
 
 
 class InstitutionAdmin(admin.ModelAdmin):
@@ -90,7 +94,7 @@ class AffiliationAdmin(admin.ModelAdmin):
         """
         Return empty perms dict thus hiding the model from admin index.
         """
-        return {}    
+        return {}
 
 
 class AttendanceAdmin(admin.ModelAdmin):

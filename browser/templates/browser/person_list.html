@@ -1,0 +1,50 @@
+{% extends "browser/base.html" %}
+{% load app_filters %}
+
+{% block main %}
+<div class="panel panel-mbl">
+    <table class="table">
+        <thead>
+            <tr>
+                <td>Name</td>
+                <td>Courses</td>
+                <td>Affiliations</td>
+                <td>Locations</td>
+            </tr>
+        </thead>
+        <tbody>
+        {% for person in persons %}
+            <tr>
+                <td><a href="{% url "person" person.id %}">{{ person.name }}</a></td>
+                <td>{{ person|get_attendance|length }}</td>
+                <td>{{ person|get_affiliations|length }}</td>
+                <td>{{ person|get_locations|length }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div class="panel-footer">
+        <nav>
+            <ul class="pagination pagination-sm">
+                {% if persons.has_previous %}
+                <li>
+                    <a href="?page={{ persons.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+                {% for p in persons.paginator.num_pages|get_range:1 %}
+                <li class="{% if p == persons.number %}active{% endif %}"><a href="?page={{ p }}">{{ p }}</a></li>
+                {% endfor %}
+                {% if persons.has_next %}
+                <li>
+                    <a href="?page={{ persons.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
+{% endblock %}
