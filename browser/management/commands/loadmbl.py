@@ -29,6 +29,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         path = options['datapath'][0]
         for name, fname in self.datatypes:
+            print 'Loading %s from %s' % (name, fname)
             method = getattr(self, 'handle_{0}'.format(name))
             for datum in self.load_csv(os.path.join(path, fname)):
                 try:
