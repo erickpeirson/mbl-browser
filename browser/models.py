@@ -35,9 +35,15 @@ class Course(URIMixin, NameMixin, YearMixin):
     def primary_coursegroup(self):
         return self.is_part_of.all()[0]
 
+    @property
+    def number_of_attendees(self):
+        return self.attendees.count()
+
 
 class CourseGroup(URIMixin, NameMixin):
-    pass
+    @property
+    def number_of_courses(self):
+        return self.courses.count()
 
 
 class Institution(URIMixin, NameMixin):
@@ -70,6 +76,10 @@ class Person(URIMixin):
     @property
     def name(self):
         return ' '.join([self.first_name, self.last_name])
+
+    @property
+    def number_of_courses(self):
+        return self.courses.distinct('pk').count()
 
     def __unicode__(self):
         return self.name
