@@ -16,8 +16,8 @@
     <div class="panel-heading" id="attendanceChartHeading">
         <h3>Attendance</h3>
         <p class="text text-muted">Click on a year to view details for that course.</p>
-        <svg width="1000" height="150">
-            <g class="chart-wrapper" transform="translate(50,20)">
+        <svg width="100%" height="150">
+            <g class="chart-wrapper" transform="translate(20,20)">
                 <g class="bars"></g>
                 <g class="x axis"></g>
                 <g class="y axis"></g>
@@ -110,7 +110,7 @@ function update() {
 W.addListener(update);
 
 function updateScales() {
-  var width = d3.min([W.getViewportWidth(), maxWidth]) - rightPadding;
+  var width = $('#attendanceChart').width() - rightPadding; //d3.min([W.getViewportWidth(), maxWidth])
   xScale.range([0, width]);
 }
 
@@ -119,7 +119,7 @@ function updateAxes() {
 }
 
 function updateBars() {
-    var width = d3.min([W.getViewportWidth(), maxWidth]) - rightPadding;
+    var width = $('#attendanceChart').width() - rightPadding;
   // Perform the data join
   var u = barGroup
   .selectAll('rect')
