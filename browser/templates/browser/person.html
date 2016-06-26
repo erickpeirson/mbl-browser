@@ -30,15 +30,16 @@
                 <thead>
                     <tr>
                         <td>Year</td>
-                        <td>Role</td>
+                        <td>Position</td>
                         <td>Institution</td>
                     </tr>
                 </thead>
                 <tbody>
                     {% for affiliation in affiliations %}
+
                     <tr>
                         <td>{{ affiliation.year }}</td>
-                        <td>{{ affiliation.role }}</td>
+                        <td>{{ affiliation.position }}</td>
                         <td>
                             <a href="{% url "institution" affiliation.institution.id %}">{{ affiliation.institution.name }}</a>
                         </td>
