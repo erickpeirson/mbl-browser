@@ -1,0 +1,6 @@
+202468564 browser/fixtures/mbl_data.xml
+19608796 data/cleaned_affiliations.csv
+11744302 data/cleaned_coursedata.csv
+10713485 data/cleaned_locations.csv
+4714372 data/cleaned_investigators.csv
+4297974 data/person.csv

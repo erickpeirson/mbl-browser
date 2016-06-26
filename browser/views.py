@@ -1,15 +1,17 @@
 from django.shortcuts import render, get_object_or_404
+from django.template import RequestContext
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse
 
 from browser.models import *
-from django.conf import settings
 
 
-def get_base_context():
-    return { 'git_revision': settings.GIT_REVISION, }
+
 
 def get_paginator(model, request, order_by=None, pagesize=25):
+    """
+    Generic paginator functionality for views.
+    """
     queryset = model.objects.all()
     if order_by:
         queryset = queryset.order_by(order_by)
@@ -25,11 +27,17 @@ def get_paginator(model, request, order_by=None, pagesize=25):
 
 
 def home(request):
+    """
+    The view at /.
+    """
     return render(request, "browser/base.html")
 
 
 def course(request, course_id=None):
-    context = get_base_context()
+    """
+    Handles both list and detail views for :class:`.Course`\s.
+    """
+    context = RequestContext(request, {})
     if course_id:
         context['course'] = get_object_or_404(Course, pk=course_id)
         template = "browser/course.html"
@@ -40,7 +48,10 @@ def course(request, course_id=None):
 
 
 def coursegroup(request, coursegroup_id=None):
-    context = get_base_context()
+    """
+    Handles both list and detail views for :class:`.CourseGroup`\s.
+    """
+    context = RequestContext(request, {})
     if coursegroup_id:
         context['coursegroup'] = get_object_or_404(CourseGroup, pk=coursegroup_id)
         template = "browser/coursegroup.html"
@@ -65,7 +76,10 @@ def coursegroup_data(request, coursegroup_id=None):
 
 
 def person(request, person_id=None):
-    context = get_base_context()
+    """
+    Handles both list and detail views for :class:`.Person`\s.
+    """
+    context = RequestContext(request, {})
     if person_id:
         context['person'] = get_object_or_404(Person, pk=person_id)
         template = "browser/person.html"
@@ -76,10 +90,10 @@ def person(request, person_id=None):
 
 
 def goals(request):
-    return render(request, "browser/goals.html", get_base_context())
+    return render(request, "browser/goals.html", RequestContext(request, {}))
 
 def people(request):
-    return render(request, "browser/people.html", get_base_context())
+    return render(request, "browser/people.html", RequestContext(request, {}))
 
 def methods(request):
-    return render(request, "browser/methods.html", get_base_context())
+    return render(request, "browser/methods.html", RequestContext(request, {}))

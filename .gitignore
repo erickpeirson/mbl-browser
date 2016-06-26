@@ -57,3 +57,7 @@ docs/_build/
 target/
 
 staticfiles
+
+
+*.csv
+*.xml
