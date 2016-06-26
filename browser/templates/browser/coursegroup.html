@@ -110,7 +110,7 @@ function update() {
 W.addListener(update);
 
 function updateScales() {
-  var width = $('#attendanceChartHeading').width() - rightPadding;//d3.min([W.getViewportWidth(), maxWidth]) - rightPadding;
+  var width = d3.min([W.getViewportWidth(), maxWidth]) - rightPadding;
   xScale.range([0, width]);
 }
 
@@ -119,7 +119,7 @@ function updateAxes() {
 }
 
 function updateBars() {
-    var width = $('#attendanceChartHeading').width() - rightPadding;
+    var width = d3.min([W.getViewportWidth(), maxWidth]) - rightPadding;
   // Perform the data join
   var u = barGroup
   .selectAll('rect')
