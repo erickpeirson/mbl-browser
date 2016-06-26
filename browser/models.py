@@ -52,12 +52,20 @@ class Institution(URIMixin, NameMixin):
     Use this field to specify a known institution (i.e. a location with an entry
     in the Conceptpower name authority).""")
 
+    @property
+    def number_of_affiliates(self):
+        return self.affiliates.count()
+
 
 class Location(URIMixin, NameMixin):
     authority = models.ForeignKey('KnownLocation', blank=True, null=True,
                                   help_text="""
     Use this field to specify a known location (i.e. a location with an entry
     in the GeoNames database).""")
+
+    @property
+    def number_of_denizens(self):
+        return self.denizens.distinct('pk').count()
 
 
 class Person(URIMixin):
@@ -80,6 +88,14 @@ class Person(URIMixin):
     @property
     def number_of_courses(self):
         return self.courses.distinct('pk').count()
+
+    @property
+    def number_of_affiliations(self):
+        return self.affiliations.distinct('pk').count()
+
+    @property
+    def is_investigator(self):
+        return self.investigator_set.count() > 0
 
     def __unicode__(self):
         return self.name

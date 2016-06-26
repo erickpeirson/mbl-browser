@@ -19,16 +19,54 @@ class MockObject(dict):
         return self.get(key)
 
 
+class DenizenSerializer(serializers.Serializer):
+    """
+    From the perspective of a :class:`.Location`\.
+    """
+    first_name = serializers.CharField(max_length=255)
+    last_name = serializers.CharField(max_length=255)
+    url = serializers.HyperlinkedIdentityField(view_name='person-detail')
+    year = serializers.ListField()
+
+
 class LocationListSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Location
-        fields = ('name', 'url')
+        fields = ('name', 'url', 'number_of_denizens')
 
 
 class LocationDetailSerializer(serializers.HyperlinkedModelSerializer):
+    denizens = serializers.SerializerMethodField('has_denizens')
+
     class Meta:
         model = Location
-        fields = ('name', 'url')
+        fields = ('name', 'url', 'denizens', 'number_of_denizens')
+
+    def has_denizens(self, obj):
+        """
+        Group :class:`.Localization` instances by :class:`.Person`\.
+
+        Display only one entry per person per year.
+        """
+
+        afields = ['person_id', 'year']
+        aqs = Localization.objects.filter(location_id=obj.id).distinct(*afields)
+
+        person_locations = defaultdict(list)
+        for localization in aqs.values(*afields):
+            person_locations[localization['person_id']].append(localization['year'])
+
+        pfields = ['last_name', 'first_name', 'pk']
+        qs = []
+        for person in obj.denizens.distinct('pk').values(*pfields):
+            person['year'] = person_locations[person['pk']]
+            qs.append(MockObject(person))
+
+        # HyperlinkedIdentityField requires the HttpRequest to generate an
+        #  absolute URL.
+        context = {'request': self._context['request']}
+        serializer = DenizenSerializer(qs, many=True, context=context)
+        return serializer.data
 
 
 class PositionSerializer(serializers.Serializer):
@@ -60,7 +98,7 @@ class InstitutionDetailSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Institution
-        fields = ('name', 'url', 'affiliates')
+        fields = ('name', 'url', 'affiliates', 'number_of_affiliates')
 
     def affiliated_people(self, obj):
         """
@@ -94,8 +132,7 @@ class InstitutionDetailSerializer(serializers.HyperlinkedModelSerializer):
 class InstitutionListSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Institution
-        fields = ('name', 'url')
-
+        fields = ('name', 'url', 'number_of_affiliates')
 
 
 class LocalizationSerializer(serializers.Serializer):
@@ -107,15 +144,23 @@ class LocalizationSerializer(serializers.Serializer):
     year = serializers.ListField()
 
 
+class InvestigatorSerializer(serializers.Serializer):
+    subject = serializers.CharField(max_length=255)
+    role = serializers.CharField(max_length=255)
+    year = serializers.IntegerField(default=0)
+
+
 class PersonDetailSerializer(serializers.HyperlinkedModelSerializer):
     affiliations = serializers.SerializerMethodField('affiliated_with')
     courses = serializers.SerializerMethodField('attended_courses')
     locations = serializers.SerializerMethodField('has_location')
-    # locations = LocationListSerializer(many=True)
+    investigation = serializers.SerializerMethodField('is_investigator')
 
     class Meta:
         model = Person
-        exclude = ('uri',)
+        fields = ('last_name', 'first_name', 'url', 'number_of_courses',
+                  'is_investigator', 'number_of_affiliations', 'affiliations',
+                  'courses', 'locations', 'investigation')
 
 
     def affiliated_with(self, obj):
@@ -199,11 +244,17 @@ class PersonDetailSerializer(serializers.HyperlinkedModelSerializer):
         serializer = LocalizationSerializer(qs, many=True, context=context)
         return serializer.data
 
+    def is_investigator(self, obj):
+        qs = obj.investigator_set.all()
+        serializer = InvestigatorSerializer(qs, many=True)
+        return serializer.data
+
 
 class PersonListSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Person
-        fields = ('last_name', 'first_name', 'url', 'number_of_courses')
+        fields = ('last_name', 'first_name', 'url', 'number_of_courses',
+                  'is_investigator', 'number_of_affiliations')
 
 
 class RoleSerializer(serializers.Serializer):
