@@ -18,6 +18,8 @@ class CourseGroupViewSet(viewsets.ModelViewSet):
 
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_class = CourseFilter
 
     def get_serializer_class(self):
         if hasattr(self, 'action') and self.action == 'list':
@@ -38,6 +40,8 @@ class PersonViewSet(viewsets.ModelViewSet):
 
 class InstitutionViewSet(viewsets.ModelViewSet):
     queryset = Institution.objects.all()
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_class = InstitutionFilter
 
     def get_serializer_class(self):
         if hasattr(self, 'action') and self.action == 'list':
