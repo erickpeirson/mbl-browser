@@ -11,6 +11,15 @@
         <script src="{% static "browser/js/d3.min.js" %}"></script>
         <script src="{% static "browser/js/W.min.js" %}"></script>
         <style>
+        /* MBL seal background image -- has to be in template for the static
+           URL to work correctly. */
+        body {
+            background-image: url("{% static "browser/img/seal.png" %}");
+            background-repeat: no-repeat;
+            background-size: 534px 529px;
+            background-position: center top;
+        }
+
 
         </style>
         {% block extrahead %}
@@ -31,7 +40,7 @@
                     project, and an administrative platform for curation and data entry.
                 </p>
                 <p>
-                    All of the data on this platform are available via a REST API.
+                    All of the data on this platform are available via a <a href="/rest/">REST API</a>.
                 </p>
                 <p>
                     <a class="btn btn-lg btn-primary" href="{% url "coursegroup_list" %}" role="button">View courses »</a>

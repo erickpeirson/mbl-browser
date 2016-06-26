@@ -34,6 +34,7 @@
 <div class="panel panel-mbl">
     <ul class="list-group">
         {% for institution in filter_list %}
+        {% if institution.name|length > 0 %}
         <a class="list-group-item" href="{% url "institution" institution.id %}">
             {{ institution.name }}
             <span class="btn-group pull-right">
@@ -46,6 +47,7 @@
                 </span>
             </span>
         </a>
+        {% endif %}
 
         {% endfor %}
     </ul>

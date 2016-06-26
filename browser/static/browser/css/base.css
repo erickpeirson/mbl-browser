@@ -37,7 +37,7 @@ p {
 }
 
 .navbar-default .navbar-brand:hover {
-    color: #fff;
+    /*color: #fff;*/
 }
 
 .navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:focus, .navbar-default .navbar-nav>.active>a:hover {
@@ -49,7 +49,7 @@ p {
 }
 
 .navbar-default .navbar-nav>li>a:hover, .navbar-default .navbar-nav>li>a:focus {
-    color: #000;
+    /*color: #000;*/
 }
 
 .jumbotron {
@@ -65,6 +65,13 @@ p {
 .panel-mbl {
     /*background-color: rgba(80, 227, 239, 0.5);*/
     background-color: rgba(245, 245, 245, 0.2);
+}
+.panel-mbl>.list-group {
+    background-color: rgba(245, 245, 245, 0.0);
+}
+
+.panel-mbl>.list-group>.list-group-item {
+    background-color: rgba(245, 245, 245, 0.0);
 }
 
 .panel-mbl-footer {
@@ -96,13 +103,4 @@ table {
 ul.nobullet {
     list-style-type: none;
     padding-left: 0px;
-}
-
-
-/* MBL seal background image */
-body {
-    background-image: url("{% static "browser/img/seal.png" %}");
-    background-repeat: no-repeat;
-    background-size: 534px 529px;
-    background-position: center top;
 }
