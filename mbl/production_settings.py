@@ -37,6 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'crispy_forms',
+    'pagination',
     'rest_framework',
     'browser',
 )
@@ -130,3 +131,6 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 20,
 }
+
+PAGINATION_DEFAULT_PAGINATION = 20
+PAGINATION_DEFAULT_WINDOW = 5
