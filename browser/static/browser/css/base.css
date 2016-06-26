@@ -86,9 +86,6 @@ table {
 .alert-mbl {
     padding-top: 5px;
     padding-bottom: 5px;
-    background-color: rgba(80, 227, 239, 0.5);
-    border-color: #1a6065;
-    color: #fff;
 }
 
 .alert-mbl>h1, .alert-mbl>h2, .alert-mbl>h3 {

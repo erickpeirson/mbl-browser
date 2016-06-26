@@ -1,7 +1,36 @@
 {% extends "browser/base.html" %}
 {% load app_filters %}
+{% load addcss %}
+{% load pagination_tags %}
 
 {% block main %}
+{% autopaginate coursegroups.qs 40 as filter_list %}
+
+
+<div class="clearfix">
+    <div class="btn-group pull-right">
+        <button data-toggle="collapse" class="btn btn-primary" data-target="#filters">Show/hide filters</button>
+    </div>
+</div>
+
+<div class="collapse" id="filters">
+    <form class="form clearfix">
+        {% for field in coursegroups.form %}
+        <div class="form-group">
+            <label>{{ field.label }}</label>
+            {{ field|addcss:"form-control" }}
+        </div>
+        {% endfor %}
+        <div class="btn-group pull-right">
+            <input class="btn btn-primary" type="submit" value="Apply Filters" />
+        </div>
+    </form>
+</div>
+
+<div class="text-center">
+    {% paginate %}
+</div>
+
 <div class="panel panel-mbl">
     <table class="table">
         <thead>
@@ -12,7 +41,8 @@
             </tr>
         </thead>
         <tbody>
-        {% for coursegroup in coursegroups %}
+
+        {% for coursegroup in filter_list %}
             <tr>
                 <td><a href="{% url "coursegroup" coursegroup.id %}">{{ coursegroup.name }}</a></td>
                 <td>{{ coursegroup|get_partof_set|length }}</td>
@@ -21,28 +51,11 @@
         {% endfor %}
         </tbody>
     </table>
-    <div class="panel-footer">
-        <nav>
-            <ul class="pagination pagination-sm">
-                {% if coursegroups.has_previous %}
-                <li>
-                    <a href="?page={{ coursegroups.previous_page_number }}" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                </li>
-                {% endif %}
-                {% for p in coursegroups.paginator.num_pages|get_range:1 %}
-                <li class="{% if p == coursegroups.number %}active{% endif %}"><a href="?page={{ p }}">{{ p }}</a></li>
-                {% endfor %}
-                {% if coursegroups.has_next %}
-                <li>
-                    <a href="?page={{ coursegroups.next_page_number }}" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                </li>
-                {% endif %}
-            </ul>
-        </nav>
+
+    <div class="panel-footer text-center">
+    {% paginate %}
     </div>
+
+
 </div>
 {% endblock %}

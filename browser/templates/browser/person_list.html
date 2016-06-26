@@ -1,48 +1,67 @@
 {% extends "browser/base.html" %}
 {% load app_filters %}
+{% load addcss %}
+{% load pagination_tags %}
 
 {% block main %}
-<div class="panel panel-mbl">
-    <table class="table">
-        <thead>
-            <tr>
-                <td>Name</td>
-                <td>Courses</td>
-                <td>Affiliations</td>
-            </tr>
-        </thead>
-        <tbody>
-        {% for person in persons %}
-            <tr>
-                <td><a href="{% url "person" person.id %}">{{ person.name }}</a></td>
-                <td>{{ person|get_attendance|length }}</td>
-                <td>{{ person|get_affiliations|length }}</td>
-            </tr>
+{% autopaginate persons.qs 40 as filter_list %}
+
+<div class="clearfix">
+    <div class="btn-group pull-right">
+        <button data-toggle="collapse" class="btn btn-primary" data-target="#filters">Show/hide filters</button>
+    </div>
+</div>
+
+<div class="collapse" id="filters">
+    <form class="form clearfix">
+        {% for field in persons.form %}
+        <div class="form-group">
+            <label>{{ field.label }}</label>
+            {{ field|addcss:"form-control" }}
+        </div>
         {% endfor %}
-        </tbody>
-    </table>
-    <div class="panel-footer">
-        <nav>
-            <ul class="pagination pagination-sm">
-                {% if persons.has_previous %}
-                <li>
-                    <a href="?page={{ persons.previous_page_number }}" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                </li>
-                {% endif %}
-                {% for p in persons.paginator.num_pages|get_range:1 %}
-                <li class="{% if p == persons.number %}active{% endif %}"><a href="?page={{ p }}">{{ p }}</a></li>
-                {% endfor %}
-                {% if persons.has_next %}
-                <li>
-                    <a href="?page={{ persons.next_page_number }}" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                </li>
-                {% endif %}
-            </ul>
-        </nav>
+        <div class="btn-group pull-right">
+            <input class="btn btn-primary" type="submit" value="Apply Filters" />
+        </div>
+    </form>
+</div>
+
+<div class="text-center">
+    {% paginate %}
+</div>
+
+<div class="panel panel-mbl">
+
+    <ul class="list-group">
+        {% for person in filter_list %}
+        <a class="list-group-item" href="{% url "person" person.id %}">
+            <div>
+                {{ person.name }}
+                {% if person.is_investigator %}<span class="label label-primary">Investigator</span>{% endif %}
+                <span class="btn-group pull-right">
+                    <span class="btn btn-success btn-xs"
+                        data-toggle="tooltip"
+                        data-placement="left"
+                        data-container='body'
+                        title="Number of courses attended">
+                        {{ person.number_of_courses }}
+                    </span>
+                    <span class="btn btn-info btn-xs"
+                        data-toggle="tooltip"
+                        data-placement="left"
+                        data-container='body'
+                        title="Number of institutional affiliations">
+                        {{ person.number_of_affiliations }}
+                    </span>
+                </span>
+            </div>
+
+        </a>
+        {% endfor %}
+    </ul>
+
+    <div class="panel-footer text-center">
+        {% paginate %}
     </div>
 </div>
 {% endblock %}

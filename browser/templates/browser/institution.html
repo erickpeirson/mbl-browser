@@ -1,0 +1,33 @@
+{% extends "browser/base.html" %}
+{% load app_filters %}
+
+{% block main %}
+<div class="alert alert-mbl">
+    Institution
+    <h1>{{ institution.name }}</h1>
+</div>
+
+<!-- Attendees -->
+<!-- {% with course|get_attendance as attendances %} -->
+<div class="panel panel-mbl">
+    <div class="panel-heading">
+        <h3>Affiliates</h3>
+    </div>
+
+    <ul class="list-group">
+
+        {% for affiliate in institution|get_affiliates %}
+        <a class="list-group-item" href="{% url "person" affiliate.pk %}">
+            <div class="text-warning h5">{{ affiliate.first_name }} {{ affiliate.last_name }}</div>
+            <dl class="dl-horizontal">
+                {% for position in affiliate.positions %}
+                <dt>{{position.year}}</dt>
+                <dd>{{position.position}}</dd>
+                {% endfor %}
+            </dl>
+        </a>
+        {% endfor %}
+
+</div>
+{% endwith %}
+{% endblock %}

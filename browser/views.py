@@ -4,7 +4,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse
 
 from browser.models import *
-
+from browser.filters import *
 
 
 
@@ -42,7 +42,7 @@ def course(request, course_id=None):
         context['course'] = get_object_or_404(Course, pk=course_id)
         template = "browser/course.html"
     else:
-        context['courses'] = get_paginator(Course, request)
+        context['courses'] = CourseFilter(request.GET, queryset=Course.objects.order_by('year'))
         template = "browser/course_list.html"
     return render(request, template, context)
 
@@ -57,7 +57,8 @@ def coursegroup(request, coursegroup_id=None):
         template = "browser/coursegroup.html"
     else:
 
-        coursegroups = get_paginator(CourseGroup, request)
+        # coursegroups = get_paginator(CourseGroup, request, order_by='name')
+        coursegroups = CourseGroupFilter(request.GET, queryset=CourseGroup.objects.all())
         context['coursegroups'] = coursegroups
         template = "browser/coursegroup_list.html"
     return render(request, template, context)
@@ -81,11 +82,33 @@ def person(request, person_id=None):
     """
     context = RequestContext(request, {})
     if person_id:
-        context['person'] = get_object_or_404(Person, pk=person_id)
+        person = get_object_or_404(Person, pk=person_id)
+        context.update({
+            'person': person,
+            # 'affiliated_with': affiliated_with(person),
+        })
         template = "browser/person.html"
     else:
-        context['persons'] = get_paginator(Person, request, 'last_name', 100)
+        context['persons'] = PersonFilter(request.GET, queryset=Person.objects.order_by('last_name'))
+        # context['persons'] = get_paginator(Person, request, 'last_name', 100)
         template = "browser/person_list.html"
+    return render(request, template, context)
+
+
+def institution(request, institution_id=None):
+    """
+    Handles both list and detail views for :class:`.Person`\s.
+    """
+    context = RequestContext(request, {})
+    if institution_id:
+        institution = get_object_or_404(Institution, pk=institution_id)
+        context.update({
+            'institution': institution,
+        })
+        template = "browser/institution.html"
+    else:
+        context['institutions'] = InstitutionFilter(request.GET, queryset=Institution.objects.order_by('name'))
+        template = "browser/institution_list.html"
     return render(request, template, context)
 
 

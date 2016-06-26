@@ -8,14 +8,22 @@
 
 {% block main %}
 <div class="alert alert-mbl">
-    Course Group
+    <span class="text-warning">Course Group</span>
     <h1>{{ coursegroup.name }}</h1>
 </div>
 
 <div class="panel panel-mbl" id="attendanceChart">
-    <div class="panel-heading">
+    <div class="panel-heading" id="attendanceChartHeading">
         <h3>Attendance</h3>
-        <p class="text text-muted">Hover over each bar to see the number of attendees in that year.</p>
+        <p class="text text-muted">Click on a year to view details for that course.</p>
+        <svg width="1000" height="150">
+            <g class="chart-wrapper" transform="translate(50,20)">
+                <g class="bars"></g>
+                <g class="x axis"></g>
+                <g class="y axis"></g>
+
+            </g>
+        </svg>
     </div>
 </div>
 
@@ -25,7 +33,7 @@
         <h3>Courses</h3>
         <p class="text text-muted">Click on a course name to view a complete list of participants.</p>
     </div>
-    <table class="table">
+    <table class="table table-responsive table-hover">
         <thead>
             <tr>
                 <td>Year</td>
@@ -46,79 +54,153 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="4">{{coursegroup|get_coursegroup_attendance_count}} unique attendees in {{ coursegroup.courses.all|length }} courses during the period {{ coursegroup|get_years }}.</td>
+                <td colspan="4">
+                    {{coursegroup|get_coursegroup_attendance_count}} unique attendees in
+                    {{ coursegroup.courses.all|length }} courses during the period {{ coursegroup|get_years }}.
+                </td>
             </tr>
         </tfoot>
     </table>
 </div>
+<style>
+text {
+  font-family: sans-serif;
+  font-size: 10px;
+}
+rect {
+  fill: #337ab7;
+  cursor: pointer;
+}
+rect:hover {
+  fill: orange;
+}
+path {
+  fill: none;
+  stroke: #ccc;
+}
+line {
+  stroke: #ccc;
+}
 
+</style>
 
 <script>
 
-var height = 100;
+var maxWidth = 1200, rightPadding = 70;
+var xScale, yScale, xAxisComponent, yAxisComponent;
+var numBars, yMax, xMax, xMin;
+var data = [];
 
-var margin = {top: 5, right: 10, bottom: 30, left: 40}
-  , width = parseInt(d3.select('#attendanceChart').style('width'), 10)
-  , width = width - margin.left - margin.right
-  , percent = d3.format('%')
-  , widthScaler = 0.85;
+var container = d3.select('svg g.chart-wrapper'),
+  barGroup = container.select('.bars')
+  xAxis = container.select('.x.axis')
+  yAxis = container.select('.y.axis');
 
-var x = d3.scale.ordinal()
-    .rangeRoundBands([0, width], .1);
 
-var y = d3.scale.linear()
+function intToChar(i) {
+  return String.fromCharCode(i + 65);
+}
+
+function update() {
+  updateScales();
+  updateAxes();
+  updateBars();
+}
+
+W.addListener(update);
+
+function updateScales() {
+  var width = $('#attendanceChartHeading').width() - rightPadding;//d3.min([W.getViewportWidth(), maxWidth]) - rightPadding;
+  xScale.range([0, width]);
+}
+
+function updateAxes() {
+  d3.select('.x.axis').call(xAxisComponent);
+}
+
+function updateBars() {
+    var width = $('#attendanceChartHeading').width() - rightPadding;
+  // Perform the data join
+  var u = barGroup
+  .selectAll('rect')
+  .data(data.attendance);
+
+  // Add bars
+  u.enter()
+    .append('rect');
+
+  // Remove bars
+  u.exit()
+    .remove();
+
+  u.on('click', function(d) {
+      window.location.href = '/course/' + d.id + '/';
+  });
+
+  // Update bar position, width & height
+  u.attr('x', function(d, i) {return xScale(d.year);})
+    .attr('width', 0.8*width/(xMax - xMin))
+    .attr('y', function(d) {
+        return yScale(d.attendees);
+    })
+    .attr('height', function(d) {return yScale(0) - yScale(d.attendees);});
+}
+
+function initChart(data) {
+  var width = 400, height = 100;
+  numBars = data.length;
+
+  // Initialise scales
+  xScale = d3.scale.linear()
+    .domain([xMin, xMax])
+    .range([0, width]);
+
+  yScale = d3.scale.linear()
+    .domain([0, yMax])
     .range([height, 0]);
 
-var xAxis = d3.svg.axis()
-    .scale(x)
-    .orient("bottom");
+  // Build the x-axis
+  xAxisComponent = d3.svg.axis()
+    .scale(xScale)
+    .orient('bottom')
+    .tickFormat(d3.format("d"));
 
-var yAxis = d3.svg.axis()
-    .scale(y)
-    .orient("left")
-    .ticks(4, "");
+  xAxis.attr('transform', 'translate(0,'+height+')');
 
-var svg = d3.select("#attendanceChart").append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  // Build the y-axis
+  yAxisComponent = d3.svg.axis()
+    .scale(yScale)
+    .orient('left');
 
-d3.json("{% url "coursegroup_data" coursegroup.id %}", function(error, data) {
-  if (error) throw error;
+  yAxis.call(yAxisComponent);
 
-  x.domain(data.attendance.map(function(d) { return d.year; }));
-  y.domain([0, d3.max(data.attendance, function(d) { return d.attendees; })]);
 
-  svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
+}
 
-  svg.append("g")
-      .attr("class", "y axis")
-      .call(yAxis);
+function initEvents() {
+  // Set up event handler for resizes
+  W.addListener(update);
 
-  svg.selectAll(".bar")
-      .data(data.attendance)
-    .enter().append("rect")
-      .attr("class", "bar")
-      .attr("x", function(d) { return x(d.year) + x.rangeBand()*(1. - widthScaler)/2; })
-      .attr("width", x.rangeBand()*widthScaler)
-      .attr("y", function(d) { return y(d.attendees); })
-      .attr("height", function(d) { return height - y(d.attendees); });
+  // Update data button
+  d3.select('#update').on('click', function() {
+    // data = randomData(data);
+    update();
+  });
+}
 
-   svg.selectAll(".bar")
-      .attr('data-toggle', 'tooltip')
-      .attr('data-placement', 'top')
-      .append("title")
-        .text(function(d) { return d.attendees; });
+d3.json("{% url "coursegroup_data" coursegroup.id %}", function(error, response_data) {
+    data = response_data;
+
+    xMax = Math.max.apply(Math, data.attendance.map(function(d) {return d.year; }));
+    xMin = Math.min.apply(Math, data.attendance.map(function(d) {return d.year; }));
+    yMax = Math.max.apply(Math, data.attendance.map(function(d) { return d.attendees; }));
+    console.log(yMax);
+    initChart(data.attendance);
+    update();
+
+    initEvents();
 });
 
-function type(d) {
-  d.attendees = +d.attendees;
-  return d;
-}
 
 </script>
 {% endblock %}

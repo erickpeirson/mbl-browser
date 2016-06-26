@@ -94,6 +94,10 @@ class Person(URIMixin):
         return self.affiliations.distinct('pk').count()
 
     @property
+    def number_of_locations(self):
+        return self.locations.distinct('pk').count()
+
+    @property
     def is_investigator(self):
         return self.investigator_set.count() > 0
 

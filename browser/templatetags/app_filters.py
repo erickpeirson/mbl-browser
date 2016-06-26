@@ -1,6 +1,8 @@
 from django.template import Library
 from browser.models import *
 
+from collections import defaultdict
+
 register = Library()
 
 
@@ -112,3 +114,25 @@ def get_partof_set(coursegroup):
 @register.filter
 def get_researches(person):
     return Investigator.objects.filter(person=person).distinct('year', 'id').order_by('year', 'id')
+
+
+@register.filter
+def get_affiliates(institution):
+    afields = ['person_id', 'year', 'position']
+    aqs = Affiliation.objects.filter(institution_id=institution.id)\
+                             .distinct(*afields)
+
+    person_affiliations = defaultdict(list)
+    for affiliation in aqs.values(*afields):
+        person_affiliations[affiliation['person_id']].append(affiliation)
+
+    pfields = ['last_name', 'first_name', 'pk']
+    qs = []
+    for person in institution.affiliates.distinct('pk').values(*pfields):
+        person['positions'] = person_affiliations[person['pk']]
+        qs.append(person)
+
+    # HyperlinkedIdentityField requires the HttpRequest to generate an
+    #  absolute URL.
+
+    return qs
