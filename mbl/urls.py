@@ -45,6 +45,8 @@ urlpatterns = [
     url(r'^people/$', views.people, name="people"),
     url(r'^methods/$', views.methods, name="methods"),
 
+    url(r'^search/$', views.generic_autocomplete, name="search"),
+
     url(r'^rest/', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]

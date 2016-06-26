@@ -10,6 +10,7 @@
         <script src="{% static "browser/js/bootstrap.min.js" %}"></script>
         <script src="{% static "browser/js/d3.min.js" %}"></script>
         <script src="{% static "browser/js/W.min.js" %}"></script>
+
         <style>
         /* MBL seal background image -- has to be in template for the static
            URL to work correctly. */
@@ -42,10 +43,11 @@
                 <p>
                     All of the data on this platform are available via a <a href="/rest/">REST API</a>.
                 </p>
-                <p>
-                    <a class="btn btn-lg btn-primary" href="{% url "coursegroup_list" %}" role="button">View courses »</a>
-                </p>
             </div>
+            <form class="form">
+                <input type="text" class="form-control" id="search" placeholder="What are you looking for?" />
+            </form>
+            <div class="list-group" id="results-container"></div>
             {% endblock %}
             <div class="panel panel-mbl-footer">
                 <div class="panel-body">
@@ -61,6 +63,30 @@
         $(document).ready(function() {
             $(".dropdown-toggle").dropdown();
             $('[data-toggle="tooltip"]').tooltip();
+        });
+
+        var searchResultClasses = {
+            'Person': 'list-group-item-success',
+            'CourseGroup': 'list-group-item-info',
+            'Institution': 'list-group-item-warning',
+        };
+        var searchResultIcons = {
+            'CourseGroup': 'glyphicon glyphicon-education',
+            'Person': 'glyphicon glyphicon-user',
+            'Institution': 'glyphicon glyphicon-tower',
+        }
+
+        $('#search').on('keyup', function(e) {
+            var query = $(this).val();
+            $.ajax("{% url "search" %}?query=" + query, {
+                success: function(result) {
+                    $('#results-container').empty();
+                    result.results.forEach(function(r) {
+                        console.log(r);
+                        $('#results-container').append('<a class="list-group-item search-result '+ searchResultClasses[r.model] + '" href="'+r.url+'"><span class="'+ searchResultIcons[r.model] +'"></span> '+r.name+'</a>');
+                    });
+                }
+            });
         });
 
         </script>

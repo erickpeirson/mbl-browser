@@ -2,9 +2,13 @@ from django.shortcuts import render, get_object_or_404
 from django.template import RequestContext
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse
+from django.db.models.query_utils import Q
+from django.db.models import Count
 
 from browser.models import *
 from browser.filters import *
+
+from itertools import chain, groupby
 
 
 
@@ -120,3 +124,46 @@ def people(request):
 
 def methods(request):
     return render(request, "browser/methods.html", RequestContext(request, {}))
+
+
+def generic_autocomplete(request):
+    """
+    A quick-and-dirty autocomplete for the front page.
+    """
+    query = request.GET.get('query', None)
+
+    models = [
+        (Person, ['last_name', 'first_name']),
+        (CourseGroup, ['name']),
+        (Institution, ['name']),
+    ]
+    results = []
+    if query and len(query) > 2:
+        query_parts = query.split(' ')
+
+        for model, fields in models:
+            qs = model.objects.all()
+            resultset = []
+
+            for field in fields:
+                for part in query_parts:
+                    if len(part) < 3:
+                        continue
+                    resultset = chain(resultset, qs.filter(**{'%s__icontains' % field: part}).values('id', *fields))
+                    # q |= Q(**{'%s__istartswith' % field: part})
+            grouped = [(i, [o for o in objects]) for i, objects in groupby(sorted(resultset, key=lambda o: o['id']), key=lambda o: o['id'])]
+            for i, objects in sorted(grouped, key=lambda o: len(o[1]))[::-1]:
+            # for obj in model.objects.filter(q):
+                obj = objects[0]
+
+                results.append({
+                    'model': model.__name__,
+                    'url': reverse(model.__name__.lower(), args=[obj['id']]),
+                    'name': obj.get('name', '%s %s' % (obj.get('first_name'), obj.get('last_name'))),
+                })
+                if len(results) > 20:
+                    break
+
+            if len(results) > 20:
+                break
+    return JsonResponse({'results': results})

@@ -1,5 +1,7 @@
 from django.db import models
 
+from django.core.urlresolvers import reverse
+
 
 class URIMixin(models.Model):
     uri = models.CharField(max_length=255, unique=True)
@@ -39,11 +41,17 @@ class Course(URIMixin, NameMixin, YearMixin):
     def number_of_attendees(self):
         return self.attendees.count()
 
+    def get_absolute_url(self):
+        return reverse('course', args=[self.id])
+
 
 class CourseGroup(URIMixin, NameMixin):
     @property
     def number_of_courses(self):
         return self.courses.count()
+
+    def get_absolute_url(self):
+        return reverse('coursegroup', args=[self.id])
 
 
 class Institution(URIMixin, NameMixin):
@@ -56,6 +64,9 @@ class Institution(URIMixin, NameMixin):
     def number_of_affiliates(self):
         return self.affiliates.count()
 
+    def get_absolute_url(self):
+        return reverse('institution', args=[self.id])
+
 
 class Location(URIMixin, NameMixin):
     authority = models.ForeignKey('KnownLocation', blank=True, null=True,
@@ -66,6 +77,9 @@ class Location(URIMixin, NameMixin):
     @property
     def number_of_denizens(self):
         return self.denizens.distinct('pk').count()
+
+    def get_absolute_url(self):
+        return reverse('location', args=[self.id])
 
 
 class Person(URIMixin):
@@ -103,6 +117,9 @@ class Person(URIMixin):
 
     def __unicode__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse('person', args=[self.id])
 
 
 class Affiliation(YearMixin):
