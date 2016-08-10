@@ -40,6 +40,8 @@ INSTALLED_APPS = (
     'pagination',
     'rest_framework',
     'browser',
+    'social.apps.django_app.default',
+    'simple_history',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -52,7 +54,20 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'pagination.middleware.PaginationMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
 )
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend', # default
+    'social.backends.github.GithubOAuth2',
+)
+ANONYMOUS_USER_ID = -1
+
+SOCIAL_AUTH_GITHUB_KEY = os.environ.get('SOCIAL_AUTH_GITHUB_KEY', None)
+SOCIAL_AUTH_GITHUB_SECRET = os.environ.get('SOCIAL_AUTH_GITHUB_SECRET', None)
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = BASE_URL
+
+
 
 ROOT_URLCONF = 'mbl.urls'
 
@@ -63,13 +78,19 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                "django.contrib.auth.context_processors.auth",
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
+                "django.core.context_processors.static",
                 "django.core.context_processors.i18n",
                 "django.core.context_processors.media",
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'browser.context_processors.git_revision'
+                'browser.context_processors.git_revision',
+                "django.core.context_processors.request",
+                "django.core.context_processors.tz",
+                'social.apps.django_app.context_processors.backends',
+                'social.apps.django_app.context_processors.login_redirect',
             ],
         },
     },
