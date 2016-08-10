@@ -8,8 +8,33 @@
 
 {% block main %}
 <div class="alert alert-mbl">
-    <span class="text-warning">Course Group</span>
-    <h1>{{ coursegroup.name }}</h1>
+    Course Group
+    <div>
+        <span class="h1">{{ coursegroup.name }}</span>
+        {% if user.is_staff %}
+        <span class="pull-right btn-group btn-group-lg">
+            <a class="btn btn-lg fa fa-history"
+                aria-hidden="true"
+                data-toggle="modal"
+                data-target="#historyModal">
+            </a>
+            <a class="btn btn-lg fa fa-edit"
+                aria-hidden="true"
+                href="{% url "edit-coursegroup" coursegroup.id %}">
+            </a>
+            <a class="btn btn-lg fa fa-code-fork"
+                aria-hidden="true"
+                href="">
+            </a>
+        </span>
+        {% endif %}
+    </div>
+    {% if coursegroup.validated %}
+    <div>
+        <span class="glyphicon glyphicon-ok" style="color:green;"></span>&nbsp;
+        Validated by {{ coursegroup.validated_by }} on {{ coursegroup.validated_on }}.
+    </div>
+    {% endif %}
 </div>
 
 <div class="panel panel-mbl" id="attendanceChart">
@@ -203,4 +228,8 @@ d3.json("{% url "coursegroup_data" coursegroup.id %}", function(error, response_
 
 
 </script>
+
+{% with coursegroup as instance %}
+{% include "browser/history_modal.html" %}
+{% endwith %}
 {% endblock %}

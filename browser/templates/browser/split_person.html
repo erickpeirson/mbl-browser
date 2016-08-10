@@ -1,0 +1,133 @@
+{% extends "browser/base.html" %}
+{% load staticfiles %}
+{% load app_filters %}
+{% load addcss %}
+
+{% block extrahead %}
+<script type="text/javascript" src="{% static "browser/js/bootstrap-multiselect.js" %}"></script>
+<link rel="stylesheet" href="{% static "browser/css/bootstrap-multiselect.css" %}" type="text/css"/>
+{% endblock %}
+
+{% block main %}
+
+<div class="alert alert-mbl">
+    <span class="text-warning">Person</span>
+    <div>
+        <span class="h3">{{ person.name }}</span>
+    </div>
+</div>
+
+<div class="container">
+    <div class="h2">
+        Fork Person Record</span>
+    </div>
+    <p class="text-info">
+        This action will create a new <strong>Person</strong> record with the information provided below. Any relations
+        that you select (e.g. affiliations, attendances) will be removed from the existing <strong>{{ person.name }}</strong>
+        record and attached to the new Person record.
+    </p>
+    <form class="form" action="{% if next %}?next={{ next }}{% else %}.{% endif %}" method="POST">
+        {% csrf_token %}
+
+        {% for error in form.non_field_errors %}
+        <div class="alert alert-warning">{{ error }}</div>
+        {% endfor %}
+        <div class="row">
+            <div class="col-xs-6">
+                {% with form.first_name as field %}
+                <div class="form-group">
+                    {% for error in field.errors %}
+                    <div class="alert alert-warning">{{ error }}</div>
+                    {% endfor %}
+                    <label>{{ field.label }}</label>
+                    {{ field|addcss:"form-control" }}
+                    <p class="text-muted">{{ field.help_text }}</p>
+                </div>
+                {% endwith %}
+            </div>
+            <div class="col-xs-6">
+                {% with form.last_name as field %}
+                <div class="form-group">
+                    {% for error in field.errors %}
+                    <div class="alert alert-warning">{{ error }}</div>
+                    {% endfor %}
+                    <label>{{ field.label }}</label>
+                    {{ field|addcss:"form-control" }}
+                    <p class="text-muted">{{ field.help_text }}</p>
+                </div>
+                {% endwith %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6">
+                {% with form.affiliations as field %}
+                <div class="form-group">
+                    {% for error in field.errors %}
+                    <div class="alert alert-warning">{{ error }}</div>
+                    {% endfor %}
+                    <label>{{ field.label }}</label>
+                    {{ field|addcss:"form-control" }}
+                    <p class="text-muted">{{ field.help_text }}</p>
+                </div>
+                {% endwith %}
+            </div>
+            <div class="col-xs-6">
+                {% with form.attendances as field %}
+                <div class="form-group">
+                    {% for error in field.errors %}
+                    <div class="alert alert-warning">{{ error }}</div>
+                    {% endfor %}
+                    <label>{{ field.label }}</label>
+                    {{ field|addcss:"form-control" }}
+                    <p class="text-muted">{{ field.help_text }}</p>
+                </div>
+                {% endwith %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6">
+                {% with form.localizations as field %}
+                <div class="form-group">
+                    {% for error in field.errors %}
+                    <div class="alert alert-warning">{{ error }}</div>
+                    {% endfor %}
+                    <label>{{ field.label }}</label>
+                    {{ field|addcss:"form-control" }}
+                    <p class="text-muted">{{ field.help_text }}</p>
+                </div>
+                {% endwith %}
+            </div>
+            <div class="col-xs-6">
+                {% with form.investigations as field %}
+                <div class="form-group">
+                    {% for error in field.errors %}
+                    <div class="alert alert-warning">{{ error }}</div>
+                    {% endfor %}
+                    <label>{{ field.label }}</label>
+                    {{ field|addcss:"form-control" }}
+                    <p class="text-muted">{{ field.help_text }}</p>
+                </div>
+                {% endwith %}
+            </div>
+        </div>
+
+        <div class="text-center">
+            <input class="btn btn-success" type="submit" value="Save"
+                data-toggle="tooltip"
+                data-title="You will be directed to the new Person record once the fork action is complete">
+        </div>
+    </form>
+</div>
+<script>
+$(function(){
+   $("select").multiselect({});
+});
+</script>
+<style>
+.multiselect-container.dropdown-menu {
+    max-height: 300px;
+    overflow-y: scroll;
+}
+</style>
+
+{% endblock %}

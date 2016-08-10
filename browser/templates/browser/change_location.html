@@ -1,0 +1,42 @@
+{% extends "browser/change_base.html" %}
+{% load addcss %}
+
+
+{% block extra_form_fields %}
+<div class="row">
+    <div class="col-xs-8">
+        {% with extra_form.external_uri as field %}
+        <div class="form-group">
+            {% for error in field.errors %}
+            <div class="alert alert-warning">{{ error }}</div>
+            {% endfor %}
+            <label>External URI</label>
+            <div class="input-group">
+                <span class="input-group-btn">
+                    <a class="btn glyphicon glyphicon-search"
+                        href="https://www.openstreetmap.org/search?query={{ location.name }}"
+                        target="_blank"
+                        data-toggle="tooltip"
+                        data-title="Search for this location in the OpenStreetMap database">
+                    </a>
+                </span>
+                {{ field|addcss:"form-control" }}
+            </div>
+            <p class="text-muted">{{ field.help_text }}</p>
+        </div>
+        {% endwith %}
+    </div>
+    <div class="col-xs-4">
+        {% with extra_form.geo_uri as field %}
+        <div class="form-group">
+            {% for error in field.errors %}
+            <div class="alert alert-warning">{{ error }}</div>
+            {% endfor %}
+            <label>Geo URI</label>
+            {{ field|addcss:"form-control" }}
+            <p class="text-muted">{{ field.help_text }}</p>
+        </div>
+        {% endwith %}
+    </div>
+</div>
+{% endblock %}

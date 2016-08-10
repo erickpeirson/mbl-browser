@@ -35,18 +35,35 @@
     <table class="table">
         <thead>
             <tr>
-                <td>Name</td>
-                <td>Courses</td>
-                <td>Years</td>
+
+                <th>Name</th>
+                <th>Courses</th>
+                <th>Years</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
 
         {% for coursegroup in filter_list %}
             <tr>
+
                 <td><a href="{% url "coursegroup" coursegroup.id %}">{{ coursegroup.name }}</a></td>
                 <td>{{ coursegroup|get_partof_set|length }}</td>
                 <td>{{ coursegroup|get_years }}</td>
+                <td>
+                    {% if coursegroup.validated %}
+                    <i class="fa fa-check-square" aria-hidden="true"
+                        style="color: green;"
+                        data-toggle="tooltip"
+                        data-title="This record was validated by {{ coursegroup.validated_by }} on {{ coursegroup.validated_on }}">
+                    </i>
+                    {% else %}
+                    <i class="fa fa-square" aria-hidden="true"
+                        data-toggle="tooltip"
+                        data-title="This record has not yet been validated">
+                    </i>
+                    {% endif %}
+                </td>
             </tr>
         {% endfor %}
         </tbody>
@@ -58,4 +75,8 @@
 
 
 </div>
+
+<script>
+$('[data-toggle="tooltip"]').tooltip();
+</script>
 {% endblock %}

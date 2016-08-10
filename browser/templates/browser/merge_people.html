@@ -1,0 +1,88 @@
+{% extends "browser/base.html" %}
+{% load staticfiles %}
+{% load app_filters %}
+{% load addcss %}
+
+{% block extrahead %}
+<script type="text/javascript" src="{% static "browser/js/bootstrap-multiselect.js" %}"></script>
+<link rel="stylesheet" href="{% static "browser/css/bootstrap-multiselect.css" %}" type="text/css"/>
+{% endblock %}
+
+{% block main %}
+
+<div class="alert alert-mbl">
+    <span class="text-warning">Person</span>
+    <div>
+        <span class="h3">Merge</span>
+    </div>
+</div>
+
+<div class="container">
+    <div class="h2">
+        Merge Person Records</span>
+    </div>
+    <p class="text-info">
+        This action will merge the <strong>Person</strong> records below into a single record. Any relations
+        that you select (e.g. affiliations, attendances) will be removed from the selected <strong>{{ person.name }}</strong>
+        record and attached to the target Person record that you select.
+    </p>
+    <form class="form" action="{% if next %}?next={{ next }}{% else %}.{% endif %}" method="POST">
+        {% csrf_token %}
+
+        <input type="hidden" name="perform" value="True" />
+        <input type="hidden" name="action" value="merge" />
+        <input type="hidden" name="model" value="person" />
+        {% for person in people %}
+        <input type="hidden" name="action_select" value="{{ person.id }}" />
+        {% endfor %}
+
+        {% for error in form.non_field_errors %}
+        <div class="alert alert-warning">{{ error }}</div>
+        {% endfor %}
+
+        {% with form.merge_into as field %}
+        <div class="form-group">
+            {% for error in field.errors %}
+            <div class="alert alert-warning">{{ error }}</div>
+            {% endfor %}
+            <label>{{ field.label }}</label>
+            {{ field|addcss:"form-control" }}
+            <p class="text-muted">{{ field.help_text }}</p>
+        </div>
+        {% endwith %}
+
+        <ul class="list-group">
+            {% for person in people %}
+            <li class="list-group-item">{{ person.name }}
+                <span class="pull-right">
+                    {% if person.is_investigator %}<span class="text-warning">Investigator</span>{% endif %}
+                    <span class="text-success">
+                        {{ person.number_of_courses }} course{% if person.number_of_courses != 1%}s{% endif %}
+                    </span>
+                    <span class="text-primary">
+                        {{ person.number_of_affiliations }} affiliation{% if person.number_of_affiliations != 1%}s{% endif %}
+                    </span>
+                </span>
+            </li>
+            {% endfor %}
+        </ul>
+        <div class="text-center">
+            <input class="btn btn-success" type="submit" value="Save"
+                data-toggle="tooltip"
+                data-title="You will be directed to the parent Person record once the merge action is complete">
+        </div>
+    </form>
+</div>
+<script>
+$(function(){
+   $("select").multiselect({});
+});
+</script>
+<style>
+.multiselect-container.dropdown-menu {
+    max-height: 300px;
+    overflow-y: scroll;
+}
+</style>
+
+{% endblock %}

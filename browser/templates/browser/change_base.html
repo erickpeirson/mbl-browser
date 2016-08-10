@@ -1,0 +1,59 @@
+{% extends "browser/base.html" %}
+{% load addcss %}
+
+{% block main %}
+<div class="container">
+    <form class="form" action="{% if next %}?next={{ next }}{% else %}.{% endif %}" method="POST">
+        {% csrf_token %}
+
+        {% for error in form.non_field_errors %}
+        <div class="alert alert-warning">{{ error }}</div>
+        {% endfor %}
+
+        {% block form_fields %}
+        {% with form.name as field %}
+        <div class="form-group">
+            {% for error in field.errors %}
+            <div class="alert alert-warning">{{ error }}</div>
+            {% endfor %}
+            <label>{{ field.label }}</label>
+            {{ field|addcss:"form-control" }}
+            <p class="text-muted">{{ field.help_text }}</p>
+        </div>
+        {% endwith %}
+
+        {% with form.validated as field %}
+        <div class="checkbox">
+            {% for error in field.errors %}
+            <div class="alert alert-warning">{{ error }}</div>
+            {% endfor %}
+            <label>
+                {{ field }} {{ field.label }}
+            </label>
+            <p class="text-muted">{{ field.help_text }}</p>
+        </div>
+        {% endwith %}
+        {% endblock %}
+
+        {% block extra_form_fields %}
+        {% for field in extra_form %}
+        <div class="form-group">
+            {% for error in field.errors %}
+            <div class="alert alert-warning">{{ error }}</div>
+            {% endfor %}
+            <label>{{ field.label }}</label>
+            {{ field|addcss:"form-control" }}
+            <p class="text-muted">{{ field.help_text }}</p>
+        </div>
+        {% endfor %}
+        {% endblock %}
+
+        <div class="text-right">
+            <input class="btn btn-success" type="submit" value="Save"
+                data-toggle="tooltip"
+                data-title="You will be directed to the new Person record once the fork action is complete">
+        </div>
+    </form>
+</div>
+
+{% endblock %}

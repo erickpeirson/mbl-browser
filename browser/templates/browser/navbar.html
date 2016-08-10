@@ -1,4 +1,5 @@
 {% load staticfiles %}
+{% load i18n %}
 
 <nav class="navbar navbar-default">
     <div class="container-fluid">
@@ -30,11 +31,23 @@
                 </li>
                 <li><a href="{% url "person_list" %}">People</a></li>
                 <li><a href="{% url "institution_list" %}">Institutions</a></li>
+                <li><a href="{% url "location_list" %}">Locations</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="{% url "goals" %}">Goals</a></li>
-                <li><a href="{% url "people" %}">People</a></li>
-                <li><a href="{% url "methods" %}">Methods</a></li>
+                <li><a href="{% url "about" %}">About</a></li>
+
+                {% if user.is_active %}
+                <li>
+                    <a href="">Dashboard</a>
+                </li>
+                <li>
+                    <a class="btn btn-sm" href="{% url 'logout' %}?next={{ request.path }}"><i class="fa fa-sign-out" aria-hidden="true"></i> <strong>{% firstof user.get_short_name user.get_username %}</strong>: {% trans 'Log out' %}</a>
+                </li>
+                {% else %}
+                <li>
+                    <a class="btn btn-sm" href="{% url 'social:begin' 'github' %}"><i class="fa fa-github" aria-hidden="true"></i> {% trans 'Log in' %}</a>
+                </li>
+                {% endif %}
             </ul>
         </div>
     </div>

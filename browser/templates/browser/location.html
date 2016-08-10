@@ -3,9 +3,9 @@
 
 {% block main %}
 <div class="alert alert-mbl">
-    Institution
+    Location
     <div>
-        <span class="h1">{{ institution.name }}</span>
+        <span class="h1">{{ location.name }}</span>
         {% if user.is_staff %}
         <span class="pull-right btn-group btn-group-lg">
             <a class="btn btn-lg fa fa-history"
@@ -15,48 +15,52 @@
             </a>
             <a class="btn btn-lg fa fa-edit"
                 aria-hidden="true"
-                href="{% url "edit-institution" institution.id %}">
+                href="{% url "edit-location" location.id %}">
             </a>
             <a class="btn btn-lg fa fa-code-fork"
                 aria-hidden="true"
-                href="">
+                href="{% url "split-location" location.id %}">
             </a>
         </span>
         {% endif %}
     </div>
-    {% if institution.validated %}
+    {% if location.validated %}
     <div>
         <span class="glyphicon glyphicon-ok" style="color:green;"></span>&nbsp;
-        Validated by {{ institution.validated_by }} on {{ institution.validated_on }}.
+        Validated by {{ location.validated_by }} on {{ location.validated_on }}.
     </div>
     {% endif %}
+    {% if location.authority %}
+    <div>
+        <a class="btn btn-sm" aria-hidden="true"
+            href="{{ location.authority.external_uri }}"
+            target="_blank">
+            <i class="fa fa-globe"></i> {{ location.authority.external_uri }}
+        </a>
+    </div>
+    {% endif %}
+
 </div>
 
 <!-- Attendees -->
 <!-- {% with course|get_attendance as attendances %} -->
 <div class="panel panel-mbl">
     <div class="panel-heading">
-        <h3>Affiliates</h3>
+        <h3>Denizens</h3>
     </div>
 
     <ul class="list-group">
 
-        {% for affiliate in institution|get_affiliates %}
-        <a class="list-group-item" href="{% url "person" affiliate.pk %}">
-            <div class="text-warning h5">{{ affiliate.first_name }} {{ affiliate.last_name }}</div>
-            <dl class="dl-horizontal">
-                {% for position in affiliate.positions %}
-                <dt>{{position.year}}</dt>
-                <dd>{{position.position}}</dd>
-                {% endfor %}
-            </dl>
+        {% for localization in location|get_denizens %}
+        <a class="list-group-item" href="{% url "person" localization.person.pk %}">
+            <div class="text-warning h5">{{ localization.person.first_name }} {{ localization.person.last_name }} ({{ localization.year }})</div>
         </a>
         {% endfor %}
 
 </div>
 {% endwith %}
 
-{% with institution as instance %}
+{% with location as instance %}
 {% include "browser/history_modal.html" %}
 {% endwith %}
 

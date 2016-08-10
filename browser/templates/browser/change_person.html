@@ -1,0 +1,46 @@
+{% extends "browser/change_base.html" %}
+{% load addcss %}
+
+{% block form_fields %}
+<div class="row">
+    <div class="col-xs-6">
+        {% with form.first_name as field %}
+        <div class="form-group">
+            {% for error in field.errors %}
+            <div class="alert alert-warning">{{ error }}</div>
+            {% endfor %}
+            <label>{{ field.label }}</label>
+            {{ field|addcss:"form-control" }}
+            <p class="text-muted">{{ field.help_text }}</p>
+        </div>
+        {% endwith %}
+    </div>
+    <div class="col-xs-6">
+        {% with form.last_name as field %}
+        <div class="form-group">
+            {% for error in field.errors %}
+            <div class="alert alert-warning">{{ error }}</div>
+            {% endfor %}
+            <label>{{ field.label }}</label>
+            {{ field|addcss:"form-control" }}
+            <p class="text-muted">{{ field.help_text }}</p>
+        </div>
+        {% endwith %}
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12">
+        {% with form.validated as field %}
+        <div class="checkbox">
+            {% for error in field.errors %}
+            <div class="alert alert-warning">{{ error }}</div>
+            {% endfor %}
+            <label>
+                {{ field }} {{ field.label }}
+            </label>
+            <p class="text-muted">{{ field.help_text }}</p>
+        </div>
+        {% endwith %}
+    </div>
+</div>
+{% endblock %}

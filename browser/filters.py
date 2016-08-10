@@ -46,6 +46,11 @@ class CourseGroupFilter(filters.FilterSet):
         model = CourseGroup
         fields = ['name', ]
 
+        order_by = [
+            ('name', 'Name (ascending)'),
+            ('-name', 'Name (descending)')
+        ]
+
     def filter_occurred_from(self, queryset, value):
         if not value:
             return queryset
@@ -79,3 +84,10 @@ class PersonFilter(filters.FilterSet):
 
     def filter_affiliation(self, queryset, value):
         return queryset.filter(affiliations__name__icontains=value).distinct('last_name', 'id')
+
+
+class LocationFilter(filters.FilterSet):
+
+    class Meta:
+        model = Location
+        fields = ['name', 'validated']

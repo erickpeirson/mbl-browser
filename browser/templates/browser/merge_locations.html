@@ -1,0 +1,88 @@
+{% extends "browser/base.html" %}
+{% load staticfiles %}
+{% load app_filters %}
+{% load addcss %}
+
+{% block extrahead %}
+<script type="text/javascript" src="{% static "browser/js/bootstrap-multiselect.js" %}"></script>
+<link rel="stylesheet" href="{% static "browser/css/bootstrap-multiselect.css" %}" type="text/css"/>
+{% endblock %}
+
+{% block main %}
+
+<div class="alert alert-mbl">
+    <span class="text-warning">Location</span>
+    <div>
+        <span class="h3">Merge</span>
+    </div>
+</div>
+
+<div class="container">
+    <div class="h2">
+        Merge Location Records</span>
+    </div>
+    <p class="text-info">
+        This action will merge the <strong>Location</strong> records below into a single record. All relations
+        (e.g. affiliations, attendances) will be removed from the selected <strong>{{ location.name }}</strong>
+        record and attached to the target Location record that you select.
+    </p>
+    <form class="form" action="{% if next %}?next={{ next }}{% else %}.{% endif %}" method="POST">
+        {% csrf_token %}
+
+        <input type="hidden" name="perform" value="True" />
+        <input type="hidden" name="action" value="merge" />
+        <input type="hidden" name="model" value="location" />
+        {% for location in locations %}
+        <input type="hidden" name="action_select" value="{{ location.id }}" />
+        {% endfor %}
+
+        {% for error in form.non_field_errors %}
+        <div class="alert alert-warning">{{ error }}</div>
+        {% endfor %}
+
+        {% with form.merge_into as field %}
+        <div class="form-group">
+            {% for error in field.errors %}
+            <div class="alert alert-warning">{{ error }}</div>
+            {% endfor %}
+            <label>{{ field.label }}</label>
+            {{ field|addcss:"form-control" }}
+            <p class="text-muted">{{ field.help_text }}</p>
+        </div>
+        {% endwith %}
+
+        <ul class="list-group">
+            {% for location in locations %}
+            <li class="list-group-item">{{ location.name }}
+                <span class="pull-right">
+                    <span class="text-success"
+                        data-toggle="tooltip"
+                        data-placement="left"
+                        data-container='body'
+                        title="Number of affiliates">
+                        {{ location.number_of_denizens }} denizen{% if location.number_of_denizens != 1 %}s{% endif %}
+                    </span>
+                </span>
+            </li>
+            {% endfor %}
+        </ul>
+        <div class="text-center">
+            <input class="btn btn-success" type="submit" value="Save"
+                data-toggle="tooltip"
+                data-title="You will be directed to the parent Person record once the merge action is complete">
+        </div>
+    </form>
+</div>
+<script>
+$(function(){
+   $("select").multiselect({});
+});
+</script>
+<style>
+.multiselect-container.dropdown-menu {
+    max-height: 300px;
+    overflow-y: scroll;
+}
+</style>
+
+{% endblock %}

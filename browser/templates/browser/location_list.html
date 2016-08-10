@@ -4,7 +4,8 @@
 {% load pagination_tags %}
 
 {% block main %}
-{% autopaginate persons.qs 40 as filter_list %}
+{% autopaginate locations.qs 40 as filter_list %}
+
 
 <div class="clearfix">
     <div class="btn-group pull-right">
@@ -14,7 +15,7 @@
 
 <div class="collapse" id="filters">
     <form class="form clearfix">
-        {% for field in persons.form %}
+        {% for field in locations.form %}
         <div class="form-group">
             <label>{{ field.label }}</label>
             {{ field|addcss:"form-control" }}
@@ -32,10 +33,10 @@
 
 <div class="panel panel-mbl">
     {% if user.is_staff %}
-    <form class="form" id="action_form" method="POST" action="{% url "bulk-action" "person" %}">
+    <form class="form" id="action_form" method="POST" action="{% url "bulk-action" "location" %}">
         {% csrf_token %}
         <input type="hidden" name="action" value="" id="action-input"></input>
-        <input type="hidden" name="model" value="person" id="action-model"></input>
+        <input type="hidden" name="model" value="location" id="action-model"></input>
     {% endif %}
         {% if user.is_staff %}
         <div class="btn-group">
@@ -60,37 +61,40 @@
         </script>
         {% endif %}
         <ul class="list-group">
-            {% for person in filter_list %}
-            <a class="list-group-item" href="{% url "person" person.id %}">
+            {% for location in filter_list %}
+            {% if location.name|length > 0 %}
+            <a class="list-group-item" href="{% url "location" location.id %}">
                 {% if user.is_staff %}
                 <div class="checkbox-inline">
                     <label>
-                        <input type="checkbox" name="action_select" value="{{ person.id }}" class="action_select">
-                        {{ person.name }}
+                        <input type="checkbox" name="action_select" value="{{ location.id }}" class="action_select">
+                        {{ location.name }}
                     </label>
                 </div>
                 {% else %}
-                    {{ person.name }}
+                    {{ location.name }}
                 {% endif %}
                 <span class="pull-right">
-                    {% if person.is_investigator %}<span class="text-warning">Investigator</span>{% endif %}
-                    <span class="text-success">
-                        {{ person.number_of_courses }} course{% if person.number_of_courses != 1%}s{% endif %}
-                    </span>
-                    <span class="text-primary">
-                        {{ person.number_of_affiliations }} affiliation{% if person.number_of_affiliations != 1%}s{% endif %}
+                    <span class="text-success"
+                        data-toggle="tooltip"
+                        data-placement="left"
+                        data-container='body'
+                        title="Number of affiliates">
+                        {{ location.number_of_denizens }} denizen{% if location.number_of_denizens != 1 %}s{% endif %}
                     </span>
                 </span>
             </a>
+            {% endif %}
+
             {% endfor %}
         </ul>
     {% if user.is_staff %}</form>{% endif %}
 
-    <div class="panel-footer text-center">
+        <div class="panel-footer text-center">
         {% paginate %}
-    </div>
-</div>
+        </div>
 
+</div>
 {% if user.is_staff %}
 <script>
 $('body').ready(function() {

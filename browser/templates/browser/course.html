@@ -4,7 +4,32 @@
 {% block main %}
 <div class="alert alert-mbl">
     Course
-    <h1>{{ course.name }}</h1>
+    <div>
+        <span class="h1">{{ course.name }}</span>
+        {% if user.is_staff %}
+        <span class="pull-right btn-group btn-group-lg">
+            <a class="btn btn-lg fa fa-history"
+                aria-hidden="true"
+                data-toggle="modal"
+                data-target="#historyModal">
+            </a>
+            <a class="btn btn-lg fa fa-edit"
+                aria-hidden="true"
+                href="{% url "edit-course" course.id %}">
+            </a>
+            <a class="btn btn-lg fa fa-code-fork"
+                aria-hidden="true"
+                href="">
+            </a>
+        </span>
+        {% endif %}
+    </div>
+    {% if course.validated %}
+    <div>
+        <span class="glyphicon glyphicon-ok" style="color:green;"></span>&nbsp;
+        Validated by {{ course.validated_by }} on {{ course.validated_on }}.
+    </div>
+    {% endif %}
 </div>
 
 <!-- Coursegroups -->

@@ -59,6 +59,11 @@ def get_localizations(person):
 
 
 @register.filter
+def get_denizens(location):
+    return location.localization_set.distinct('year', 'person_id').order_by('year', 'person_id')
+
+
+@register.filter
 def get_locations(person):
     return person.locations.distinct('id')
 
