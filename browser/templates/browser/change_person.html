@@ -44,3 +44,42 @@
     </div>
 </div>
 {% endblock %}
+
+{% block extra_form_fields %}
+<div class="row">
+    <div class="col-xs-6">
+        {% with extra_form.conceptpower_uri as field %}
+        <div class="form-group">
+            {% for error in field.errors %}
+            <div class="alert alert-warning">{{ error }}</div>
+            {% endfor %}
+            <label>Conceptpower URI</label>
+            <div class="input-group">
+                <span class="input-group-btn">
+                    <a class="btn glyphicon glyphicon-search"
+                        href="https://chps.asu.edu/conceptpower/home/conceptsearch?word={{ person.name|plusencode }}&pos=noun"
+                        target="_blank"
+                        data-toggle="tooltip"
+                        data-title="Search for this person in Conceptpower authority service">
+                    </a>
+                </span>
+                {{ field|addcss:"form-control" }}
+            </div>
+            <p class="text-muted">{{ field.help_text }}</p>
+        </div>
+        {% endwith %}
+    </div>
+    <div class="col-xs-6">
+        {% with extra_form.description as field %}
+        <div class="form-group">
+            {% for error in field.errors %}
+            <div class="alert alert-warning">{{ error }}</div>
+            {% endfor %}
+            <label>{{ field.label }}</label>
+            {{ field|addcss:"form-control" }}
+            <p class="text-muted">{{ field.help_text }}</p>
+        </div>
+        {% endwith %}
+    </div>
+</div>
+{% endblock %}

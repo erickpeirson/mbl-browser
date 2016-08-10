@@ -198,23 +198,49 @@ def logout_view(request):
     return HttpResponseRedirect(request.GET.get('next', reverse('home')))
 
 
+def _handle_known_person_form(request, extra_form, person):
+    known_person = extra_form.save(commit=False)
+    existing = None
+    if known_person.conceptpower_uri:
+        try:
+            existing = KnownPerson.objects.get(conceptpower_uri=known_person.conceptpower_uri)
+        except KnownPerson.DoesNotExist:
+            existing = None
+
+    if existing:
+        person.authority = existing
+        person.save()
+    elif known_person.conceptpower_uri:
+        if getattr(known_person, 'changed_by', None) is None:
+            known_person.changed_by = request.user
+        known_person.save()
+        person.authority = known_person
+        person.save()
+
+
 @staff_member_required
 def edit_person(request, person_id):
     person = get_object_or_404(Person, pk=person_id)
     if request.method == 'GET':
         form = PersonForm(instance=person)
+        extra_form = KnownPersonForm(instance=person.authority, prefix='known')
+
     elif request.method == 'POST':
         form = PersonForm(request.POST, instance=person)
+        extra_form = KnownPersonForm(request.POST, instance=person.authority, prefix='known')
         if form.is_valid():
             person = form.save()
             if person.validated and person.validated_by is None:
                 person.validated_by = request.user
                 person.validated_on = datetime.datetime.now()
                 person.save()
+            if extra_form.is_valid():
+                _handle_known_person_form(request, extra_form, person)
             return HttpResponseRedirect(reverse('person', args=(person.id,)))
     context = RequestContext(request, {
         'form': form,
         'person': person,
+        'extra_form': extra_form
     })
 
     template = "browser/change_person.html"

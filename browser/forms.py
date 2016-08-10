@@ -35,6 +35,12 @@ class KnownLocationForm(forms.ModelForm):
         fields = ['external_uri', 'geo_uri']
 
 
+class KnownPersonForm(forms.ModelForm):
+    class Meta:
+        model = KnownPerson
+        fields = ['conceptpower_uri', 'description']
+
+
 class PersonForm(forms.ModelForm):
     conceptpower_uri = forms.CharField(widget=forms.HiddenInput(), required=False)
 
