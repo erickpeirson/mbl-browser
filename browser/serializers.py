@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from browser.models import *
+from django.contrib.auth.models import User
 
 from collections import defaultdict
 
@@ -17,6 +18,20 @@ class MockObject(dict):
         Translates a ``__getattr__()`` into a ``get()``.
         """
         return self.get(key)
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username', )
+
+
+class KnownPersonSerializer(serializers.ModelSerializer):
+    changed_by = UserSerializer()
+
+    class Meta:
+        model = KnownPerson
+        fields = ('conceptpower_uri', 'description', 'changed_by')
 
 
 class DenizenSerializer(serializers.Serializer):
@@ -155,12 +170,13 @@ class PersonDetailSerializer(serializers.HyperlinkedModelSerializer):
     courses = serializers.SerializerMethodField('attended_courses')
     locations = serializers.SerializerMethodField('has_location')
     investigation = serializers.SerializerMethodField('is_investigator')
+    authority = KnownPersonSerializer(read_only=True)
 
     class Meta:
         model = Person
         fields = ('last_name', 'first_name', 'url', 'number_of_courses',
                   'is_investigator', 'number_of_affiliations', 'affiliations',
-                  'courses', 'locations', 'investigation')
+                  'courses', 'locations', 'investigation', 'uri', 'authority')
 
 
     def affiliated_with(self, obj):
@@ -251,10 +267,13 @@ class PersonDetailSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class PersonListSerializer(serializers.HyperlinkedModelSerializer):
+    authority = KnownPersonSerializer(read_only=True)
+
     class Meta:
         model = Person
         fields = ('last_name', 'first_name', 'url', 'number_of_courses',
-                  'is_investigator', 'number_of_affiliations')
+                  'is_investigator', 'number_of_affiliations', 'uri',
+                  'authority')
 
 
 class RoleSerializer(serializers.Serializer):

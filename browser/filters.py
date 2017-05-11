@@ -80,9 +80,13 @@ class PersonFilter(filters.FilterSet):
         return queryset.filter(num_investigations=0)
 
     def filter_location(self, queryset, value):
+        if not value:
+            return queryset
         return queryset.filter(locations__name__icontains=value).distinct('last_name', 'id')
 
     def filter_affiliation(self, queryset, value):
+        if not value:
+            return queryset
         return queryset.filter(affiliations__name__icontains=value).distinct('last_name', 'id')
 
 

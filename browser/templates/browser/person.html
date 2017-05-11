@@ -6,6 +6,7 @@
     Person
     <div>
         <span class="h1">{{ person.name }}</span>
+
         {% if user.is_staff %}
         <span class="pull-right btn-group btn-group-lg">
             <a class="btn btn-lg fa fa-history"
@@ -23,6 +24,10 @@
             </a>
         </span>
         {% endif %}
+    </div>
+    <div class="text-warning">
+        <span class="glyphicon glyphicon-barcode"></span>
+        {{ person.authority.conceptpower_uri|urlize }}
     </div>
     {% if person.validated %}
     <div>

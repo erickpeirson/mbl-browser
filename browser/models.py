@@ -190,7 +190,9 @@ class Person(URIMixin, CuratedMixin):
 
     @property
     def name(self):
-        return ' '.join([self.first_name, self.last_name])
+        if hasattr(self, 'first_name'):
+            return ' '.join([self.first_name, self.last_name])
+        return self.last_name
 
     @property
     def number_of_courses(self):
