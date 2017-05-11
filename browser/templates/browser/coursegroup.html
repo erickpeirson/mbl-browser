@@ -216,10 +216,9 @@ function initEvents() {
 d3.json("{% url "coursegroup_data" coursegroup.id %}", function(error, response_data) {
     data = response_data;
 
-    xMax = Math.max.apply(Math, data.attendance.map(function(d) {return d.year; }));
+    xMax = Math.max.apply(Math, data.attendance.map(function(d) {return d.year; })) + 1;
     xMin = Math.min.apply(Math, data.attendance.map(function(d) {return d.year; }));
     yMax = Math.max.apply(Math, data.attendance.map(function(d) { return d.attendees; }));
-    console.log(yMax);
     initChart(data.attendance);
     update();
 

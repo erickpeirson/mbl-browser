@@ -63,7 +63,6 @@ def coursegroup(request, coursegroup_id=None):
     context = RequestContext(request, {})
     if coursegroup_id:
         context['coursegroup'] = get_object_or_404(CourseGroup, pk=coursegroup_id)
-        print context['coursegroup'].history.all()[0].__dict__
         template = "browser/coursegroup.html"
     else:
 
