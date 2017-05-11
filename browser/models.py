@@ -27,6 +27,17 @@ class YearMixin(models.Model):
         abstract = True
 
 
+
+class LastUpdatedMixin(models.Model):
+    """
+    Model must aleady have an history field.
+    """
+    class Meta:
+        abstract = True
+
+    last_updated = models.DateTimeField(auto_now=True)
+
+
 class CuratedMixin(models.Model):
     validated = models.BooleanField(default=False, help_text="Indicates that"
                                     " a record has been examined for accuracy."
@@ -66,7 +77,7 @@ class NameMixin(models.Model):
         return self.name
 
 
-class Course(URIMixin, NameMixin, YearMixin, CuratedMixin):
+class Course(URIMixin, NameMixin, YearMixin, CuratedMixin, LastUpdatedMixin):
     history = HistoricalRecords()
     attendees = models.ManyToManyField('Person', through='Attendance',
                                        related_name='courses')
@@ -95,7 +106,7 @@ class Course(URIMixin, NameMixin, YearMixin, CuratedMixin):
         return reverse('course', args=[self.id])
 
 
-class CourseGroup(URIMixin, NameMixin, CuratedMixin):
+class CourseGroup(URIMixin, NameMixin, CuratedMixin, LastUpdatedMixin):
     history = HistoricalRecords()
     changed_by = models.ForeignKey('auth.User', related_name='edited_coursegroups')
 
@@ -115,7 +126,7 @@ class CourseGroup(URIMixin, NameMixin, CuratedMixin):
         return reverse('coursegroup', args=[self.id])
 
 
-class Institution(URIMixin, NameMixin, CuratedMixin):
+class Institution(URIMixin, NameMixin, CuratedMixin, LastUpdatedMixin):
     history = HistoricalRecords()
     authority = models.ForeignKey('KnownInstitution', blank=True, null=True,
                                   help_text="""
@@ -140,7 +151,7 @@ class Institution(URIMixin, NameMixin, CuratedMixin):
         return reverse('institution', args=[self.id])
 
 
-class Location(URIMixin, NameMixin, CuratedMixin):
+class Location(URIMixin, NameMixin, CuratedMixin, LastUpdatedMixin):
     history = HistoricalRecords()
     authority = models.ForeignKey('KnownLocation', blank=True, null=True,
                                   help_text="""
@@ -165,7 +176,7 @@ class Location(URIMixin, NameMixin, CuratedMixin):
         return reverse('location', args=[self.id])
 
 
-class Person(URIMixin, CuratedMixin):
+class Person(URIMixin, CuratedMixin, LastUpdatedMixin):
     history = HistoricalRecords()
     last_name = models.CharField(max_length=255)
     first_name = models.CharField(max_length=255, blank=True)
@@ -217,7 +228,7 @@ class Person(URIMixin, CuratedMixin):
         return reverse('person', args=[self.id])
 
 
-class Affiliation(YearMixin, CuratedMixin):
+class Affiliation(YearMixin, CuratedMixin, LastUpdatedMixin):
     history = HistoricalRecords()
     person = models.ForeignKey('Person')
     institution = models.ForeignKey('Institution')
@@ -239,7 +250,7 @@ class Affiliation(YearMixin, CuratedMixin):
         return u'%s in %i' % (self.institution.name, self.year)
 
 
-class Attendance(YearMixin, CuratedMixin):
+class Attendance(YearMixin, CuratedMixin, LastUpdatedMixin):
     history = HistoricalRecords()
     person = models.ForeignKey('Person')
     course = models.ForeignKey('Course')
@@ -260,7 +271,7 @@ class Attendance(YearMixin, CuratedMixin):
         return u'%s as %s' % (self.course.name, self.role)
 
 
-class PartOf(YearMixin, CuratedMixin):
+class PartOf(YearMixin, CuratedMixin, LastUpdatedMixin):
     history = HistoricalRecords()
     course = models.ForeignKey('Course')
     coursegroup = models.ForeignKey('CourseGroup')
@@ -276,7 +287,7 @@ class PartOf(YearMixin, CuratedMixin):
         self.changed_by = value
 
 
-class Localization(YearMixin, CuratedMixin):
+class Localization(YearMixin, CuratedMixin, LastUpdatedMixin):
     history = HistoricalRecords()
     person = models.ForeignKey('Person')
     location = models.ForeignKey('Location')
@@ -299,7 +310,7 @@ class Localization(YearMixin, CuratedMixin):
         return u'%s in %i' % (self.person.__unicode__(), self.year)
 
 
-class Investigator(YearMixin, CuratedMixin):
+class Investigator(YearMixin, CuratedMixin, LastUpdatedMixin):
     history = HistoricalRecords()
     person = models.ForeignKey('Person')
     subject = models.CharField(max_length=255, blank=True)
@@ -330,7 +341,7 @@ class Investigator(YearMixin, CuratedMixin):
         return rep
 
 
-class KnownLocation(NameMixin, CuratedMixin):
+class KnownLocation(NameMixin, CuratedMixin, LastUpdatedMixin):
     """
     """
     history = HistoricalRecords()
@@ -382,7 +393,7 @@ class KnownLocation(NameMixin, CuratedMixin):
         self.changed_by = value
 
 
-class KnownPerson(NameMixin, CuratedMixin):
+class KnownPerson(NameMixin, CuratedMixin, LastUpdatedMixin):
     """
     A :class:`.KnownPerson` is a person for which an entry exists in the
     Conceptpower name authority.
@@ -403,7 +414,7 @@ class KnownPerson(NameMixin, CuratedMixin):
         self.changed_by = value
 
 
-class KnownInstitution(NameMixin, CuratedMixin):
+class KnownInstitution(NameMixin, CuratedMixin, LastUpdatedMixin):
     """
     A :class:`.KnownInstitution` is an institution for which an entry exists in
     the Conceptpower name authority.
