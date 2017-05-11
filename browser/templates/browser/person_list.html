@@ -96,6 +96,13 @@
                     {% endif %}
 
                 </span>
+                {% if person.authority %}
+                <div class="text-warning">
+                    <span class="glyphicon glyphicon-barcode"></span>
+                    {{ person.authority.conceptpower_uri|urlize }}
+                </div>
+                {% endif %}
+                
                 {% with person.history.last as history %}
                 {% if history %}
                 <div class="text-warning">
@@ -103,6 +110,7 @@
                 </div>
                 {% endif %}
                 {% endwith %}
+
             </li>
             {% endfor %}
         </ul>

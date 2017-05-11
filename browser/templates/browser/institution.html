@@ -42,15 +42,22 @@
     <ul class="list-group">
 
         {% for affiliate in institution|get_affiliates %}
-        <a class="list-group-item" href="{% url "person" affiliate.pk %}">
-            <div class="text-warning h5">{{ affiliate.first_name }} {{ affiliate.last_name }}</div>
+        <li class="list-group-item" >
+            <a href="{% url "person" affiliate.pk %}" class="text-warning">{{ affiliate.first_name }} {{ affiliate.last_name }}</a>
+            {% with person.history.last as history %}
+            {% if history %}
+            <div class="text-warning">
+                Updated by <strong>{{ history.changed_by }}</strong> on {{ history.history_date }}
+            </div>
+            {% endif %}
+            {% endwith %}
             <dl class="dl-horizontal">
                 {% for position in affiliate.positions %}
                 <dt>{{position.year}}</dt>
                 <dd>{{position.position}}</dd>
                 {% endfor %}
             </dl>
-        </a>
+        </li>
         {% endfor %}
 
 </div>
