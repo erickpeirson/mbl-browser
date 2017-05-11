@@ -3,6 +3,8 @@
 {% load addcss %}
 {% load pagination_tags %}
 
+{% block title %}Institutions{% endblock %}
+
 {% block main %}
 {% autopaginate institutions.qs 40 as filter_list %}
 
@@ -35,18 +37,18 @@
     <ul class="list-group">
         {% for institution in filter_list %}
         {% if institution.name|length > 0 %}
-        <a class="list-group-item" href="{% url "institution" institution.id %}">
-            {{ institution.name }}
-            <span class="btn-group pull-right">
-                <span class="btn btn-success btn-xs"
+        <li class="list-group-item">
+            <a href="{% url "institution" institution.id %}">{{ institution.name }}</a>
+            <span class="pull-right">
+                <span class="text-success"
                     data-toggle="tooltip"
                     data-placement="left"
                     data-container='body'
                     title="Number of affiliates">
-                    {{ institution.number_of_affiliates }}
+                    {{ institution.number_of_affiliates }} affiliate{% if institution.number_of_affiliates != 1 %}s{% endif %}
                 </span>
             </span>
-        </a>
+        </li>
         {% endif %}
 
         {% endfor %}

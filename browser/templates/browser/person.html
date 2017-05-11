@@ -1,6 +1,8 @@
 {% extends "browser/base.html" %}
 {% load app_filters %}
 
+{% block title %}{{ person.name }} (Person){% endblock %}
+
 {% block main %}
 <div class="alert alert-mbl">
     Person
@@ -25,10 +27,12 @@
         </span>
         {% endif %}
     </div>
+    {% if person.authority %}
     <div class="text-warning">
         <span class="glyphicon glyphicon-barcode"></span>
         {{ person.authority.conceptpower_uri|urlize }}
     </div>
+    {% endif %}
     {% if person.validated %}
     <div>
         <span class="glyphicon glyphicon-ok" style="color:green;"></span>&nbsp;

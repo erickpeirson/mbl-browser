@@ -3,6 +3,8 @@
 {% load addcss %}
 {% load pagination_tags %}
 
+{% block title %}Course Groups{% endblock %}
+
 {% block main %}
 {% autopaginate coursegroups.qs 40 as filter_list %}
 

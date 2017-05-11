@@ -3,6 +3,8 @@
 {% load addcss %}
 {% load pagination_tags %}
 
+{% block title %}People{% endblock %}
+
 {% block main %}
 {% autopaginate persons.qs 40 as filter_list %}
 
@@ -102,7 +104,7 @@
                     {{ person.authority.conceptpower_uri|urlize }}
                 </div>
                 {% endif %}
-                
+
                 {% with person.history.last as history %}
                 {% if history %}
                 <div class="text-warning">

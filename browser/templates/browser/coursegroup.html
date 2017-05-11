@@ -2,6 +2,8 @@
 {% load staticfiles %}
 {% load app_filters %}
 
+{% block title %}{{ coursegroup.name }} (Course Group){% endblock %}
+
 {% block extrahead %}
 <link rel="stylesheet" href="{% static "browser/css/bar.css" %}" />
 {% endblock %}

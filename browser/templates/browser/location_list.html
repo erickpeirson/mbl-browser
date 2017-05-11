@@ -3,6 +3,8 @@
 {% load addcss %}
 {% load pagination_tags %}
 
+{% block title %}Locations{% endblock %}
+
 {% block main %}
 {% autopaginate locations.qs 40 as filter_list %}
 
@@ -63,27 +65,27 @@
         <ul class="list-group">
             {% for location in filter_list %}
             {% if location.name|length > 0 %}
-            <a class="list-group-item" href="{% url "location" location.id %}">
+            <li class="list-group-item">
                 {% if user.is_staff %}
                 <div class="checkbox-inline">
                     <label>
                         <input type="checkbox" name="action_select" value="{{ location.id }}" class="action_select">
-                        {{ location.name }}
+                        <a href="{% url "location" location.id %}">{{ location.name }}</a>
                     </label>
                 </div>
                 {% else %}
-                    {{ location.name }}
+                    <a href="{% url "location" location.id %}">{{ location.name }}</a>
                 {% endif %}
                 <span class="pull-right">
                     <span class="text-success"
                         data-toggle="tooltip"
                         data-placement="left"
                         data-container='body'
-                        title="Number of affiliates">
+                        title="Number of denizens">
                         {{ location.number_of_denizens }} denizen{% if location.number_of_denizens != 1 %}s{% endif %}
                     </span>
                 </span>
-            </a>
+            </li>
             {% endif %}
 
             {% endfor %}
