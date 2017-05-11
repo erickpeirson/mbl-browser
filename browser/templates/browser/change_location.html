@@ -20,7 +20,7 @@
                         data-title="Search for this location in the OpenStreetMap database">
                     </a>
                 </span>
-                {{ field|addcss:"form-control" }}
+                {{ field|addcss:"form-control input-sm" }}
             </div>
             <p class="text-muted">{{ field.help_text }}</p>
         </div>
@@ -33,7 +33,7 @@
             <div class="alert alert-warning">{{ error }}</div>
             {% endfor %}
             <label>Geo URI</label>
-            {{ field|addcss:"form-control" }}
+            {{ field|addcss:"form-control input-sm" }}
             <p class="text-muted">{{ field.help_text }}</p>
         </div>
         {% endwith %}

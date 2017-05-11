@@ -17,7 +17,7 @@
         {% for field in persons.form %}
         <div class="form-group">
             <label>{{ field.label }}</label>
-            {{ field|addcss:"form-control" }}
+            {{ field|addcss:"form-control input-sm" }}
         </div>
         {% endfor %}
         <div class="btn-group pull-right">
@@ -61,16 +61,16 @@
         {% endif %}
         <ul class="list-group">
             {% for person in filter_list %}
-            <a class="list-group-item" href="{% url "person" person.id %}">
+            <li class="list-group-item">
                 {% if user.is_staff %}
                 <div class="checkbox-inline">
                     <label>
                         <input type="checkbox" name="action_select" value="{{ person.id }}" class="action_select">
-                        {{ person.name }}
+                        <a href="{% url "person" person.id %}">{{ person.name }}</a>
                     </label>
                 </div>
                 {% else %}
-                    {{ person.name }}
+                    <a href="{% url "person" person.id %}">{{ person.name }}</a>
                 {% endif %}
                 <span class="pull-right">
                     {% if person.is_investigator %}<span class="text-warning">Investigator</span>{% endif %}
@@ -80,8 +80,30 @@
                     <span class="text-primary">
                         {{ person.number_of_affiliations }} affiliation{% if person.number_of_affiliations != 1%}s{% endif %}
                     </span>
+
+                    {% if person.validated %}
+                    <i class="glyphicon glyphicon-ok-sign" aria-hidden="true"
+                        style="color: green;"
+                        data-toggle="tooltip"
+                        data-title="This record was validated by {{ person.validated_by }} on {{ person.validated_on }}">
+                    </i>
+                    {% else %}
+                    <i class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"
+                        style="color: orange;"
+                        data-toggle="tooltip"
+                        data-title="This record has not yet been validated">
+                    </i>
+                    {% endif %}
+
                 </span>
-            </a>
+                {% with person.history.last as history %}
+                {% if history %}
+                <div class="text-warning">
+                    Updated by <strong>{{ history.changed_by }}</strong> on {{ history.history_date }}
+                </div>
+                {% endif %}
+                {% endwith %}
+            </li>
             {% endfor %}
         </ul>
     {% if user.is_staff %}</form>{% endif %}

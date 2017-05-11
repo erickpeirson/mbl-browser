@@ -29,7 +29,7 @@
                     <div class="alert alert-warning">{{ error }}</div>
                     {% endfor %}
                     <label>{{ field.label }}</label>
-                    {{ field|addcss:"form-control" }}
+                    {{ field|addcss:"form-control input-sm" }}
                     <p class="text-muted">{{ field.help_text }}</p>
                 </div>
                 {% endwith %}
@@ -41,7 +41,7 @@
                     <div class="alert alert-warning">{{ error }}</div>
                     {% endfor %}
                     <label>{{ field.label }}</label>
-                    {{ field|addcss:"form-control" }}
+                    {{ field|addcss:"form-control input-sm" }}
                     <p class="text-muted">{{ field.help_text }}</p>
                 </div>
                 {% endwith %}
@@ -71,7 +71,7 @@
             <div class="alert alert-warning">{{ error }}</div>
             {% endfor %}
             <label>{{ field.label }}</label>
-            {{ field|addcss:"form-control" }}
+            {{ field|addcss:"form-control input-sm" }}
             <p class="text-muted">{{ field.help_text }}</p>
         </div>
         {% endfor %}

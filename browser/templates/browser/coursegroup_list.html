@@ -18,7 +18,7 @@
         {% for field in coursegroups.form %}
         <div class="form-group">
             <label>{{ field.label }}</label>
-            {{ field|addcss:"form-control" }}
+            {{ field|addcss:"form-control input-sm" }}
         </div>
         {% endfor %}
         <div class="btn-group pull-right">
@@ -52,13 +52,13 @@
                 <td>{{ coursegroup|get_years }}</td>
                 <td>
                     {% if coursegroup.validated %}
-                    <i class="fa fa-check-square" aria-hidden="true"
+                    <i class="glyphicon glyphicon-ok-sign" aria-hidden="true"
                         style="color: green;"
                         data-toggle="tooltip"
                         data-title="This record was validated by {{ coursegroup.validated_by }} on {{ coursegroup.validated_on }}">
                     </i>
                     {% else %}
-                    <i class="fa fa-square" aria-hidden="true"
+                    <i class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"
                         data-toggle="tooltip"
                         data-title="This record has not yet been validated">
                     </i>

@@ -82,12 +82,12 @@ class PersonFilter(filters.FilterSet):
     def filter_location(self, queryset, value):
         if not value:
             return queryset
-        return queryset.filter(locations__name__icontains=value).distinct('last_name', 'id')
+        return queryset.filter(locations__name__icontains=value)#.distinct('last_name', 'id')
 
     def filter_affiliation(self, queryset, value):
         if not value:
             return queryset
-        return queryset.filter(affiliations__name__icontains=value).distinct('last_name', 'id')
+        return queryset.filter(affiliations__name__icontains=value)#.distinct('last_name', 'id')
 
 
 class LocationFilter(filters.FilterSet):
