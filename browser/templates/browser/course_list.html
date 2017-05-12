@@ -8,8 +8,10 @@
 {% block main %}
 {% autopaginate courses.qs 40 as filter_list %}
 <div class="clearfix">
-    <div class="btn-group pull-right">
-        <button data-toggle="collapse" class="btn btn-primary" data-target="#filters">Show/hide filters</button>
+    <div>
+        <div class="btn-group pull-right">
+            <button data-toggle="collapse" class="btn btn-primary" data-target="#filters">Show/hide filters</button>
+        </div>
     </div>
 </div>
 

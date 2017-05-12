@@ -107,6 +107,7 @@ ul.nobullet {
 
 .search-result {
     font-size: 10pt;
+    cursor: pointer;
 }
 
 #results-container a {

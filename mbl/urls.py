@@ -37,7 +37,9 @@ urlpatterns = [
     url(r'^bulk/(?P<model>[a-z]+)/$', views.bulk_action, name="bulk-action"),
 
     url(r'^course/(?P<course_id>[0-9]+)/$', views.course, name="course"),
+    url(r'^course/(?P<course_id>[0-9]+)/delete/$', views.course_delete, name="delete-course"),
     url(r'^course/(?P<course_id>[0-9]+)/edit/$', views.edit_course, name="edit-course"),
+    url(r'^course/(?P<course_id>[0-9]+)/add/$', views.attendee_create, name="add-attendee"),
     url(r'^course/$', views.course, name="course_list"),
     url(r'^person/(?P<person_id>[0-9]+)/$', views.person, name="person"),
     url(r'^person/(?P<person_id>[0-9]+)/edit/$', views.edit_person, name="edit-person"),
@@ -56,6 +58,7 @@ urlpatterns = [
     url(r'^coursegroup/(?P<coursegroup_id>[0-9]+)/$', views.coursegroup, name="coursegroup"),
     url(r'^coursegroup/(?P<coursegroup_id>[0-9]+)/edit/$', views.edit_coursegroup, name="edit-coursegroup"),
     url(r'^coursegroup/(?P<coursegroup_id>[0-9]+).json$', views.coursegroup_data, name="coursegroup_data"),
+    url(r'^coursegroup/(?P<coursegroup_id>[0-9]+)/create/$', views.course_create, name="create-course"),
     url(r'^coursegroup/$', views.coursegroup, name="coursegroup_list"),
     url(r'^about/$', views.about, name="about"),
     url(r'^search/$', views.generic_autocomplete, name="search"),

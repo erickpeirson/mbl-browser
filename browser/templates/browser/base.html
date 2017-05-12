@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="stylesheet" href="{% static "browser/css/bootstrap.min.css" %}" />
         <link rel="stylesheet" href="{% static "browser/css/jquery-ui.min.css" %}" />
+        <link rel="stylesheet" href="{% static "browser/css/modal.css" %}" />
         <link rel="stylesheet" href="{% static "browser/css/base.css" %}" />
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
         <script src="{% static "browser/js/jquery-1.11.1.min.js" %}"></script>
@@ -12,6 +13,28 @@
         <script src="{% static "browser/js/bootstrap.min.js" %}"></script>
         <script src="{% static "browser/js/d3.min.js" %}"></script>
         <script src="{% static "browser/js/W.min.js" %}"></script>
+
+        <script src="{% static "browser/js/tiny-cookie.min.js" %}"></script>
+        <script src="{% static "browser/js/vue-cookie.js" %}"></script>
+        <script src="{% static "browser/js/vue.min.js" %}"></script>
+
+        <link rel="apple-touch-icon" sizes="57x57" href="{% static "browser/favicon.ico/apple-icon-57x57.png" %}">
+        <link rel="apple-touch-icon" sizes="60x60" href="{% static "browser/favicon.ico/apple-icon-60x60.png" %}">
+        <link rel="apple-touch-icon" sizes="72x72" href="{% static "browser/favicon.ico/apple-icon-72x72.png" %}">
+        <link rel="apple-touch-icon" sizes="76x76" href="{% static "browser/favicon.ico/apple-icon-76x76.png" %}">
+        <link rel="apple-touch-icon" sizes="114x114" href="{% static "browser/favicon.ico/apple-icon-114x114.png" %}">
+        <link rel="apple-touch-icon" sizes="120x120" href="{% static "browser/favicon.ico/apple-icon-120x120.png" %}">
+        <link rel="apple-touch-icon" sizes="144x144" href="{% static "browser/favicon.ico/apple-icon-144x144.png" %}">
+        <link rel="apple-touch-icon" sizes="152x152" href="{% static "browser/favicon.ico/apple-icon-152x152.png" %}">
+        <link rel="apple-touch-icon" sizes="180x180" href="{% static "browser/favicon.ico/apple-icon-180x180.png" %}">
+        <link rel="icon" type="image/png" sizes="192x192"  href="{% static "browser/favicon.ico/android-icon-192x192.png" %}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{% static "browser/favicon.ico/favicon-32x32.png" %}">
+        <link rel="icon" type="image/png" sizes="96x96" href="{% static "browser/favicon.ico/favicon-96x96.png" %}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{% static "browser/favicon.ico/favicon-16x16.png" %}">
+        <link rel="manifest" href="{% static "browser/favicon.ico/manifest.json" %}">
+        <meta name="msapplication-TileColor" content="#ffffff">
+        <meta name="msapplication-TileImage" content="{% static "browser/favicon.ico/ms-icon-144x144.png" %}">
+        <meta name="theme-color" content="#ffffff">
 
         <style>
         /* MBL seal background image -- has to be in template for the static
@@ -33,6 +56,7 @@
     <body>
         <div class="container">
             {% include "browser/navbar.html" %}
+
             {% block main %}
             <div class="jumbotron">
                 <h1>History of the Marine Biological Laboratory</h1>
@@ -47,15 +71,15 @@
                     project, and an administrative platform for curation and data entry.
                 </p>
                 <p>
-                    All of the data on this platform are available via a <a href="/rest/">REST API</a>.
+                    All of the data on this platform are available via a <a href="{% static "browser/favicon.ico/rest/" %}">REST API</a>.
                 </p>
             </div>
-
-            {% endblock %}
             <h4>Questions? Comments? Concerns?</h3>
             <p>
                 Talk to <a href="https://erickpeirson.github.io/">Erick</a>
             </p>
+            {% endblock %}
+
             <div class="panel panel-mbl-footer">
                 <div class="panel-body">
                         <a href="https://github.com/erickpeirson/mbl-browser"><i class="fa fa-github fa-2x"></i> Source on GitHub</a>
@@ -101,5 +125,6 @@
         });
 
         </script>
+
     </body>
 </html>

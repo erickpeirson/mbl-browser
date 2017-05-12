@@ -1,6 +1,7 @@
 import django_filters
 from django.db.models import Count
 from django.utils.translation import ugettext as _
+from django.db.models import Q
 
 from rest_framework import filters
 
@@ -68,10 +69,21 @@ class PersonFilter(filters.FilterSet):
     location = django_filters.MethodFilter()
     affiliation = django_filters.MethodFilter()
     is_investigator = django_filters.MethodFilter(widget=ConfigurableBooleanWidget(empty='----'))
+    name = django_filters.MethodFilter()
 
     class Meta:
         model = Person
         fields = ['last_name', 'first_name', 'is_investigator', 'affiliation']
+
+    def filter_name(self, queryset, value):
+        if not value:
+            return queryset
+        value_parts = value.split()
+        q = Q()
+        for part in value_parts:
+            q &= (Q(first_name__icontains=part) | Q(last_name__icontains=part))
+
+        return queryset.filter(q)
 
     def filter_is_investigator(self, queryset, value):
         queryset = queryset.annotate(num_investigations=Count('investigator'))

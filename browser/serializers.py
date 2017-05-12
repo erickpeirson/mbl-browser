@@ -118,7 +118,7 @@ class InstitutionDetailSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Institution
-        fields = ('name', 'url', 'affiliates', 'number_of_affiliates', 'last_updated')
+        fields = ('name', 'url', 'affiliates', 'number_of_affiliates', 'last_updated', 'id')
 
     def affiliated_people(self, obj):
         """
@@ -152,7 +152,7 @@ class InstitutionDetailSerializer(serializers.HyperlinkedModelSerializer):
 class InstitutionListSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Institution
-        fields = ('name', 'url', 'number_of_affiliates', 'last_updated')
+        fields = ('name', 'url', 'number_of_affiliates', 'last_updated', 'id')
 
 
 class LocalizationSerializer(serializers.Serializer):
@@ -184,7 +184,7 @@ class PersonDetailSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('last_name', 'first_name', 'url', 'number_of_courses',
                   'is_investigator', 'number_of_affiliations', 'affiliations',
                   'courses', 'locations', 'investigation', 'uri', 'authority',
-                  'last_updated')
+                  'last_updated', 'id')
 
 
     def affiliated_with(self, obj):
@@ -281,7 +281,7 @@ class PersonListSerializer(serializers.HyperlinkedModelSerializer):
         model = Person
         fields = ('last_name', 'first_name', 'url', 'number_of_courses',
                   'is_investigator', 'number_of_affiliations', 'uri',
-                  'authority', 'last_updated')
+                  'authority', 'last_updated', 'id')
 
 
 class RoleSerializer(serializers.Serializer):
@@ -362,7 +362,7 @@ class CourseListSerializer(serializers.HyperlinkedModelSerializer):
 class CourseGroupListSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = CourseGroup
-        fields = ('name', 'url', 'number_of_courses', 'last_updated')
+        fields = ('id', 'name', 'url', 'number_of_courses', 'last_updated')
 
 
 class CourseGroupDetailSerializer(serializers.HyperlinkedModelSerializer):
@@ -370,7 +370,7 @@ class CourseGroupDetailSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = CourseGroup
-        fields = ('name', 'url', 'number_of_courses', 'courses', 'last_updated')
+        fields = ('id', 'name', 'url', 'number_of_courses', 'courses', 'last_updated')
 
     def get_courses(self, obj):
         qs = obj.courses.distinct('id')

@@ -19,6 +19,11 @@ class URIMixin(models.Model):
     class Meta:
         abstract = True
 
+    def save(self, *args, **kwargs):
+        if not self.uri:
+            self.uri = generate_uri(self.__class__)
+        super(URIMixin, self).save(*args, **kwargs)
+
 
 class YearMixin(models.Model):
     year = models.IntegerField()
@@ -104,6 +109,9 @@ class Course(URIMixin, NameMixin, YearMixin, CuratedMixin, LastUpdatedMixin):
 
     def get_absolute_url(self):
         return reverse('course', args=[self.id])
+
+    def can_delete(self):
+        return self.attendees.count() == 0
 
 
 class CourseGroup(URIMixin, NameMixin, CuratedMixin, LastUpdatedMixin):

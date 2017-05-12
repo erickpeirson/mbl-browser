@@ -7,6 +7,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.db.models.query_utils import Q
 from django.db.models import Count
+from django.db import transaction
 
 from browser.models import *
 from browser.filters import *
@@ -48,7 +49,10 @@ def course(request, course_id=None):
     """
     context = RequestContext(request, {})
     if course_id:
-        context['course'] = get_object_or_404(Course, pk=course_id)
+        course = get_object_or_404(Course, pk=course_id)
+        context.update({
+            'course': course,
+        })
         template = "browser/course.html"
     else:
         context['courses'] = CourseFilter(request.GET, queryset=Course.objects.order_by('year'))
@@ -311,7 +315,7 @@ def edit_course(request, course_id):
         'course': course,
     })
 
-    template = "browser/change_base.html"
+    template = "browser/change_course.html"
     return render(request, template, context)
 
 
@@ -474,4 +478,133 @@ def merge_locations(request, location_ids):
     })
 
     template = "browser/merge_locations.html"
+    return render(request, template, context)
+
+
+@staff_member_required
+def course_create(request, coursegroup_id):
+    """
+    Allows a curator to create a new course record as part of a course group.
+    """
+    template = 'browser/course_create.html'
+    coursegroup = get_object_or_404(CourseGroup, pk=coursegroup_id)
+    if request.method == 'GET':
+        form = CourseInstanceForm()
+    elif request.method == 'POST':
+        form = CourseInstanceForm(request.POST)
+        if form.is_valid():
+            with transaction.atomic():
+                course = Course.objects.create(
+                    name = form.cleaned_data['name'],
+                    validated = form.cleaned_data.get('validated'),
+                    year = form.cleaned_data['year'],
+                    changed_by = request.user,
+                )
+                partof = PartOf.objects.create(
+                    year = form.cleaned_data['year'],
+                    course = course,
+                    coursegroup = coursegroup,
+                    changed_by = request.user,
+                )
+            return HttpResponseRedirect(reverse('course', args=(course.id,)))
+    context = {
+        'form': form,
+        'coursegroup': coursegroup,
+    }
+    return render(request, template, context)
+
+
+@staff_member_required
+def course_delete(request, course_id):
+    """
+    Allows a curator to delete a course record.
+    """
+    template = 'browser/course_delete.html'
+    confirmed = request.GET.get('confirmed', False)
+    next_page = request.GET.get('next', reverse('course-list'))
+    course = get_object_or_404(Course, pk=course_id)
+    context = {}
+    if course.can_delete():
+        if confirmed:
+            course.delete()
+            return HttpResponseRedirect(next_page)
+    else:
+        context.update({'error': True})
+    context.update({
+        'next_page': next_page,
+        'course': course
+    })
+    return render(request, template, context)
+
+
+@staff_member_required
+def attendee_create(request, course_id):
+    """
+    Allows a curator to add an attendee to a course.
+    """
+
+    course = get_object_or_404(Course, pk=course_id)
+    template = 'browser/attendee_create.html'
+    if request.method == 'GET':
+        form = AttendeeForm()
+
+    elif request.method == 'POST':
+        form = AttendeeForm(request.POST)
+        if form.is_valid():
+            with transaction.atomic():
+                person = form.cleaned_data.get('person')
+                create = form.cleaned_data.get('create_person')
+                if create and not person:
+                    surname = form.cleaned_data.get('create_person_lastname')
+                    forename = form.cleaned_data.get('create_person_firstname')
+                    person = Person.objects.create(
+                        first_name=forename,
+                        last_name=surname,
+                        changed_by=request.user
+                    )
+
+                attendance = Attendance.objects.create(
+                    person = person,
+                    year = course.year,
+                    course = course,
+                    role = form.cleaned_data.get('role'),
+                    changed_by=request.user
+                )
+
+                location_literal = form.cleaned_data.get('location')
+                if location_literal:
+                    location = Location.objects.create(
+                        name = location_literal,
+                        changed_by=request.user
+                    )
+                    localization = Localization.objects.create(
+                        person = person,
+                        location = location,
+                        year = course.year,
+                        changed_by=request.user
+                    )
+
+                institution = form.cleaned_data.get('institution')
+                institution_name = form.cleaned_data.get('institution_search')
+                create_institution = form.cleaned_data.get('create_institution')
+                position = form.cleaned_data.get('position')
+                
+                if create_institution:
+                    institution = Institution.objects.create(
+                        name = institution_name,
+                        changed_by=request.user
+                    )
+                affiliation = Affiliation.objects.create(
+                    person = person,
+                    institution = institution,
+                    year = course.year,
+                    position = position,
+                    changed_by=request.user
+                )
+
+            return HttpResponseRedirect(reverse('course', args=(course.id,)))
+    context = {
+        'course': course,
+        'form': form,
+    }
     return render(request, template, context)

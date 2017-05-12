@@ -10,6 +10,9 @@
         <span class="h1">{{ course.name }}</span>
         {% if user.is_staff %}
         <span class="pull-right btn-group btn-group-lg">
+            <a class="btn btn-lg" href="{% url "delete-course" course.id %}">
+                <span class="glyphicon glyphicon-remove"></span>
+            </a>
             <a class="btn btn-lg fa fa-history"
                 aria-hidden="true"
                 data-toggle="modal"
@@ -64,7 +67,13 @@
     <div class="panel-heading">
         <h3>Attendees</h3>
     </div>
-
+    {% if user.is_staff %}
+    <div class="text-right">
+        <a class="btn btn-success btn-xs" href="{% url "add-attendee" course.id %}">
+            <span class="glyphicon glyphicon-plus"></span> Add attendee
+        </a>
+    </div>
+    {% endif %}
     <table class="table">
         <thead>
             <tr>
@@ -102,4 +111,7 @@
 
 </div>
 {% endwith %}
+
+
+
 {% endblock %}

@@ -1,0 +1,39 @@
+{% extends "browser/base.html" %}
+{% load app_filters %}
+{% load addcss %}
+
+{% block title %}Create a new course{% endblock %}
+
+{% block main %}
+<div class="alert alert-mbl">
+    Course: <span class="text-warning">{{course.name }}</span>
+    <div>
+        {% if error %}
+        <div class="alert alert-warning">
+            <div class="h2">No can do.</div>
+            <p>
+                You cannot delete a course record with attendees. If you're determined to
+                delete this course record, go back and remove the attendees first.
+            </p>
+        </div>
+        <div class="text-right">
+            <a class="btn btn-success" onclick="window.history.back()">Take me back!</a>
+        </div>
+        {% else %}
+        <div class="alert alert-danger">
+            <div class="h1">Are you sure?</div>
+            <p>
+                This action will delete the course record forever. Are you certain
+                that you wish to proceed?
+            </p>
+        </div>
+        <div class="text-right">
+            <a class="btn btn-success" onclick="window.history.back()">Take me back!</a>
+            <a href="{% url "delete-course" course.id %}" class="btn btn-danger">Delete Forever</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+
+{% endblock %}

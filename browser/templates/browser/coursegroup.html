@@ -56,8 +56,15 @@
 
 <!-- coursegroupgroups -->
 <div class="panel panel-mbl">
-    <div class="panel-heading">
-        <h3>Courses</h3>
+    <div class="panel-heading clearfix">
+        <div class="h3">Courses</div>
+        {% if user.is_staff %}
+        <span class="pull-right">
+            <a class="btn btn-xs btn-success" href="{% url "create-course" coursegroup.id %}">
+                <span class="glyphicon glyphicon-plus"></span> New course
+            </a>
+        </span>
+        {% endif %}
         <p class="text text-muted">Click on a course name to view a complete list of participants.</p>
     </div>
     <table class="table table-responsive table-hover">

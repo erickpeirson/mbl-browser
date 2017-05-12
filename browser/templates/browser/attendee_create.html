@@ -1,0 +1,221 @@
+{% extends "browser/base.html" %}
+{% load app_filters %}
+{% load addcss %}
+
+{% block title %}Add an attendee{% endblock %}
+
+{% block main %}
+<div class="alert alert-mbl">
+    Course: <span class="text-warning">{{ course.name }}</span>
+    <div>
+        <span class="h1">Add an attendee</span>
+        <p class="text-info">
+            Use this form to add an attendee to <span class="text-warning">{{ course.name }}</span>
+        </p>
+    </div>
+</div>
+
+<div class="container">
+<!-- Coursegroups -->
+    <div class="panel panel-mbl">
+        <form class="form" action="." method="POST">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-sm-6">
+                    {% with form.person as field %}
+                    <div class="form-group">
+                        {% for error in field.errors %}
+                        <div class="alert alert-warning">{{ error }}</div>
+                        {% endfor %}
+                        <label>{{ field.label }}</label>
+                        {{ form.person_search|addcss:"form-control input-sm" }}
+                        <div class="list-group" id="person-results-container"></div>
+                        {{ field|addcss:"form-control input-sm" }}
+                        <p class="text-muted">{{ field.help_text }}</p>
+                        <label class="control-label">{{ form.create_person.label }} {{ form.create_person }}</label>
+                        <span class="text-muted">{{ form.create_person.help_text }}</span>
+                    </div>
+                    {% endwith %}
+                </div>
+                <div class="col-sm-6">
+                    {% with form.role as field %}
+                    <div class="form-group">
+                        {% for error in field.errors %}
+                        <div class="alert alert-warning">{{ error }}</div>
+                        {% endfor %}
+                        <label>{{ field.label }}</label>
+                        {{ field|addcss:"form-control input-sm" }}
+                        <p class="text-muted">{{ field.help_text }}</p>
+                    </div>
+                    {% endwith %}
+                </div>
+            </div>
+
+            <div class="row create-row panel panel-default" style="display: none;">
+                <div class="col-sm-6">
+                    {% with form.create_person_firstname as field %}
+                    <div class="form-group">
+                        {% for error in field.errors %}
+                        <div class="alert alert-warning">{{ error }}</div>
+                        {% endfor %}
+                        <label>{{ field.label }}</label>
+                        {{ field|addcss:"form-control input-sm" }}
+                        <p class="text-muted">{{ field.help_text }}</p>
+                    </div>
+                    {% endwith %}
+                </div>
+                <div class="col-sm-6">
+                    {% with form.create_person_lastname as field %}
+                    <div class="form-group">
+                        {% for error in field.errors %}
+                        <div class="alert alert-warning">{{ error }}</div>
+                        {% endfor %}
+                        <label>{{ field.label }}</label>
+                        {{ field|addcss:"form-control input-sm" }}
+                        <p class="text-muted">{{ field.help_text }}</p>
+                    </div>
+                    {% endwith %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    {% with form.institution as field %}
+                    <div class="form-group">
+                        {% for error in field.errors %}
+                        <div class="alert alert-warning">{{ error }}</div>
+                        {% endfor %}
+                        <label>{{ field.label }}</label>
+                        {{ form.institution_search|addcss:"form-control input-sm" }}
+                        <div class="list-group" id="institution-results-container"></div>
+                        {{ field|addcss:"form-control input-sm" }}
+                        <p class="text-muted">{{ field.help_text }}</p>
+                        <label class="control-label">{{ form.create_institution.label }} {{ form.create_institution }}</label>
+                        <span class="text-muted">{{ form.create_institution.help_text }}</span>
+                    </div>
+                    {% endwith %}
+                </div>
+                <div class="col-sm-6">
+                    {% with form.position as field %}
+                    <div class="form-group">
+                        {% for error in field.errors %}
+                        <div class="alert alert-warning">{{ error }}</div>
+                        {% endfor %}
+                        <label>{{ field.label }}</label>
+                        {{ field|addcss:"form-control input-sm" }}
+                        <p class="text-muted">{{ field.help_text }}</p>
+                    </div>
+                    {% endwith %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    {% with form.create_person_location as field %}
+                    <div class="form-group">
+                        {% for error in field.errors %}
+                        <div class="alert alert-warning">{{ error }}</div>
+                        {% endfor %}
+                        <label>{{ field.label }}</label>
+                        {{ field|addcss:"form-control input-sm" }}
+                        <p class="text-muted">{{ field.help_text }}</p>
+                    </div>
+                    {% endwith %}
+                </div>
+            </div>
+            <div class="text-right">
+                <input type="submit" name="Create" value="Create" class="btn btn-success">
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+
+var toggleCreateFields = function() {
+    if ($('#id_create_person:checked').val()) {
+        $('.create-row').css('display', 'block');
+    } else {
+        $('.create-row').css('display', 'none');
+    }
+
+}
+$('#id_create_person').change(toggleCreateFields);
+$('body').ready(toggleCreateFields);
+
+var container = $('#person-results-container');
+var search = $('#id_person_search');
+var input = $('#id_person');
+
+var institution_search = $('#id_institution_search');
+var institution_container = $('#institution-results-container');
+var institution_input = $('#id_institution');
+
+var selectResult = function(id, name) {
+    container.empty();
+    search.val(name);
+    input.val(id);
+}
+
+var selectInstitutionResult = function(id, name) {
+    institution_container.empty();
+    institution_search.val(name);
+    institution_input.val(id);
+}
+
+var getName = function(result) {
+    return result.first_name + ' ' + result.last_name;
+}
+
+$(document).ready(function() {
+    $(".dropdown-toggle").dropdown();
+    $('[data-toggle="tooltip"]').tooltip();
+});
+
+var searchPromise = null;
+
+search.on('keyup', function(e) {
+    var query = $(this).val();
+    input.val();
+    if (query.length == 0){
+        container.empty();
+    } else {
+        if (searchPromise) {
+            clearTimeout(searchPromise);
+        }
+        searchPromise = setTimeout(function() {
+            $.ajax("{% url "person-list" %}?name=" + query, {
+                success: function(result) {
+                    container.empty();
+                    result.results.forEach(function(r) {
+                        container.append('<a class="list-group-item search-result" id="' + r.id + '" onclick="selectResult(' + r.id + ', \''+ getName(r) +'\')">' + getName(r) + '</a>');
+                    });
+                }
+            });
+        }, 500);
+    }
+});
+
+institution_search.on('keyup', function(e) {
+    var query = $(this).val();
+    institution_input.val();
+    if (query.length == 0){
+        institution_container.empty();
+    } else {
+        if (searchPromise) {
+            clearTimeout(searchPromise);
+        }
+        searchPromise = setTimeout(function() {
+            $.ajax("{% url "institution-list" %}?name=" + query, {
+                success: function(result) {
+                    institution_container.empty();
+                    result.results.forEach(function(r) {
+                        institution_container.append('<a class="list-group-item search-result" id="' + r.id + '" onclick="selectInstitutionResult(' + r.id + ', \''+ r.name +'\')">' + r.name + '</a>');
+                    });
+                }
+            });
+        }, 500);
+    }
+});
+
+</script>
+
+{% endblock %}

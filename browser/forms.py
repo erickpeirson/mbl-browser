@@ -11,7 +11,82 @@ class CourseGroupForm(forms.ModelForm):
         fields = ['name', 'validated']
 
 
+class CourseInstanceForm(forms.Form):
+    name = forms.CharField(help_text='For example: "Botany 1891"')
+    year = forms.IntegerField()
+    validated = forms.BooleanField(help_text="Indicates that a record has been"
+                                   " examined for accuracy. This does not"
+                                   " necessarily mean that the record has been"
+                                   " disambiguated with respect to an authority"
+                                   " accord.", required=False)
+
+
+class AttendeeForm(forms.Form):
+    person = forms.ModelChoiceField(queryset=Person.objects.all(),
+                                    required=False,
+                                    widget=forms.HiddenInput())
+    person_search = forms.CharField(required=False, widget=forms.TextInput(attrs={'autocomplete': 'off'}))
+    create_person = forms.BooleanField(required=False, label='Create',
+                                       help_text="Create a new person record.")
+    create_person_firstname = forms.CharField(required=False, label='Forename',
+                                              help_text='May include middle names and/or initials. E.g. "Eric H."')
+    create_person_lastname = forms.CharField(required=False, label='Surname',
+                                             help_text='May include affixes, e.g. "Jackson Jr."')
+    create_person_location = forms.CharField(required=False, label='Location',
+                                             help_text="Enter any information that you have about this person's geographic location,"
+                                                       " aside from their institutional affiliation, such as an address.")
+    role = forms.CharField(help_text='E.g. Faculty, Student, Assistant, Instructor, Director.')
+
+    institution = forms.ModelChoiceField(queryset=Institution.objects.all(),
+                                         required=False,
+                                         widget=forms.HiddenInput())
+    institution_search = forms.CharField(required=False, widget=forms.TextInput(attrs={'autocomplete': 'off'}))
+    position = forms.CharField(help_text='E.g. Assistant Professor, Graduate Student', required=False)
+    create_institution = forms.BooleanField(required=False, label='Create',
+                                            help_text="Create a new institution record using the name entered above.")
+
+    def __init__(self, *args, **kwargs):
+        if args:
+            initial = kwargs.get('initial', {})
+            person_id = args[0].get('person')
+            if person_id:
+                person = Person.objects.get(pk=int(person_id))
+                initial.update({'person_search': person.first_name + ' ' + person.last_name})
+
+            institution_id = args[0].get('institution')
+            if institution_id:
+                institution = Institution.objects.get(pk=int(institution_id))
+                initial.update({'institution_search': institution.name})
+            kwargs.update({'initial': initial})
+        super(AttendeeForm, self).__init__(*args, **kwargs)
+
+
+    def clean(self):
+        cleaned_data = super(AttendeeForm, self).clean()
+        create_person = cleaned_data.get('create_person')
+        person = cleaned_data.get('person')
+        create_person_firstname = cleaned_data.get('create_person_firstname')
+        create_person_lastname = cleaned_data.get('create_person_lastname')
+        create_institution = cleaned_data.get('create_institution')
+        institution_search = cleaned_data.get('institution_search')
+
+        if create_person and not create_person_firstname:
+            self.add_error('create_person_firstname', 'Please enter a forename')
+        if create_person and not create_person_lastname:
+            self.add_error('create_person_lastname', 'Please enter a surname')
+        if not person and not create_person:
+            self.add_error('person_search', 'Please select a person')
+        if create_institution and not institution_search:
+            self.add_error('institution_search', 'Please enter the name of the institution')
+        return cleaned_data
+
+
 class CourseForm(forms.ModelForm):
+    name = forms.CharField(help_text='For example: "Botany 1891"')
+    # is_part_of = forms.ModelChoiceField(widget=forms.HiddenInput(),
+    #                                     label='Course group/series',
+    #                                     queryset=CourseGroup.objects.all())
+
     class Meta:
         model = Course
         fields = ['name', 'validated']
