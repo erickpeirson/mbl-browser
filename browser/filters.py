@@ -28,6 +28,10 @@ class CourseFilter(filters.FilterSet):
     class Meta:
         model = Course
         fields = ['name', 'occurred_from', 'occurred_through',]
+        order_by = [
+            ('name', 'Name (ascending)'),
+            ('-name', 'Name (descending)')
+        ]
 
 
 class InstitutionFilter(filters.FilterSet):
@@ -37,6 +41,7 @@ class InstitutionFilter(filters.FilterSet):
         model = Institution
         fields = ['name', ]
 
+from django.db.models import Max, Min
 
 class CourseGroupFilter(filters.FilterSet):
     name = django_filters.CharFilter(name='name', lookup_type='icontains')
@@ -55,12 +60,12 @@ class CourseGroupFilter(filters.FilterSet):
     def filter_occurred_from(self, queryset, value):
         if not value:
             return queryset
-        return queryset.filter(courses__year__gte=value).distinct('id')
+        return queryset.annotate(latest_course=Max('courses__year')).filter(latest_course__gte=value)
 
     def filter_occurred_through(self, queryset, value):
         if not value:
             return queryset
-        return queryset.filter(courses__year__lte=value).distinct('id')
+        return queryset.annotate(earliest_course=Min('courses__year')).filter(earliest_course__lte=value)
 
 
 class PersonFilter(filters.FilterSet):
@@ -94,12 +99,12 @@ class PersonFilter(filters.FilterSet):
     def filter_location(self, queryset, value):
         if not value:
             return queryset
-        return queryset.filter(locations__name__icontains=value)#.distinct('last_name', 'id')
+        return queryset.filter(locations__name__icontains=value)
 
     def filter_affiliation(self, queryset, value):
         if not value:
             return queryset
-        return queryset.filter(affiliations__name__icontains=value)#.distinct('last_name', 'id')
+        return queryset.filter(affiliations__name__icontains=value)
 
 
 class LocationFilter(filters.FilterSet):
@@ -107,3 +112,8 @@ class LocationFilter(filters.FilterSet):
     class Meta:
         model = Location
         fields = ['name', 'validated']
+
+        order_by = [
+            ('name', 'Name (ascending)'),
+            ('-name', 'Name (descending)')
+        ]

@@ -136,8 +136,8 @@ var toggleCreateFields = function() {
     } else {
         $('.create-row').css('display', 'none');
     }
-
 }
+
 $('#id_create_person').change(toggleCreateFields);
 $('body').ready(toggleCreateFields);
 
@@ -172,9 +172,21 @@ $(document).ready(function() {
 
 var searchPromise = null;
 
+var toggleIndicator = function() {
+    var val = input.val();
+    if (val != '' && val != null) {
+        indicator.removeClass('glyphicon-search');
+        indicator.addClass('glyphicon-ok');
+    } else {
+        indicator.addClass('glyphicon-search');
+        indicator.removeClass('glyphicon-ok');
+    }
+}
+
 search.on('keyup', function(e) {
     var query = $(this).val();
-    input.val();
+    input.val(null);
+
     if (query.length == 0){
         container.empty();
     } else {
@@ -196,7 +208,8 @@ search.on('keyup', function(e) {
 
 institution_search.on('keyup', function(e) {
     var query = $(this).val();
-    institution_input.val();
+    institution_input.val(null);
+
     if (query.length == 0){
         institution_container.empty();
     } else {

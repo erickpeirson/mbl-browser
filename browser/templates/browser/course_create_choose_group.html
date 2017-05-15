@@ -1,0 +1,119 @@
+{% extends "browser/base.html" %}
+{% load app_filters %}
+{% load addcss %}
+
+{% block title %}Create a new course{% endblock %}
+
+{% block main %}
+<div class="alert alert-mbl">
+    Course
+    <div>
+        <span class="h1">Select a course group</span>
+        <p class="text-info">
+            A course record describes a specific event, such as the Embryology course held in 1974.
+            Courses generally belong to a course group; for example, the 1974 Embryology course is part of
+            a group (series) that began in the late 19th century. Please select a course group, or
+            create a new group.
+        </p>
+    </div>
+</div>
+
+<div class="container">
+<!-- Coursegroups -->
+    <div class="panel panel-mbl">
+        <form class="form" action="." method="POST">
+            {% csrf_token %}
+
+            <div class="row">
+                <div class="col-xs-12">
+                    {% with form.group as field %}
+                    <div class="form-group">
+                        {% for error in field.errors %}
+                        <div class="alert alert-warning">{{ error }}</div>
+                        {% endfor %}
+                        <label>{{ field.label }}</label>
+                        <div class="input-group">
+                            <input class="form-control input-sm"
+                                type="text"
+                                name="group_name"
+                                {% if field.value %}value="{{ field.value }}"{% endif %}
+                                id="id_group_name"
+                                autofocus
+                                placeholder="Start typing to search..."
+                                autocomplete="off">
+                            <span class="input-group-btn">
+                                <span class="btn btn-sm btn-warning">
+                                    <span id="group-input-indicator" class="glyphicon glyphicon-search"></span>&nbsp;
+                                </span>
+                            </span>
+                        </div>
+                        <div class="list-group" id="group-results-container"></div>
+                        {{ field|addcss:"form-control input-sm" }}
+                        <p class="text-muted">{{ field.help_text }}</p>
+                        <label class="control-label">{{ form.group_create.label }} {{ form.group_create }}</label>
+                        <span class="text-muted">{{ form.group_create.help_text }}</span>
+                    </div>
+                    {% endwith %}
+                </div>
+            </div>
+            <div class="text-right">
+                <input type="submit" name="Create" value="Create" class="btn btn-success">
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+var container = $('#group-results-container');
+var search = $('#id_group_name');
+var input = $('#id_group');
+var indicator = $('#group-input-indicator');
+
+
+var selectResult = function(id, name) {
+    console.log(id, name);
+    container.empty();
+    search.val(name);
+    input.val(id);
+    toggleIndicator();
+}
+
+var searchPromise = null;
+
+var toggleIndicator = function() {
+    var val = input.val();
+    if (val != '' && val != null) {
+        indicator.removeClass('glyphicon-search');
+        indicator.addClass('glyphicon-ok');
+    } else {
+        indicator.addClass('glyphicon-search');
+        indicator.removeClass('glyphicon-ok');
+    }
+}
+
+
+search.on('keyup', function(e) {
+    var query = $(this).val();
+    input.val(null);
+    toggleIndicator();
+    if (query.length == 0){
+        container.empty();
+    } else {
+        if (searchPromise) {
+            clearTimeout(searchPromise);
+        }
+        searchPromise = setTimeout(function() {
+            $.ajax("{% url "coursegroup-list" %}?name=" + query, {
+                success: function(result) {
+                    container.empty();
+                    result.results.forEach(function(r) {
+                        container.append('<a class="list-group-item search-result" id="' + r.id + '" onclick="selectResult(' + r.id + ', \''+ r.name +'\')">' + r.name + '</a>');
+                    });
+                }
+            });
+        }, 500);
+    }
+});
+</script>
+
+{% endblock %}

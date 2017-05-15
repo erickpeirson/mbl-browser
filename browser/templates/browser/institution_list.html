@@ -8,26 +8,49 @@
 {% block main %}
 {% autopaginate institutions.qs 40 as filter_list %}
 
-
-<div class="clearfix">
-    <div class="btn-group pull-right">
-        <button data-toggle="collapse" class="btn btn-primary" data-target="#filters">Show/hide filters</button>
+<form class="form">
+    <div class="row">
+        <div class="col-sm-12">
+            {% with persons.form.name as field %}
+            <div class="form-group">
+                <div class="input-group">
+                    <input type="text" class="form-control" name="name" id="id_name" autofocus placeholder="Search by name"{% if institutions.form.name.value %} value="{{ institutions.form.name.value }}"{% endif %}>
+                    <span class="input-group-btn">
+                        <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-search"></span>&nbsp;</button>
+                    </span>
+                </div>
+            </div>
+            {% endwith %}
+        </div>
+        {% comment %}
+        <div class="col-sm-2">
+            <div class="clearfix">
+                <div class="btn-group pull-right">
+                    <a data-toggle="collapse" class="btn btn-primary btn-sm" data-target="#filters"><span class="glyphicon glyphicon-filter"></span> Advanced</a>
+                </div>
+            </div>
+        </div>
+        {% endcomment %}
     </div>
-</div>
 
-<div class="collapse" id="filters">
-    <form class="form clearfix">
+    {% comment %}
+    <div class="collapse" id="filters">
+
         {% for field in institutions.form %}
+        {% if field.label != 'Name' %}
         <div class="form-group">
             <label>{{ field.label }}</label>
             {{ field|addcss:"form-control input-sm" }}
         </div>
+        {% endif %}
         {% endfor %}
         <div class="btn-group pull-right">
-            <input class="btn btn-primary" type="submit" value="Apply Filters" />
+            <input class="btn btn-primary btn-sm" type="submit" value="Apply" />
         </div>
-    </form>
-</div>
+
+    </div>
+    {% endcomment %}
+</form>
 
 <div class="text-center">
     {% paginate %}

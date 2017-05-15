@@ -11,6 +11,27 @@ class CourseGroupForm(forms.ModelForm):
         fields = ['name', 'validated']
 
 
+class GroupForCourseForm(forms.Form):
+    group_name = forms.CharField()
+    group = forms.ModelChoiceField(queryset=CourseGroup.objects.all(),
+                                   required=False,
+                                   widget=forms.HiddenInput())
+    group_create = forms.BooleanField(required=False, label='Create',
+                                      help_text="Create a new group or series"
+                                                " for this course.")
+
+    def __init__(self, *args, **kwargs):
+        print args, kwargs
+        if args:
+            initial = kwargs.get('initial', {})
+            group_id = args[0].get('group')
+            if group_id:
+                group = CourseGroup.objects.get(pk=int(group_id))
+                initial.update({'group_name': group.name})
+
+        super(GroupForCourseForm, self).__init__(*args, **kwargs)
+
+
 class CourseInstanceForm(forms.Form):
     name = forms.CharField(help_text='For example: "Botany 1891"')
     year = forms.IntegerField()
@@ -19,6 +40,7 @@ class CourseInstanceForm(forms.Form):
                                    " necessarily mean that the record has been"
                                    " disambiguated with respect to an authority"
                                    " accord.", required=False)
+
 
 
 class AttendeeForm(forms.Form):

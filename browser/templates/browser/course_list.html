@@ -7,30 +7,69 @@
 
 {% block main %}
 {% autopaginate courses.qs 40 as filter_list %}
-<div class="clearfix">
-    <div>
-        <div class="btn-group pull-right">
-            <button data-toggle="collapse" class="btn btn-primary" data-target="#filters">Show/hide filters</button>
+
+<form class="form ">
+    <div class="row">
+        <div class="col-sm-10">
+            {% with persons.form.name as field %}
+            <div class="form-group">
+                <div class="input-group">
+                    <input type="text" class="form-control" name="name" id="id_name" autofocus placeholder="Search by name"{% if courses.form.name.value %} value="{{ courses.form.name.value }}{% endif %}">
+                    <span class="input-group-btn">
+                        <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-search"></span>&nbsp;</button>
+                    </span>
+                </div>
+            </div>
+            {% endwith %}
+        </div>
+        <div class="col-sm-2">
+            <div class="clearfix">
+                <div class="btn-group pull-right">
+                    <a data-toggle="collapse" class="btn btn-primary btn-sm" data-target="#filters"><span class="glyphicon glyphicon-filter"></span> Advanced</a>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="collapse" id="filters">
-    <form class="form clearfix">
-        {% for field in courses.form %}
-        <div class="form-group">
-            <label>{{ field.label }}</label>
-            {{ field|addcss:"form-control input-sm" }}
+    <div class="collapse" id="filters">
+        <div class="row">
+            <div class="col-sm-4">
+                {% with courses.form.occurred_from as field %}
+                <div class="form-group">
+                    <label>{{ field.label }}</label>
+                    {{ field|addcss:"form-control input-sm" }}
+                </div>
+                {% endwith %}
+            </div>
+            <div class="col-sm-4">
+                {% with courses.form.occurred_through as field %}
+                <div class="form-group">
+                    <label>{{ field.label }}</label>
+                    {{ field|addcss:"form-control input-sm" }}
+                </div>
+                {% endwith %}
+            </div>
+            <div class="col-sm-4">
+                {% with courses.form.o as field %}
+                <div class="form-group">
+                    <label>{{ field.label }}</label>
+                    {{ field|addcss:"form-control input-sm" }}
+                </div>
+                {% endwith %}
+            </div>
         </div>
-        {% endfor %}
-        <div class="btn-group pull-right">
-            <input class="btn btn-primary" type="submit" value="Apply Filters" />
-        </div>
-    </form>
-</div>
+    </div>
+
+</form>
 
 <div class="text-center">
     {% paginate %}
+
+    {% if user.is_staff %}
+    <span class="pull-right btn-group">
+        <a class="btn btn-success btn-xs" href="{% url "create-course-nogroup" %}"><span class="glyphicon glyphicon-plus"></span> Create</a>
+    </span>
+    {% endif %}
 </div>
 
 <div class="panel panel-mbl">

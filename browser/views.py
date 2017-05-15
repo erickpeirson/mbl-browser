@@ -482,35 +482,52 @@ def merge_locations(request, location_ids):
 
 
 @staff_member_required
-def course_create(request, coursegroup_id):
+def course_create(request, coursegroup_id=None):
     """
     Allows a curator to create a new course record as part of a course group.
     """
-    template = 'browser/course_create.html'
-    coursegroup = get_object_or_404(CourseGroup, pk=coursegroup_id)
-    if request.method == 'GET':
-        form = CourseInstanceForm()
-    elif request.method == 'POST':
-        form = CourseInstanceForm(request.POST)
-        if form.is_valid():
-            with transaction.atomic():
-                course = Course.objects.create(
-                    name = form.cleaned_data['name'],
-                    validated = form.cleaned_data.get('validated'),
-                    year = form.cleaned_data['year'],
-                    changed_by = request.user,
-                )
-                partof = PartOf.objects.create(
-                    year = form.cleaned_data['year'],
-                    course = course,
-                    coursegroup = coursegroup,
-                    changed_by = request.user,
-                )
-            return HttpResponseRedirect(reverse('course', args=(course.id,)))
-    context = {
-        'form': form,
-        'coursegroup': coursegroup,
-    }
+    context = {}
+    if coursegroup_id is None:
+        template = 'browser/course_create_choose_group.html'
+        if request.method == 'GET':
+            form = GroupForCourseForm()
+        elif request.method == 'POST':
+            form = GroupForCourseForm(request.POST)
+            if form.is_valid():
+                group = form.cleaned_data.get('group')
+                print form.cleaned_data
+                create_group = form.cleaned_data.get('group_create', False)
+                group_name = form.cleaned_data.get('group_name')
+                if create_group and group_name:
+                    group = CourseGroup.objects.create(name=group_name,
+                                                       changed_by=request.user)
+
+                return HttpResponseRedirect(reverse('create-course', args=(group.id,)))
+
+    else:
+        coursegroup = get_object_or_404(CourseGroup, pk=coursegroup_id)
+        template = 'browser/course_create.html'
+        if request.method == 'GET':
+            form = CourseInstanceForm()
+        elif request.method == 'POST':
+            form = CourseInstanceForm(request.POST)
+            if form.is_valid():
+                with transaction.atomic():
+                    course = Course.objects.create(
+                        name = form.cleaned_data['name'],
+                        validated = form.cleaned_data.get('validated'),
+                        year = form.cleaned_data['year'],
+                        changed_by = request.user,
+                    )
+                    partof = PartOf.objects.create(
+                        year = form.cleaned_data['year'],
+                        course = course,
+                        coursegroup = coursegroup,
+                        changed_by = request.user,
+                    )
+                return HttpResponseRedirect(reverse('course', args=(course.id,)))
+        context = {'coursegroup': coursegroup,}
+    context.update({'form': form})
     return render(request, template, context)
 
 
@@ -521,7 +538,7 @@ def course_delete(request, course_id):
     """
     template = 'browser/course_delete.html'
     confirmed = request.GET.get('confirmed', False)
-    next_page = request.GET.get('next', reverse('course-list'))
+    next_page = request.GET.get('next', reverse('courses'))
     course = get_object_or_404(Course, pk=course_id)
     context = {}
     if course.can_delete():
@@ -588,7 +605,7 @@ def attendee_create(request, course_id):
                 institution_name = form.cleaned_data.get('institution_search')
                 create_institution = form.cleaned_data.get('create_institution')
                 position = form.cleaned_data.get('position')
-                
+
                 if create_institution:
                     institution = Institution.objects.create(
                         name = institution_name,

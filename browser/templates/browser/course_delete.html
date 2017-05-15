@@ -2,7 +2,7 @@
 {% load app_filters %}
 {% load addcss %}
 
-{% block title %}Create a new course{% endblock %}
+{% block title %}Delete course{% endblock %}
 
 {% block main %}
 <div class="alert alert-mbl">
@@ -29,7 +29,7 @@
         </div>
         <div class="text-right">
             <a class="btn btn-success" onclick="window.history.back()">Take me back!</a>
-            <a href="{% url "delete-course" course.id %}" class="btn btn-danger">Delete Forever</a>
+            <a href="{% url "delete-course" course.id %}?confirmed=true" class="btn btn-danger">Delete Forever</a>
         </div>
         {% endif %}
     </div>
