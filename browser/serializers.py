@@ -35,6 +35,24 @@ class KnownPersonSerializer(serializers.ModelSerializer):
                   'last_updated')
 
 
+class KnownLocationSerializer(serializers.ModelSerializer):
+    changed_by = UserSerializer()
+
+    class Meta:
+        model = KnownLocation
+        fields = ('external_uri', 'geo_uri', 'description', 'changed_by',
+                  'last_updated')
+
+
+class KnownInstitutionSerializer(serializers.ModelSerializer):
+    changed_by = UserSerializer()
+
+    class Meta:
+        model = KnownInstitution
+        fields = ('conceptpower_uri', 'description', 'changed_by',
+                  'last_updated')
+
+
 class DenizenSerializer(serializers.Serializer):
     """
     From the perspective of a :class:`.Location`\.
@@ -44,20 +62,27 @@ class DenizenSerializer(serializers.Serializer):
     url = serializers.HyperlinkedIdentityField(view_name='person-detail')
     year = serializers.ListField()
     last_updated = serializers.DateTimeField()
+    validated = serializers.BooleanField()
+    validated_by = serializers.CharField()
+    validated_on = serializers.DateTimeField()
 
 
 class LocationListSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Location
-        fields = ('name', 'url', 'number_of_denizens', 'last_updated')
+        fields = ('name', 'url', 'number_of_denizens', 'last_updated',
+                  'validated', 'validated_by', 'validated_on')
 
 
 class LocationDetailSerializer(serializers.HyperlinkedModelSerializer):
     denizens = serializers.SerializerMethodField('has_denizens')
+    authority = KnownLocationSerializer()
 
     class Meta:
         model = Location
-        fields = ('name', 'url', 'denizens', 'number_of_denizens', 'last_updated')
+        fields = ('name', 'url', 'denizens', 'number_of_denizens',
+                  'last_updated', 'validated', 'validated_by', 'validated_on',
+                  'authority')
 
     def has_denizens(self, obj):
         """
@@ -73,10 +98,12 @@ class LocationDetailSerializer(serializers.HyperlinkedModelSerializer):
         for localization in aqs.values('last_updated', *afields):
             person_locations[localization['person_id']].append(localization['year'])
 
-        pfields = ['last_name', 'first_name', 'pk', 'last_updated']
+        pfields = ['last_name', 'first_name', 'pk', 'last_updated', 'validated',
+                   'validated_by__username', 'validated_on']
         qs = []
         for person in obj.denizens.distinct('pk').values(*pfields):
             person['year'] = person_locations[person['pk']]
+            person['validated_by'] = person['validated_by__username']
             qs.append(MockObject(person))
 
         # HyperlinkedIdentityField requires the HttpRequest to generate an
@@ -101,6 +128,9 @@ class AffiliateSerializer(serializers.Serializer):
     url = serializers.HyperlinkedIdentityField(view_name='person-detail')
     positions = PositionSerializer(many=True)
     last_updated = serializers.DateTimeField()
+    validated = serializers.BooleanField()
+    validated_by = serializers.CharField()
+    validated_on = serializers.DateTimeField()
 
 
 class AffiliationSerializer(serializers.Serializer):
@@ -111,14 +141,20 @@ class AffiliationSerializer(serializers.Serializer):
     url = serializers.HyperlinkedIdentityField(view_name='institution-detail')
     positions = PositionSerializer(many=True)
     last_updated = serializers.DateTimeField()
+    validated = serializers.BooleanField()
+    validated_by = serializers.CharField()
+    validated_on = serializers.DateTimeField()
 
 
 class InstitutionDetailSerializer(serializers.HyperlinkedModelSerializer):
     affiliates = serializers.SerializerMethodField('affiliated_people')
+    authority = KnownInstitutionSerializer()
 
     class Meta:
         model = Institution
-        fields = ('name', 'url', 'affiliates', 'number_of_affiliates', 'last_updated', 'id')
+        fields = ('name', 'url', 'affiliates', 'number_of_affiliates',
+                  'last_updated', 'id', 'validated', 'validated_by',
+                  'validated_on', 'authority')
 
     def affiliated_people(self, obj):
         """
@@ -136,10 +172,12 @@ class InstitutionDetailSerializer(serializers.HyperlinkedModelSerializer):
         for affiliation in aqs.values('last_updated', *afields):
             person_affiliations[affiliation['person_id']].append(affiliation)
 
-        pfields = ['last_updated', 'last_name', 'first_name', 'pk']
+        pfields = ['last_updated', 'last_name', 'first_name', 'pk',
+                   'validated', 'validated_by__username', 'validated_on']
         qs = []
         for person in obj.affiliates.distinct('pk').values(*pfields):
             person['positions'] = person_affiliations[person['pk']]
+            person['validated_by'] = person['validated_by__username']
             qs.append(MockObject(person))
 
         # HyperlinkedIdentityField requires the HttpRequest to generate an
@@ -152,7 +190,8 @@ class InstitutionDetailSerializer(serializers.HyperlinkedModelSerializer):
 class InstitutionListSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Institution
-        fields = ('name', 'url', 'number_of_affiliates', 'last_updated', 'id')
+        fields = ('name', 'url', 'number_of_affiliates', 'last_updated', 'id',
+                  'validated', 'validated_by', 'validated_on')
 
 
 class LocalizationSerializer(serializers.Serializer):
@@ -163,6 +202,9 @@ class LocalizationSerializer(serializers.Serializer):
     url = serializers.HyperlinkedIdentityField(view_name='location-detail')
     year = serializers.ListField()
     last_updated = serializers.DateTimeField()
+    validated = serializers.BooleanField()
+    validated_by = serializers.CharField()
+    validated_on = serializers.DateTimeField()
 
 
 class InvestigatorSerializer(serializers.Serializer):
@@ -170,6 +212,9 @@ class InvestigatorSerializer(serializers.Serializer):
     role = serializers.CharField(max_length=255)
     year = serializers.IntegerField(default=0)
     last_updated = serializers.DateTimeField()
+    validated = serializers.BooleanField()
+    validated_by = serializers.CharField()
+    validated_on = serializers.DateTimeField()
 
 
 class PersonDetailSerializer(serializers.HyperlinkedModelSerializer):
@@ -184,7 +229,8 @@ class PersonDetailSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('last_name', 'first_name', 'url', 'number_of_courses',
                   'is_investigator', 'number_of_affiliations', 'affiliations',
                   'courses', 'locations', 'investigation', 'uri', 'authority',
-                  'last_updated', 'id')
+                  'last_updated', 'id', 'validated', 'validated_by',
+                  'validated_on')
 
 
     def affiliated_with(self, obj):
@@ -202,10 +248,12 @@ class PersonDetailSerializer(serializers.HyperlinkedModelSerializer):
         for affiliation in aqs.values('last_updated', *afields):
             institution_affiliations[affiliation['institution_id']].append(affiliation)
 
-        pfields = ['name', 'pk', 'last_updated']
+        pfields = ['name', 'pk', 'last_updated', 'validated',
+                   'validated_by__username', 'validated_on']
         qs = []
         for institution in obj.affiliations.distinct('pk').values(*pfields):
             institution['positions'] = institution_affiliations[institution['pk']]
+            institution['validated_by'] = institution['validated_by__username']
             qs.append(MockObject(institution))
 
         # HyperlinkedIdentityField requires the HttpRequest to generate an
@@ -230,9 +278,11 @@ class PersonDetailSerializer(serializers.HyperlinkedModelSerializer):
         for attendance in aqs.values('last_updated', *afields):
             person_attendances[attendance['course_id']].append(attendance['role'])
 
-        pfields = ['last_updated', 'name', 'pk']
+        pfields = ['last_updated', 'name', 'pk', 'validated',
+                   'validated_by__username', 'validated_on']
         qs = []
         for course in obj.courses.distinct('pk').values(*pfields):
+            course['validated_by'] = course['validated_by__username']
             course['role'] = person_attendances[course['pk']]
             qs.append(MockObject(course))
 
@@ -256,10 +306,12 @@ class PersonDetailSerializer(serializers.HyperlinkedModelSerializer):
         for localization in aqs.values('last_updated', *afields):
             person_locations[localization['location_id']].append(localization['year'])
 
-        pfields = ['name', 'pk', 'last_updated']
+        pfields = ['name', 'pk', 'last_updated', 'validated',
+                   'validated_by__username', 'validated_on']
         qs = []
         for location in obj.locations.distinct('pk').values(*pfields):
             location['year'] = person_locations[location['pk']]
+            location['validated_by'] = location['validated_by__username']
             qs.append(MockObject(location))
 
         # HyperlinkedIdentityField requires the HttpRequest to generate an
@@ -281,12 +333,16 @@ class PersonListSerializer(serializers.HyperlinkedModelSerializer):
         model = Person
         fields = ('last_name', 'first_name', 'url', 'number_of_courses',
                   'is_investigator', 'number_of_affiliations', 'uri',
-                  'authority', 'last_updated', 'id')
+                  'authority', 'last_updated', 'id', 'validated',
+                  'validated_by', 'validated_on')
 
 
 class RoleSerializer(serializers.Serializer):
     role = serializers.CharField(max_length=255)
     last_updated = serializers.DateTimeField()
+    validated = serializers.BooleanField()
+    validated_by = serializers.CharField()
+    validated_on = serializers.DateTimeField()
 
 
 class AttendeeSerializer(serializers.Serializer):
@@ -298,6 +354,9 @@ class AttendeeSerializer(serializers.Serializer):
     url = serializers.HyperlinkedIdentityField(view_name='person-detail')
     role = serializers.ListField()
     last_updated = serializers.DateTimeField()
+    validated = serializers.BooleanField()
+    validated_by = serializers.CharField()
+    validated_on = serializers.DateTimeField()
 
 
 class AttendanceSerializer(serializers.Serializer):
@@ -308,6 +367,9 @@ class AttendanceSerializer(serializers.Serializer):
     url = serializers.HyperlinkedIdentityField(view_name='course-detail')
     role = serializers.ListField()
     last_updated = serializers.DateTimeField()
+    validated = serializers.BooleanField()
+    validated_by = serializers.CharField()
+    validated_on = serializers.DateTimeField()
 
 
 class CourseDetailSerializer(serializers.HyperlinkedModelSerializer):
@@ -317,7 +379,8 @@ class CourseDetailSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Course
         fields = ('name', 'url', 'is_part_of', 'attendees',
-                  'number_of_attendees', 'year', 'last_updated')
+                  'number_of_attendees', 'year', 'last_updated',
+                  'validated', 'validated_by', 'validated_on')
 
     def get_is_part_of(self, obj):
         qs = obj.is_part_of.distinct('id')
@@ -340,10 +403,12 @@ class CourseDetailSerializer(serializers.HyperlinkedModelSerializer):
         for attendance in aqs.values('last_updated', *afields):
             person_attendances[attendance['person_id']].append(attendance['role'])
 
-        pfields = ['last_name', 'first_name', 'pk', 'last_updated']
+        pfields = ['last_name', 'first_name', 'pk', 'last_updated', 'validated',
+                   'validated_by__username', 'validated_on']
         qs = []
         for person in obj.attendees.distinct('pk').values(*pfields):
             person['role'] = person_attendances[person['pk']]
+            person['validated_by'] = person['validated_by__username']
             qs.append(MockObject(person))
 
         # HyperlinkedIdentityField requires the HttpRequest to generate an
@@ -356,13 +421,15 @@ class CourseDetailSerializer(serializers.HyperlinkedModelSerializer):
 class CourseListSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Course
-        fields = ('name', 'url', 'number_of_attendees', 'year', 'last_updated')
+        fields = ('name', 'url', 'number_of_attendees', 'year', 'last_updated',
+                  'validated', 'validated_by', 'validated_on')
 
 
 class CourseGroupListSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = CourseGroup
-        fields = ('id', 'name', 'url', 'number_of_courses', 'last_updated')
+        fields = ('id', 'name', 'url', 'number_of_courses', 'last_updated',
+                  'validated', 'validated_by', 'validated_on')
 
 
 class CourseGroupDetailSerializer(serializers.HyperlinkedModelSerializer):
@@ -370,7 +437,8 @@ class CourseGroupDetailSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = CourseGroup
-        fields = ('id', 'name', 'url', 'number_of_courses', 'courses', 'last_updated')
+        fields = ('id', 'name', 'url', 'number_of_courses', 'courses',
+                  'last_updated', 'validated', 'validated_by', 'validated_on')
 
     def get_courses(self, obj):
         qs = obj.courses.distinct('id')

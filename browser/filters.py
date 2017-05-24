@@ -1,14 +1,15 @@
-import django_filters
+import django_filters as df
 from django.db.models import Count
 from django.utils.translation import ugettext as _
 from django.db.models import Q
+from django.db.models import Max, Min
 
 from rest_framework import filters
 
 from browser.models import *
 
 
-class ConfigurableBooleanWidget(django_filters.widgets.BooleanWidget):
+class CBooleanWidget(df.widgets.BooleanWidget):
     """
     Overrides :class:`django_filters.widgets.BooleanWidget` in order to allow
     configuration of the empty option.
@@ -17,70 +18,132 @@ class ConfigurableBooleanWidget(django_filters.widgets.BooleanWidget):
         choices = (('', _(empty) if empty else _('Unknown')),
                    ('true', _('Yes')),
                    ('false', _('No')))
-        super(django_filters.widgets.BooleanWidget, self).__init__(attrs, choices)
+        super(df.widgets.BooleanWidget, self).__init__(attrs, choices)
 
 
 class CourseFilter(filters.FilterSet):
-    name = django_filters.CharFilter(name='name', lookup_type='icontains')
-    occurred_from = django_filters.NumberFilter(name='year', lookup_type='gte')
-    occurred_through = django_filters.NumberFilter(name='year', lookup_type='lte')
+    name = df.CharFilter(name='name', lookup_expr='icontains',
+                         label='Course name')
+    occurred_from = df.NumberFilter(name='year', lookup_expr='gte',
+                                    label='Occurred from')
+    occurred_through = df.NumberFilter(name='year', lookup_expr='lte',
+                                       label='Occurred through')
+    last_updated = df.DateTimeFilter(name='last_updated', lookup_expr='gte',
+                                     label='Last updated')
+
+    o = df.OrderingFilter(
+        # tuple-mapping retains order
+        fields=(
+            ('name', 'name'), ('last_updated', 'last_updated'),
+        ),
+
+        field_labels={
+            'name': 'Name', 'last_updated': 'Last updated',
+        }
+    )
 
     class Meta:
         model = Course
         fields = ['name', 'occurred_from', 'occurred_through',]
-        order_by = [
-            ('name', 'Name (ascending)'),
-            ('-name', 'Name (descending)')
-        ]
 
 
 class InstitutionFilter(filters.FilterSet):
-    name = django_filters.CharFilter(name='name', lookup_type='icontains')
+    name = df.CharFilter(name='name', lookup_expr='icontains',
+                         label='Institution name')
+    last_updated = df.DateTimeFilter(name='last_updated', lookup_expr='gte',
+                                     label='Last updated')
+
+    o = df.OrderingFilter(
+        # tuple-mapping retains order
+        fields=(
+            ('name', 'name'), ('last_updated', 'last_updated'),
+        ),
+
+        field_labels={
+            'name': 'Name', 'last_updated': 'Last updated',
+        }
+    )
 
     class Meta:
         model = Institution
         fields = ['name', ]
 
-from django.db.models import Max, Min
 
 class CourseGroupFilter(filters.FilterSet):
-    name = django_filters.CharFilter(name='name', lookup_type='icontains')
-    occurred_from = django_filters.MethodFilter()
-    occurred_through = django_filters.MethodFilter()
+    name = df.CharFilter(name='name', lookup_expr='icontains',
+                         label='Course name')
+    occurred_from = df.NumberFilter(method='filter_occurred_from',
+                                    label='Occurred from')
+    occurred_through = df.NumberFilter(method='filter_occurred_through',
+                                      label='Occurred through')
+    last_updated = df.DateTimeFilter(name='last_updated', lookup_expr='gte',
+                                     label='Last updated')
+
+    o = df.OrderingFilter(
+        # tuple-mapping retains order
+        fields=(
+            ('name', 'name'), ('last_updated', 'last_updated'),
+        ),
+
+        field_labels={
+            'name': 'Name', 'last_updated': 'Last updated',
+        }
+    )
 
     class Meta:
         model = CourseGroup
         fields = ['name', ]
 
-        order_by = [
-            ('name', 'Name (ascending)'),
-            ('-name', 'Name (descending)')
-        ]
 
-    def filter_occurred_from(self, queryset, value):
+    def filter_occurred_from(self, queryset, name, value):
         if not value:
             return queryset
-        return queryset.annotate(latest_course=Max('courses__year')).filter(latest_course__gte=value)
+        queryset = queryset.annotate(latest_course=Max('courses__year'))
+        return queryset.filter(latest_course__gte=value)
 
-    def filter_occurred_through(self, queryset, value):
+    def filter_occurred_through(self, queryset, name, value):
         if not value:
             return queryset
-        return queryset.annotate(earliest_course=Min('courses__year')).filter(earliest_course__lte=value)
+        queryset = queryset.annotate(earliest_course=Min('courses__year'))
+        return queryset.filter(earliest_course__lte=value)
 
 
 class PersonFilter(filters.FilterSet):
-    last_name = django_filters.CharFilter(name='last_name', lookup_type='icontains')
-    first_name = django_filters.CharFilter(name='first_name', lookup_type='icontains')
-    location = django_filters.MethodFilter()
-    affiliation = django_filters.MethodFilter()
-    is_investigator = django_filters.MethodFilter(widget=ConfigurableBooleanWidget(empty='----'))
-    name = django_filters.MethodFilter()
+    name = df.CharFilter(method='filter_name', label='Full name')
+    last_name = df.CharFilter(name='last_name', lookup_expr='icontains',
+                              label='Surname')
+    first_name = df.CharFilter(name='first_name', lookup_expr='icontains',
+                               label='Forename')
+    location = df.CharFilter(method='filter_location', label='Location')
+    affiliation = df.CharFilter(method='filter_affiliation',
+                                label='Affiliation')
+    is_investigator = df.BooleanFilter(method='filter_is_investigator',
+                                       widget=CBooleanWidget(empty='----'),
+                                       label='Is investigator?')
+    last_updated = df.DateTimeFilter(name='last_updated', lookup_expr='gte',
+                                     label='Last updated')
+
+    o = df.OrderingFilter(
+        # tuple-mapping retains order
+        fields=(
+            ('last_name', 'last_name'),
+            ('first_name', 'first_name'),
+            ('last_updated', 'last_updated'),
+        ),
+
+        field_labels={
+            'last_name': 'Surname',
+            'first_name': 'Forename',
+            'last_updated': 'Last updated',
+        }
+    )
 
     class Meta:
         model = Person
-        fields = ['last_name', 'first_name', 'is_investigator', 'affiliation']
+        fields = ['name', 'last_name', 'first_name', 'is_investigator',
+                  'affiliation']
 
-    def filter_name(self, queryset, value):
+    def filter_name(self, queryset, name, value):
         if not value:
             return queryset
         value_parts = value.split()
@@ -90,30 +153,38 @@ class PersonFilter(filters.FilterSet):
 
         return queryset.filter(q)
 
-    def filter_is_investigator(self, queryset, value):
+    def filter_is_investigator(self, queryset, name, value):
         queryset = queryset.annotate(num_investigations=Count('investigator'))
         if value:
             return queryset.filter(num_investigations__gt=0)
         return queryset.filter(num_investigations=0)
 
-    def filter_location(self, queryset, value):
+    def filter_location(self, queryset, name, value):
         if not value:
             return queryset
         return queryset.filter(locations__name__icontains=value)
 
-    def filter_affiliation(self, queryset, value):
+    def filter_affiliation(self, queryset, name, value):
         if not value:
             return queryset
         return queryset.filter(affiliations__name__icontains=value)
 
 
 class LocationFilter(filters.FilterSet):
+    last_updated = df.DateTimeFilter(name='last_updated', lookup_expr='gte',
+                                     label='Last updated')
+                                     
+    o = df.OrderingFilter(
+        # tuple-mapping retains order
+        fields=(
+            ('name', 'name'), ('last_updated', 'last_updated'),
+        ),
+
+        field_labels={
+            'name': 'Name', 'last_updated': 'Last updated',
+        }
+    )
 
     class Meta:
         model = Location
         fields = ['name', 'validated']
-
-        order_by = [
-            ('name', 'Name (ascending)'),
-            ('-name', 'Name (descending)')
-        ]

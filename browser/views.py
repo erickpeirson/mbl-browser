@@ -1,5 +1,4 @@
 from django.shortcuts import render, get_object_or_404
-from django.template import RequestContext
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
@@ -47,7 +46,7 @@ def course(request, course_id=None):
     """
     Handles both list and detail views for :class:`.Course`\s.
     """
-    context = RequestContext(request, {})
+    context = {}
     if course_id:
         course = get_object_or_404(Course, pk=course_id)
         context.update({
@@ -64,7 +63,7 @@ def coursegroup(request, coursegroup_id=None):
     """
     Handles both list and detail views for :class:`.CourseGroup`\s.
     """
-    context = RequestContext(request, {})
+    context = {}
     if coursegroup_id:
         context['coursegroup'] = get_object_or_404(CourseGroup, pk=coursegroup_id)
         template = "browser/coursegroup.html"
@@ -93,7 +92,7 @@ def person(request, person_id=None):
     """
     Handles both list and detail views for :class:`.Person`\s.
     """
-    context = RequestContext(request, {})
+    context = {}
     if person_id:
         person = get_object_or_404(Person, pk=person_id)
         context.update({
@@ -112,7 +111,7 @@ def institution(request, institution_id=None):
     """
     Handles both list and detail views for :class:`.Person`\s.
     """
-    context = RequestContext(request, {})
+    context = {}
     if institution_id:
         institution = get_object_or_404(Institution, pk=institution_id)
         context.update({
@@ -129,7 +128,7 @@ def location(request, location_id=None):
     """
     Handles both list and detail views for :class:`.Location`\s.
     """
-    context = RequestContext(request, {})
+    context = {}
     if location_id:
         location = get_object_or_404(Location, pk=location_id)
         context.update({
@@ -143,13 +142,13 @@ def location(request, location_id=None):
 
 
 def goals(request):
-    return render(request, "browser/goals.html", RequestContext(request, {}))
+    return render(request, "browser/goals.html", {})
 
 def about(request):
-    return render(request, "browser/about.html", RequestContext(request, {}))
+    return render(request, "browser/about.html", {})
 
 def methods(request):
-    return render(request, "browser/methods.html", RequestContext(request, {}))
+    return render(request, "browser/methods.html", {})
 
 
 def generic_autocomplete(request):
@@ -240,11 +239,11 @@ def edit_person(request, person_id):
             if extra_form.is_valid():
                 _handle_known_person_form(request, extra_form, person)
             return HttpResponseRedirect(reverse('person', args=(person.id,)))
-    context = RequestContext(request, {
+    context = {
         'form': form,
         'person': person,
         'extra_form': extra_form
-    })
+    }
 
     template = "browser/change_person.html"
     return render(request, template, context)
@@ -264,10 +263,10 @@ def edit_institution(request, institution_id):
                 institution.validated_on = datetime.datetime.now()
                 institution.save()
             return HttpResponseRedirect(reverse('institution', args=(institution.id,)))
-    context = RequestContext(request, {
+    context = {
         'form': form,
         'institution': institution,
-    })
+    }
 
     template = "browser/change_base.html"
     return render(request, template, context)
@@ -287,10 +286,10 @@ def edit_coursegroup(request, coursegroup_id):
                 coursegroup.validated_on = datetime.datetime.now()
                 coursegroup.save()
             return HttpResponseRedirect(reverse('coursegroup', args=(coursegroup.id,)))
-    context = RequestContext(request, {
+    context = {
         'form': form,
         'coursegroup': coursegroup,
-    })
+    }
 
     template = "browser/change_base.html"
     return render(request, template, context)
@@ -310,10 +309,10 @@ def edit_course(request, course_id):
                 course.validated_on = datetime.datetime.now()
                 course.save()
             return HttpResponseRedirect(reverse('course', args=(course.id,)))
-    context = RequestContext(request, {
+    context = {
         'form': form,
         'course': course,
-    })
+    }
 
     template = "browser/change_course.html"
     return render(request, template, context)
@@ -362,11 +361,11 @@ def edit_location(request, location_id):
             if extra_form.is_valid():
                 _handle_known_location_form(request, extra_form, location)
             return HttpResponseRedirect(reverse('location', args=(location.id,)))
-    context = RequestContext(request, {
+    context = {
         'form': form,
         'extra_form': extra_form,
         'location': location,
-    })
+    }
 
     template = "browser/change_location.html"
     return render(request, template, context)
@@ -388,10 +387,10 @@ def split_person(request, person_id):
             new_person = form.save(request.user)
             return HttpResponseRedirect(reverse('person', args=(new_person.id,)))
 
-    context = RequestContext(request, {
+    context = {
         'form': form,
         'person': person,
-    })
+    }
 
     template = "browser/split_person.html"
     return render(request, template, context)
@@ -415,11 +414,11 @@ def split_location(request, location_id):
                 _handle_known_location_form(request, extra_form, location)
             return HttpResponseRedirect(reverse('location', args=(new_location.id,)))
 
-    context = RequestContext(request, {
+    context = {
         'form': form,
         'location': location,
         'extra_form': extra_form,
-    })
+    }
 
     template = "browser/split_location.html"
     return render(request, template, context)
@@ -442,7 +441,7 @@ def bulk_action(request, model):
 @staff_member_required
 def merge_people(request, person_ids):
     perform = request.POST.get('perform', False)
-    context = RequestContext(request, {})
+    context = {}
     if perform:
         form = MergePersonForm(request.POST, people=person_ids)
         if form.is_valid():
@@ -463,7 +462,7 @@ def merge_people(request, person_ids):
 @staff_member_required
 def merge_locations(request, location_ids):
     perform = request.POST.get('perform', False)
-    context = RequestContext(request, {})
+    context = {}
     if perform:
         form = MergeLocationForm(request.POST, locations=location_ids)
         if form.is_valid():
