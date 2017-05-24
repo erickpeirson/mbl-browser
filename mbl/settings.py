@@ -133,7 +133,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-GIT_REVISION = os.environ['HEAD_HASH']
+GIT_REVISION = os.environ.get('HEAD_HASH', '')
 
 
 REST_FRAMEWORK = {

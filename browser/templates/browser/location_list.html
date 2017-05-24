@@ -92,6 +92,15 @@
             {% for location in filter_list %}
             {% if location.name|length > 0 %}
             <li class="list-group-item">
+                <span class="pull-right">
+                    <span class="text-success"
+                        data-toggle="tooltip"
+                        data-placement="left"
+                        data-container='body'
+                        title="Number of denizens">
+                        {{ location.number_of_denizens }} denizen{% if location.number_of_denizens != 1 %}s{% endif %}
+                    </span>
+                </span>
                 {% if user.is_staff %}
                 <div class="checkbox-inline">
                     <label>
@@ -102,15 +111,27 @@
                 {% else %}
                     <a href="{% url "location" location.id %}">{{ location.name }}</a>
                 {% endif %}
-                <span class="pull-right">
-                    <span class="text-success"
-                        data-toggle="tooltip"
-                        data-placement="left"
-                        data-container='body'
-                        title="Number of denizens">
-                        {{ location.number_of_denizens }} denizen{% if location.number_of_denizens != 1 %}s{% endif %}
-                    </span>
-                </span>
+
+                {% if location.authority %}
+                <div class="text-warning">
+                    <span class="glyphicon glyphicon-barcode"></span>
+                    {{ location.authority.external_uri|urlize }}
+                </div>
+                <div class="text-warning">
+                    <span class="glyphicon glyphicon-globe"></span>
+                    {{ location.authority.geo_uri }}
+                </div>
+                {% endif %}
+
+                {% with location.history.last as history %}
+                {% if history %}
+                <div class="text-warning">
+                    Updated by <strong>{{ history.changed_by }}</strong> on {{ history.history_date }}
+                </div>
+                {% endif %}
+                {% endwith %}
+
+
             </li>
             {% endif %}
 
