@@ -78,6 +78,10 @@ class LocationDetailSerializer(serializers.HyperlinkedModelSerializer):
     denizens = serializers.SerializerMethodField('has_denizens')
     authority = KnownLocationSerializer()
 
+    validated = serializers.BooleanField()
+    validated_by = serializers.CharField()
+    validated_on = serializers.DateTimeField()
+
     class Meta:
         model = Location
         fields = ('name', 'url', 'denizens', 'number_of_denizens',
@@ -150,6 +154,10 @@ class InstitutionDetailSerializer(serializers.HyperlinkedModelSerializer):
     affiliates = serializers.SerializerMethodField('affiliated_people')
     authority = KnownInstitutionSerializer()
 
+    validated = serializers.BooleanField()
+    validated_by = serializers.CharField()
+    validated_on = serializers.DateTimeField()
+
     class Meta:
         model = Institution
         fields = ('name', 'url', 'affiliates', 'number_of_affiliates',
@@ -188,6 +196,10 @@ class InstitutionDetailSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class InstitutionListSerializer(serializers.HyperlinkedModelSerializer):
+    validated = serializers.BooleanField()
+    validated_by = serializers.CharField()
+    validated_on = serializers.DateTimeField()
+
     class Meta:
         model = Institution
         fields = ('name', 'url', 'number_of_affiliates', 'last_updated', 'id',
@@ -223,6 +235,10 @@ class PersonDetailSerializer(serializers.HyperlinkedModelSerializer):
     locations = serializers.SerializerMethodField('has_location')
     investigation = serializers.SerializerMethodField('is_investigator')
     authority = KnownPersonSerializer(read_only=True)
+
+    validated = serializers.BooleanField()
+    validated_by = serializers.CharField()
+    validated_on = serializers.DateTimeField()
 
     class Meta:
         model = Person
@@ -328,6 +344,9 @@ class PersonDetailSerializer(serializers.HyperlinkedModelSerializer):
 
 class PersonListSerializer(serializers.HyperlinkedModelSerializer):
     authority = KnownPersonSerializer(read_only=True)
+    validated = serializers.BooleanField()
+    validated_by = serializers.CharField()
+    validated_on = serializers.DateTimeField()
 
     class Meta:
         model = Person
@@ -376,6 +395,10 @@ class CourseDetailSerializer(serializers.HyperlinkedModelSerializer):
     is_part_of = serializers.SerializerMethodField()
     attendees = serializers.SerializerMethodField()
 
+    validated = serializers.BooleanField()
+    validated_by = serializers.CharField()
+    validated_on = serializers.DateTimeField()
+
     class Meta:
         model = Course
         fields = ('name', 'url', 'is_part_of', 'attendees',
@@ -419,6 +442,10 @@ class CourseDetailSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class CourseListSerializer(serializers.HyperlinkedModelSerializer):
+    validated = serializers.BooleanField()
+    validated_by = serializers.CharField()
+    validated_on = serializers.DateTimeField()
+
     class Meta:
         model = Course
         fields = ('name', 'url', 'number_of_attendees', 'year', 'last_updated',
@@ -426,6 +453,10 @@ class CourseListSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class CourseGroupListSerializer(serializers.HyperlinkedModelSerializer):
+    validated = serializers.BooleanField()
+    validated_by = serializers.CharField()
+    validated_on = serializers.DateTimeField()
+
     class Meta:
         model = CourseGroup
         fields = ('id', 'name', 'url', 'number_of_courses', 'last_updated',
@@ -434,6 +465,9 @@ class CourseGroupListSerializer(serializers.HyperlinkedModelSerializer):
 
 class CourseGroupDetailSerializer(serializers.HyperlinkedModelSerializer):
     courses = serializers.SerializerMethodField()
+    validated = serializers.BooleanField()
+    validated_by = serializers.CharField()
+    validated_on = serializers.DateTimeField()
 
     class Meta:
         model = CourseGroup
