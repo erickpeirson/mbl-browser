@@ -1,6 +1,6 @@
 # mbl-browser
 
-This is the home for documentation related to the [MBL History data platform project](https://amphora.asu.edu/mbl-data/). This application is produced by the [ASU Digital Innovation Group](https://diging.asu.edu) and volunteer effort by [A Place Called Up Consulting LLC](http://www.aplacecalledup.com). 
+This is the home for documentation related to the [MBL History data platform project](https://amphora.asu.edu/mbl-data/). This application is produced by the [ASU Digital Innovation Group](https://diging.asu.edu) with volunteer effort from [A Place Called Up Consulting LLC](http://www.aplacecalledup.com). 
 
 Documentation is available here: https://diging.atlassian.net/wiki/spaces/MHDP
 
