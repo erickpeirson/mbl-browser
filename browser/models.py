@@ -32,7 +32,6 @@ class YearMixin(models.Model):
         abstract = True
 
 
-
 class LastUpdatedMixin(models.Model):
     """
     Model must aleady have an history field.

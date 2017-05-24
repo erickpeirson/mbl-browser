@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     'browser',
     'social_django',
     'simple_history',
+    'django_extensions',
 )
 
 MIDDLEWARE_CLASSES = (
