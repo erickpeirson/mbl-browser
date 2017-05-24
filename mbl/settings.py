@@ -59,7 +59,7 @@ MIDDLEWARE_CLASSES = (
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend', # default
-    'social.backends.github.GithubOAuth2',
+    'social_core.backends.github.GithubOAuth2',
 )
 ANONYMOUS_USER_ID = -1
 
