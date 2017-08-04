@@ -1,0 +1,41 @@
+{% extends "browser/change_base.html" %}
+{% load addcss %}
+
+{% block title %}Add Investigator: {{ person.name }} (Person){% endblock %}
+
+{% block form_fields %}
+{% with form.subject as field %}
+    <div class="form-group">
+        {% for error in field.errors %}
+        <div class="alert alert-warning">{{ error }}</div>
+        {% endfor %}
+        <label>{{ field.label }}</label>
+        {{ field|addcss:"form-control input-sm" }}
+        <p class="text-muted">{{ field.help_text }}</p>
+    </div>
+{% endwith %}
+
+{% with form.role as field %}
+    <div class="form-group">
+        {% for error in field.errors %}
+        <div class="alert alert-warning">{{ error }}</div>
+        {% endfor %}
+        <label>{{ field.label }}</label>
+        {{ field|addcss:"form-control input-sm" }}
+        <p class="text-muted">{{ field.help_text }}</p>
+    </div>
+{% endwith %}
+
+{% with form.year as field %}
+    <div class="form-group">
+        {% for error in field.errors %}
+        <div class="alert alert-warning">{{ error }}</div>
+        {% endfor %}
+        <label>{{ field.label }}</label>
+        {{ field|addcss:"form-control input-sm" }}
+        <p class="text-muted">{{ field.help_text }}</p>
+    </div>
+{% endwith %}
+
+
+{% endblock %}

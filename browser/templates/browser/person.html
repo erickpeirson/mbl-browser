@@ -24,6 +24,10 @@
                 aria-hidden="true"
                 href="{% url "split-person" person.id %}">
             </a>
+            <a class="btn btn-lg fa fa-plus"
+                aria-hidden="true"
+                href="{% url "add-investigator" person.id %}">
+            </a>
         </span>
         {% endif %}
     </div>

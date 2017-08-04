@@ -329,3 +329,12 @@ class SplitPersonForm(forms.Form):
                     'changed_by': user,
                 })
         return new_person
+
+class AddInvestigationForm(forms.Form):
+    subject = forms.CharField(max_length=255)
+    role = forms.CharField(max_length=255)
+    year = forms.CharField(max_length=255)
+
+    class Meta:
+        model = Person
+        fields = ['subject', 'role', 'year']
