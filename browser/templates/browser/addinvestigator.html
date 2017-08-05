@@ -2,9 +2,60 @@
 {% load addcss %}
 
 {% block title %}Add Investigator: {{ person.name }} (Person){% endblock %}
+{% block main %}
+
+
+
+<div class="alert alert-mbl">
+    Person
+    <div>
+        <span class="h1">{{ person.name }}</span>
+
+<!--        {% if user.is_staff %}
+        <span class="pull-right btn-group btn-group-lg">
+            <a class="btn btn-lg fa fa-history"
+                aria-hidden="true"
+                data-toggle="modal"
+                data-target="#historyModal">
+            </a>
+            <a class="btn btn-lg fa fa-edit"
+                aria-hidden="true"
+                href="{% url "edit-person" person.id %}">
+            </a>
+            <a class="btn btn-lg fa fa-code-fork"
+                aria-hidden="true"
+                href="{% url "split-person" person.id %}">
+            </a>
+            <a class="btn btn-lg fa fa-plus"
+                aria-hidden="true"
+                href="{% url "add-investigator" person.id %}">
+            </a>
+        </span>
+        {% endif %}-->
+    </div>
+    {% if person.authority %}
+    <div class="text-warning">
+        <span class="glyphicon glyphicon-barcode"></span>
+        {{ person.authority.conceptpower_uri|urlize }}
+    </div>
+    {% endif %}
+    {% if person.validated %}
+    <div>
+        <span class="glyphicon glyphicon-ok" style="color:green;"></span>&nbsp;
+        Validated by {{ person.validated_by }} on {{ person.validated_on }}.
+    </div>
+    {% endif %}
+</div>
+
+<p class="text-info">
+        This form will create a new <strong>Investigator</strong> record with the information provided below. This
+    information will be added to <strong>{{ person.name }}</strong> record.
+    </p>
 
 {% block form_fields %}
 {% with form.subject as field %}
+<div class="row">
+    <div class="col-xs-12">
     <div class="form-group">
         {% for error in field.errors %}
         <div class="alert alert-warning">{{ error }}</div>
@@ -13,9 +64,13 @@
         {{ field|addcss:"form-control input-sm" }}
         <p class="text-muted">{{ field.help_text }}</p>
     </div>
+    </div>
+</div>
 {% endwith %}
 
 {% with form.role as field %}
+<div class="row">
+    <div class="col-xs-8">
     <div class="form-group">
         {% for error in field.errors %}
         <div class="alert alert-warning">{{ error }}</div>
@@ -23,10 +78,12 @@
         <label>{{ field.label }}</label>
         {{ field|addcss:"form-control input-sm" }}
         <p class="text-muted">{{ field.help_text }}</p>
+    </div>
     </div>
 {% endwith %}
 
 {% with form.year as field %}
+    <div class="col-xs-4">
     <div class="form-group">
         {% for error in field.errors %}
         <div class="alert alert-warning">{{ error }}</div>
@@ -35,7 +92,15 @@
         {{ field|addcss:"form-control input-sm" }}
         <p class="text-muted">{{ field.help_text }}</p>
     </div>
+    </div>
+</div>
 {% endwith %}
 
-
+<div class="row">
+<div class="text-center">
+            <input class="btn btn-success" type="submit" value="Save">
+    <input class="btn btn-danger" type="reset" value="Cancel">
+</div>
+</div>
+{% endblock %}
 {% endblock %}
