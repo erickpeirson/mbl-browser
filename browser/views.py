@@ -629,24 +629,25 @@ def add_investigator_record(request, person_id):
     person = get_object_or_404(Person, pk=person_id)
     if request.method == 'GET':
         form = AddInvestigationForm()
-        #extra_form = KnownPersonForm(instance=person.authority, prefix='known')
 
     elif request.method == 'POST':
-        form = AddInvestigationForm(request.POST, instance=person)
-        #extra_form = KnownPersonForm(request.POST, instance=person.authority, prefix='known')
+        form = AddInvestigationForm(request.POST,instance=person)
         if form.is_valid():
-            person = form.save()
-            if person.validated and person.validated_by is None:
-                person.validated_by = request.user
-                person.validated_on = datetime.datetime.now()
-                person.save()
-            #if extra_form.is_valid():
-            #    _handle_known_person_form(request, extra_form, person)
-            return HttpResponseRedirect(reverse('person', args=(person.id,)))
+            # print (form.cleaned_data.get('subject'))
+            # print (form.cleaned_data.get('person_id'))
+            # print (person_id)
+            # form.save(person)
+            # form.person = person
+            # form.save(commit = True)
+            # print ("Data Saved")
+
+            ds = Investigator(subject=form.cleaned_data.get('subject'),role=form.cleaned_data.get('role')
+                              ,person_id=person_id,year=form.cleaned_data.get('year'), changed_by=request.user)
+            ds.save()
+
     context = {
         'form': form,
         'person': person,
-        #'extra_form': extra_form
     }
 
     template = "browser/addInvestigator.html"

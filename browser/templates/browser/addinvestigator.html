@@ -11,27 +11,6 @@
     <div>
         <span class="h1">{{ person.name }}</span>
 
-<!--        {% if user.is_staff %}
-        <span class="pull-right btn-group btn-group-lg">
-            <a class="btn btn-lg fa fa-history"
-                aria-hidden="true"
-                data-toggle="modal"
-                data-target="#historyModal">
-            </a>
-            <a class="btn btn-lg fa fa-edit"
-                aria-hidden="true"
-                href="{% url "edit-person" person.id %}">
-            </a>
-            <a class="btn btn-lg fa fa-code-fork"
-                aria-hidden="true"
-                href="{% url "split-person" person.id %}">
-            </a>
-            <a class="btn btn-lg fa fa-plus"
-                aria-hidden="true"
-                href="{% url "add-investigator" person.id %}">
-            </a>
-        </span>
-        {% endif %}-->
     </div>
     {% if person.authority %}
     <div class="text-warning">
@@ -52,6 +31,8 @@
     information will be added to <strong>{{ person.name }}</strong> record.
     </p>
 
+<form action="." method="post">
+{% csrf_token %}
 {% block form_fields %}
 {% with form.subject as field %}
 <div class="row">
@@ -99,8 +80,9 @@
 <div class="row">
 <div class="text-center">
             <input class="btn btn-success" type="submit" value="Save">
-    <input class="btn btn-danger" type="reset" value="Cancel">
+    <input class="btn btn-danger" type="reset" value="Cancel" onclick="window.location.reload()">
 </div>
 </div>
 {% endblock %}
 {% endblock %}
+</form>
