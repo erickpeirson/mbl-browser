@@ -625,30 +625,47 @@ def attendee_create(request, course_id):
     }
     return render(request, template, context)
 
+
 def add_investigator_record(request, person_id):
     person = get_object_or_404(Person, pk=person_id)
+    template = "browser/addInvestigator.html"
     if request.method == 'GET':
         form = AddInvestigationForm()
 
     elif request.method == 'POST':
         form = AddInvestigationForm(request.POST,instance=person)
         if form.is_valid():
-            # print (form.cleaned_data.get('subject'))
-            # print (form.cleaned_data.get('person_id'))
-            # print (person_id)
-            # form.save(person)
-            # form.person = person
-            # form.save(commit = True)
-            # print ("Data Saved")
-
-            ds = Investigator(subject=form.cleaned_data.get('subject'),role=form.cleaned_data.get('role')
+            investigatorobject = Investigator(subject=form.cleaned_data.get('subject'),role=form.cleaned_data.get('role')
                               ,person_id=person_id,year=form.cleaned_data.get('year'), changed_by=request.user)
-            ds.save()
+            investigatorobject.save()
+            template = "browser/person.html"
 
     context = {
         'form': form,
         'person': person,
     }
 
-    template = "browser/addInvestigator.html"
+    return render(request, template, context)
+
+
+def edit_investigator_record(request,person_id):
+
+    person = get_object_or_404(Person, pk=person_id)
+    template = "browser/investigator_edit.html"
+    if request.method == 'GET':
+        form = AddInvestigationForm()
+
+    elif request.method == 'POST':
+        form = AddInvestigationForm(request.POST,instance=person)
+        if form.is_valid():
+            investigatorobject = Investigator(subject=form.cleaned_data.get('subject'),role=form.cleaned_data.get('role')
+                              ,person_id=person_id,year=form.cleaned_data.get('year'), changed_by=request.user)
+            investigatorobject.save()
+            template = "browser/person.html"
+
+    context = {
+        'form': form,
+        'person': person,
+    }
+
     return render(request, template, context)
