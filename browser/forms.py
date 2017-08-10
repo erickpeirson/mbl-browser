@@ -331,17 +331,7 @@ class SplitPersonForm(forms.Form):
         return new_person
 
 
-# The list YEARS_CHOICE list is utilized in populating the year dropdown box
-YEARS_CHOICE = []
-for year in range(1950, 2099):
-    YEARS_CHOICE.append((year, year))
-
 class AddInvestigationForm(forms.ModelForm):
-    #subject = forms.CharField(max_length=255)
-    #role = forms.CharField(max_length=255)
-    #year = forms.IntegerField(label='Year', widget=forms.Select(choices=YEARS_CHOICE))
-
-
     class Meta:
         model = Investigator
         fields = ['subject', 'role', 'year']
