@@ -24,6 +24,10 @@
                 aria-hidden="true"
                 href="{% url "split-person" person.id %}">
             </a>
+            <a class="btn btn-lg fa fa-plus"
+                aria-hidden="true"
+                href="{% url "add-investigator" person.id %}">
+            </a>
         </span>
         {% endif %}
     </div>
@@ -144,7 +148,10 @@
                     <tr>
                         <td>
                             <a class="btn btn-xs fa fa-edit"
-                                aria-hidden="true">
+                                aria-hidden="true" href="{% url "edit-investigator" person.id research.id %}">
+                            </a>
+                            <a class="btn btn-xs fa fa-trash"
+                                aria-hidden="true" onclick="return confirm('Do you want to delete following data for {{person.name}} : \n Year - {{research.year}} \n Subject - {{research.subject}} \n Role - {{research.role}}')" href="{% url "delete-investigator" person.id research.id%}" >
                             </a>
                         </td>
                         <td>{{ research.year }}</td>
@@ -193,6 +200,7 @@
     {% endwith %}
     </div>
 </div>
+
 
 {% with person as instance %}
 {% include "browser/history_modal.html" %}
