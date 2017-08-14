@@ -150,6 +150,9 @@
                             <a class="btn btn-xs fa fa-edit"
                                 aria-hidden="true" href="{% url "edit-investigator" person.id research.id %}">
                             </a>
+                            <a class="btn btn-xs fa fa-trash"
+                                aria-hidden="true" href="{% url "delete-investigator" person.id research.id%}" >
+                            </a>
                         </td>
                         <td>{{ research.year }}</td>
                         <td>{{ research.subject }}</td>
@@ -197,6 +200,7 @@
     {% endwith %}
     </div>
 </div>
+
 
 {% with person as instance %}
 {% include "browser/history_modal.html" %}

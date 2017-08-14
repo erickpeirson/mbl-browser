@@ -626,13 +626,15 @@ def attendee_create(request, course_id):
     return render(request, template, context)
 
 
+@staff_member_required
 def add_investigator_record(request, person_id):
     person = get_object_or_404(Person, pk=person_id)
-    template = "browser/addInvestigator.html"
+    template = "browser/investigator_create.html"
     if request.method == 'GET':
         form = AddInvestigationForm()
 
     elif request.method == 'POST':
+        print("POST in add_investigator")
         form = AddInvestigationForm(request.POST,instance=person)
         if form.is_valid():
             investigatorobject = Investigator(subject=form.cleaned_data.get('subject'),role=form.cleaned_data.get('role')
@@ -648,6 +650,7 @@ def add_investigator_record(request, person_id):
     return render(request, template, context)
 
 
+@staff_member_required
 def edit_investigator_record(request,person_id,research_id):
 
     person = get_object_or_404(Person, pk=person_id)
@@ -671,6 +674,24 @@ def edit_investigator_record(request,person_id,research_id):
         'form': form,
         'person': person,
         'investigator_data': research,
+    }
+
+    return render(request, template, context)
+
+
+@staff_member_required
+def delete_investigator_record(request,person_id,research_id):
+
+    person = get_object_or_404(Person, pk=person_id)
+    research = get_object_or_404(Investigator, pk=research_id)
+    template = "browser/person.html"
+    form = AddInvestigationForm(initial={'subject': research.subject, 'role': research.role,
+                                             'year': research.year})
+
+    Investigator.objects.filter(id=research_id,person_id=person_id).delete()
+    context = {
+        'form': form,
+        'person': person,
     }
 
     return render(request, template, context)

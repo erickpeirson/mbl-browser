@@ -1,0 +1,116 @@
+body {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    background-color: white;
+    font-size: 9pt;
+}
+
+a {
+    /*color: rgba(41, 41, 41, 1.0);*/
+    font-size: 9pt;
+}
+
+a:hover {
+    /*color: #1a6065;*/
+    text-decoration: none;
+}
+
+a:focus {
+    /*color: #1a6065;*/
+    text-decoration: none;
+}
+
+.link-muted {
+    /*color: #777;*/
+}
+
+p {
+    font-size: 9pt;
+}
+
+.navbar-default {
+    background-color: rgba(245, 245, 245, 0.2);
+    color: #fff;
+}
+
+.navbar-default .navbar-brand {
+}
+
+.navbar-default .navbar-brand:hover {
+    /*color: #fff;*/
+}
+
+.navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:focus, .navbar-default .navbar-nav>.active>a:hover {
+    background-color: #ccc;
+}
+
+.navbar-default .navbar-nav>li>a {
+    /*color: #EAEAEA;*/
+}
+
+.navbar-default .navbar-nav>li>a:hover, .navbar-default .navbar-nav>li>a:focus {
+    /*color: #000;*/
+}
+
+.jumbotron {
+    /*background-color: #4d9ca2;*/
+    padding: 15px;
+    background-color: rgba(245, 245, 245, 0.2);
+}
+
+.jumbotron a {
+    font-size: 21px;
+}
+
+.panel-mbl {
+    /*background-color: rgba(80, 227, 239, 0.5);*/
+    background-color: rgba(245, 245, 245, 0.2);
+}
+.panel-mbl>.list-group {
+    background-color: rgba(245, 245, 245, 0.0);
+}
+
+.panel-mbl>.list-group>.list-group-item {
+    background-color: rgba(245, 245, 245, 0.0);
+}
+
+.panel-mbl-footer {
+    /*color: #EAEAEA;*/
+    background-color: rgba(245, 245, 245, 0.2);
+}
+
+/*.table {
+    font-size: 7pt;
+}*/
+
+
+
+table {
+    font-size:9pt;
+
+}
+
+.alert-mbl {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.alert-mbl>h1, .alert-mbl>h2, .alert-mbl>h3 {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+ul.nobullet {
+    list-style-type: none;
+    padding-left: 0px;
+}
+
+.search-result {
+    font-size: 10pt;
+    cursor: pointer;
+}
+
+#results-container a {
+    font-size: 10pt;
+
+}
