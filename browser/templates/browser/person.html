@@ -14,6 +14,8 @@
         <span class="pull-right btn-group btn-group-lg">
             <a class="btn btn-lg fa fa-history"
                 aria-hidden="true"
+                data-curation-tooltip="tooltip"
+                title="View curation history for {{person.name}}"
                 data-toggle="modal"
                 data-target="#historyModal">
             </a>
@@ -26,7 +28,7 @@
             <a class="btn btn-lg fa fa-code-fork"
                 aria-hidden="true"
                 data-toggle="tooltip"
-                title="Split the records for {{person.name}}"
+                title="Fork record for {{person.name}}"
                 href="{% url "split-person" person.id %}">
             </a>
             <a class="btn btn-lg fa fa-flask"
