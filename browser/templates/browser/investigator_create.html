@@ -1,0 +1,92 @@
+{% extends "browser/change_base.html" %}
+{% load addcss %}
+
+{% block title %}Add Investigator: {{ person.name }} (Person){% endblock %}
+{% block main %}
+<div class="alert alert-mbl">
+    Person
+    <div>
+        <span class="h1">{{ person.name }}</span>
+
+    </div>
+    {% if person.authority %}
+    <div class="text-warning">
+        <span class="glyphicon glyphicon-barcode"></span>
+        {{ person.authority.conceptpower_uri|urlize }}
+    </div>
+    {% endif %}
+    {% if person.validated %}
+    <div>
+        <span class="glyphicon glyphicon-ok" style="color:green;"></span>&nbsp;
+        Validated by {{ person.validated_by }} on {{ person.validated_on }}.
+    </div>
+    {% endif %}
+</div>
+
+<div class="container">
+    <p class="text-info">
+        This form will create a new <strong>Investigator</strong> record with the information provided below. The
+        information will be added to <strong>{{ person.name }}</strong>'s record.
+    </p>
+
+    <form action="." method="post" id="InvestigatorForm">
+    {% csrf_token %}
+    {% block form_fields %}
+    {% with form.subject as field %}
+    <div class="row">
+        <div class="col-xs-12">
+        <div class="form-group">
+            {% for error in field.errors %}
+            <div class="alert alert-warning">{{ error }}</div>
+            {% endfor %}
+            <label>{{ field.label }}</label>
+            {{ field|addcss:"form-control input-sm" }}
+            <p class="text-muted">{{ field.help_text }}</p>
+        </div>
+        </div>
+    </div>
+    {% endwith %}
+
+    {% with form.role as field %}
+    <div class="row">
+        <div class="col-xs-8">
+        <div class="form-group">
+            {% for error in field.errors %}
+            <div class="alert alert-warning">{{ error }}</div>
+            {% endfor %}
+            <label>{{ field.label }}</label>
+            {{ field|addcss:"form-control input-sm" }}
+            <p class="text-muted">{{ field.help_text }}</p>
+        </div>
+        </div>
+    {% endwith %}
+
+    {% with form.year as field %}
+        <div class="col-xs-4">
+        <div class="form-group">
+            {% for error in field.errors %}
+            <div class="alert alert-warning">{{ error }}</div>
+            {% endfor %}
+            <label>{{ field.label }}</label>
+            {{ field|addcss:"form-control input-sm" }}
+            <p class="text-muted">{{ field.help_text }}</p>
+        </div>
+        </div>
+    </div>
+    {% endwith %}
+    {% endblock %}
+    </form>
+
+    <div class="row">
+    <div class="text-center">
+        <form action="."  method="post">
+            {% csrf_token %}
+            <input class="btn btn-success" name="SaveButton_Clicked" form="InvestigatorForm" type="submit" value="Save">
+            <input class="btn btn-danger" name="CancelButton_Clicked" type="submit" value="Cancel">
+        </form>
+    </div>
+    </div>
+
+{% endblock %}
+
+</div>

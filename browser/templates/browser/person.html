@@ -1,9 +1,10 @@
 {% extends "browser/base.html" %}
 {% load app_filters %}
-
 {% block title %}{{ person.name }} (Person){% endblock %}
 
+
 {% block main %}
+
 <div class="alert alert-mbl">
     Person
     <div>
@@ -18,11 +19,21 @@
             </a>
             <a class="btn btn-lg fa fa-edit"
                 aria-hidden="true"
+                data-toggle="tooltip"
+                title="Edit record for {{person.name}}"
                 href="{% url "edit-person" person.id %}">
             </a>
             <a class="btn btn-lg fa fa-code-fork"
                 aria-hidden="true"
+                data-toggle="tooltip"
+                title="Split the records for {{person.name}}"
                 href="{% url "split-person" person.id %}">
+            </a>
+            <a class="btn btn-lg fa fa-flask"
+                aria-hidden="true"
+                data-toggle="tooltip"
+                title="Add an investigator record for {{person.name}}"
+                href="{% url "add-investigator" person.id %}">
             </a>
         </span>
         {% endif %}
@@ -143,8 +154,18 @@
                     {% for research in researches %}
                     <tr>
                         <td>
-                            <a class="btn btn-xs fa fa-edit"
-                                aria-hidden="true">
+                            <a class=" btn btn-xs fa fa-edit"
+                               aria-hidden="true"
+                               href="{% url "edit-investigator" person.id research.id %}">
+                            </a>
+                            <a class="open-InvestigatorDeleteModal btn btn-xs fa fa-trash"
+                                aria-hidden="true"
+                                data-toggle="modal"
+                                data-id="{{research.id}}"
+                                data-subject = "{{research.subject}}"
+                                data-year = "{{research.year}}"
+                                data-role = "{{research.role}}"
+                                href="#InvestigatorDeleteModal" >
                             </a>
                         </td>
                         <td>{{ research.year }}</td>
@@ -194,7 +215,9 @@
     </div>
 </div>
 
+
 {% with person as instance %}
+{% include "browser/investigator_delete_modal.html" %}
 {% include "browser/history_modal.html" %}
 {% endwith %}
 {% endblock %}

@@ -28,7 +28,7 @@ class CourseViewSet(viewsets.ModelViewSet):
 
 
 class PersonViewSet(viewsets.ModelViewSet):
-    queryset = Person.objects.distinct()
+    queryset = Person.objects.all()
     filter_backends = (filters.DjangoFilterBackend,)
     filter_class = PersonFilter
 

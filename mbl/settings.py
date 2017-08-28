@@ -22,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = eval(os.environ.get('DEBUG', 'False'))
+DEBUG = eval(os.environ.get('DEBUG', 'True'))
 
 ALLOWED_HOSTS = ['*']
 
@@ -167,3 +167,4 @@ PAGINATION_DEFAULT_WINDOW = 5
 SOCIAL_AUTH_GITHUB_KEY = os.environ.get('SOCIAL_AUTH_GITHUB_KEY', None)
 SOCIAL_AUTH_GITHUB_SECRET = os.environ.get('SOCIAL_AUTH_GITHUB_SECRET', None)
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = BASE_URL
+URI_NAMESPACE = BASE_URL

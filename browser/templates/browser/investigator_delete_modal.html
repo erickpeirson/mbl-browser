@@ -1,0 +1,27 @@
+<div class="modal fade" id="InvestigatorDeleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="deleteModalLabel">Delete Investigation record</h4>
+      </div>
+      <div class="modal-body">
+        <h5>
+        Are you sure you want to delete following data for <strong>{{person.name}}</strong> : <br><br>
+        <strong>Year :</strong> <label style="font-weight:normal" id="investigator_delete_modal_year"></label> <br>
+        <strong>Subject :</strong> <label style="font-weight:normal" id="investigator_delete_modal_subject"></label> <br>
+        <strong>Role :</strong> <label style="font-weight:normal" id="investigator_delete_modal_role"></label><br>
+        <input type="text" style="display:none;" id="investigator_delete_modal_id"></input><br>
+        </h5>
+      </div>
+      <div class="modal-footer">
+        <a
+        href=""
+        onclick="this.href='investigator/'+document.getElementById('investigator_delete_modal_id').value; deletefunction(this, event); alert('Delete');return true;">
+        <button type="button" class="btn btn-danger">Delete</button>
+        </a>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
