@@ -331,7 +331,7 @@ class SplitPersonForm(forms.Form):
         return new_person
 
 
-class InvestigationForm(forms.ModelForm):
+class InvestigatorForm(forms.ModelForm):
     class Meta:
         model = Investigator
         fields = ['subject', 'role', 'year']

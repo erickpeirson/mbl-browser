@@ -3,6 +3,17 @@
 
 {% block title %}Edit Investigator: {{ person.name }} (Person){% endblock %}
 {% block main %}
+
+<script>
+        $(document).ready(function() {
+            $(document).on("click", "#CancelButton", function () {
+                var url = window.location.href;
+                url = url.substring(0, url.indexOf("investigator"));
+                window.location = url;
+            });
+        });
+</script>
+
 <div class="alert alert-mbl">
     Person
     <div>
@@ -73,17 +84,18 @@
     </div>
     {% endwith %}
     {% endblock %}
-    </form>
+
 
     <div class="row">
     <div class="text-center">
-        <form action="."  method="post">
-            {% csrf_token %}
-            <input class="btn btn-success" type="submit" form="InvestigatorForm" name="UpdateButton_Clicked" value="Update">
-            <input class="btn btn-danger" type="submit" value="Cancel" name="CancelButton_Clicked">
-        </form>
+
+            <input class="btn btn-success" type="submit" form="InvestigatorForm" name="UpdateButton" id="ValueButton" value="Update">
+            <input class="btn btn-danger" type="button" value="Cancel" name="CancelButton" id="CancelButton">
+
     </div>
     </div>
+
+    </form>
 
 </div>
 {% endblock %}

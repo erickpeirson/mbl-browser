@@ -628,22 +628,20 @@ def attendee_create(request, course_id):
 
 @staff_member_required
 def add_investigator_record(request, person_id):
+    for i in request.GET:
+        print (i)
     person = get_object_or_404(Person, pk=person_id)
     template = "browser/investigator_create.html"
-    form = InvestigationForm()
+    form = InvestigatorForm()
 
     if request.method == 'POST':
-        if 'SaveButton_Clicked' in request.POST:
-            form = InvestigationForm(request.POST, instance=person)
-            if form.is_valid():
-                investigator = Investigator(subject=form.cleaned_data.get('subject'),
+        form = InvestigatorForm(request.POST, instance=person)
+        if form.is_valid():
+            investigator = Investigator(subject=form.cleaned_data.get('subject'),
                                             role=form.cleaned_data.get('role'),
                                             person_id=person_id, year=form.cleaned_data.get('year'),
                                             changed_by=request.user)
-                investigator.save()
-                return HttpResponseRedirect(reverse('person', args=(person.id,)))
-
-        if 'CancelButton_Clicked' in request.POST:
+            investigator.save()
             return HttpResponseRedirect(reverse('person', args=(person.id,)))
 
     context = {
@@ -662,20 +660,16 @@ def edit_investigator_record(request,person_id,research_id):
     template = "browser/investigator_edit.html"
 
     # Retreive investigator data already stored in database and display to the user
-    form = InvestigationForm(initial={'subject': research.subject, 'role': research.role,
+    form = InvestigatorForm(initial={'subject': research.subject, 'role': research.role,
                                              'year': research.year})
 
     if request.method == 'POST':
-        if 'UpdateButton_Clicked' in request.POST:
-            form = InvestigationForm(request.POST, instance=person)
-            if form.is_valid():
-                research.subject = form.cleaned_data.get('subject')
-                research.role = form.cleaned_data.get('role')
-                research.year = form.cleaned_data.get('year')
-                research.save()
-                return HttpResponseRedirect(reverse('person', args=(person.id,)))
-
-        if 'CancelButton_Clicked' in request.POST:
+        form = InvestigatorForm(request.POST, instance=person)
+        if form.is_valid():
+            research.subject = form.cleaned_data.get('subject')
+            research.role = form.cleaned_data.get('role')
+            research.year = form.cleaned_data.get('year')
+            research.save()
             return HttpResponseRedirect(reverse('person', args=(person.id,)))
 
     context = {

@@ -5,6 +5,35 @@
 
 {% block main %}
 
+<script>
+        $(document).ready(function() {
+
+            var research_id = "1234";
+
+            $('[data-curation-tooltip]').tooltip();
+
+            $(document).on("click", ".open-InvestigatorDeleteModal", function () {
+                var id = $(this).data('id');
+                var subject = $(this).data('subject');
+                var role = $(this).data('role');
+                var year = $(this).data('year');
+                research_id= $(this).data('id');
+
+                $(".modal-body #investigator_delete_modal_year").text(year);
+                $(".modal-body #investigator_delete_modal_role").text(role);
+                $(".modal-body #investigator_delete_modal_subject").text(subject);
+
+            });
+
+            $(document).on("click", "#investigator_delete_modal_deleteButton", function () {
+                window.location = 'investigator/'+ research_id+'/delete/' ;
+            });
+
+        });
+
+
+</script>
+
 <div class="alert alert-mbl">
     Person
     <div>

@@ -98,21 +98,7 @@
         $(document).ready(function() {
             $(".dropdown-toggle").dropdown();
             $('[data-toggle="tooltip"]').tooltip();
-            $('[data-curation-tooltip]').tooltip();
         });
-
-        $(document).on("click", ".open-InvestigatorDeleteModal", function () {
-                var id = $(this).data('id');
-                var subject = $(this).data('subject');
-                var role = $(this).data('role');
-                var year = $(this).data('year');
-
-                $(".modal-body #investigator_delete_modal_id").val(id+"/delete/");
-                $(".modal-body #investigator_delete_modal_year").text(year);
-                $(".modal-body #investigator_delete_modal_role").text(role);
-                $(".modal-body #investigator_delete_modal_subject").text(subject);
-
-                });
 
         var searchResultClasses = {
             'Person': 'list-group-item-success',
