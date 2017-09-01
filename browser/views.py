@@ -628,10 +628,9 @@ def attendee_create(request, course_id):
 
 @staff_member_required
 def add_investigator_record(request, person_id):
-    for i in request.GET:
-        print (i)
+    print (request)
     person = get_object_or_404(Person, pk=person_id)
-    template = "browser/investigator_create.html"
+    template = "browser/investigator.html"
     form = InvestigatorForm()
 
     if request.method == 'POST':
@@ -647,6 +646,7 @@ def add_investigator_record(request, person_id):
     context = {
         'form': form,
         'person': person,
+        'type': 'create_investigator'
     }
 
     return render(request, template, context)
@@ -654,10 +654,9 @@ def add_investigator_record(request, person_id):
 
 @staff_member_required
 def edit_investigator_record(request,person_id,research_id):
-
     person = get_object_or_404(Person, pk=person_id)
     research = get_object_or_404(Investigator, pk=research_id)
-    template = "browser/investigator_edit.html"
+    template = "browser/investigator.html"
 
     # Retreive investigator data already stored in database and display to the user
     form = InvestigatorForm(initial={'subject': research.subject, 'role': research.role,
@@ -676,6 +675,7 @@ def edit_investigator_record(request,person_id,research_id):
         'form': form,
         'person': person,
         'investigator_data': research,
+        'type': 'edit_investigator'
     }
 
     return render(request, template, context)

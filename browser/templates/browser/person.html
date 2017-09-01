@@ -7,12 +7,11 @@
 
 <script>
         $(document).ready(function() {
-
-            var research_id = "1234";
+            var research_id = "";
 
             $('[data-curation-tooltip]').tooltip();
 
-            $(document).on("click", ".open-InvestigatorDeleteModal", function () {
+            $(document).on("click", "#open-InvestigatorDeleteModal", function () {
                 var id = $(this).data('id');
                 var subject = $(this).data('subject');
                 var role = $(this).data('role');
@@ -187,10 +186,12 @@
                         <td>
                             <a class=" btn btn-xs fa fa-edit"
                                aria-hidden="true"
+                               id="edit"
                                href="{% url "edit-investigator" person.id research.id %}">
                             </a>
-                            <a class="open-InvestigatorDeleteModal btn btn-xs fa fa-trash"
+                            <a class="btn btn-xs fa fa-trash"
                                 aria-hidden="true"
+                                id="open-InvestigatorDeleteModal"
                                 data-toggle="modal"
                                 data-id="{{research.id}}"
                                 data-subject = "{{research.subject}}"
