@@ -4,16 +4,6 @@
 {% block title %}Add Investigator: {{ person.name }} (Person){% endblock %}
 {% block main %}
 
-<script>
-        $(document).ready(function() {
-            $(document).on("click", "#CancelButton", function () {
-                var url = window.location.href;
-                url = url.substring(0, url.indexOf("investigator"));
-                window.location = url;
-            });
-        });
-</script>
-
 <div class="alert alert-mbl">
     Person
     <div>
@@ -98,7 +88,7 @@
         {% else %}
         <input class="btn btn-success" name="SaveButton" form="InvestigatorForm" type="submit" value="Save">
         {% endif %}
-        <input class="btn btn-danger" name="CancelButton" type="button" id="CancelButton" value="Cancel">
+        <a class="btn btn-danger" href="{% url "person" person.id %}">Cancel</a>
     </div>
     </div>
 

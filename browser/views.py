@@ -104,6 +104,11 @@ def person(request, person_id=None):
         context['persons'] = PersonFilter(request.GET, queryset=Person.objects.order_by('last_name').filter(merge_from=None))
         # context['persons'] = get_paginator(Person, request, 'last_name', 100)
         template = "browser/person_list.html"
+
+    # If a delete action is confirmed from the user
+    if request.method == 'POST':
+        print ("person"), (request.POST.get("investigator_delete_modal_role"))
+
     return render(request, template, context)
 
 
@@ -628,7 +633,6 @@ def attendee_create(request, course_id):
 
 @staff_member_required
 def add_investigator_record(request, person_id):
-    print (request)
     person = get_object_or_404(Person, pk=person_id)
     template = "browser/investigator.html"
     form = InvestigatorForm()

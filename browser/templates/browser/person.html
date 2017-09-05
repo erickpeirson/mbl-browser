@@ -18,9 +18,10 @@
                 var year = $(this).data('year');
                 research_id= $(this).data('id');
 
-                $(".modal-body #investigator_delete_modal_year").text(year);
-                $(".modal-body #investigator_delete_modal_role").text(role);
-                $(".modal-body #investigator_delete_modal_subject").text(subject);
+                $(".modal-body #investigator_delete_modal_year").val(year);
+                $(".modal-body #investigator_delete_modal_role").val(role);
+                $(".modal-body #investigator_delete_modal_subject").val(subject);
+
 
             });
 
