@@ -105,9 +105,11 @@ def person(request, person_id=None):
         # context['persons'] = get_paginator(Person, request, 'last_name', 100)
         template = "browser/person_list.html"
 
-    # If a delete action is confirmed from the user
     if request.method == 'POST':
-        print ("person"), (request.POST.get("investigator_delete_modal_role"))
+        if 'DeleteInvestigatorButton' in request.POST:
+            print ("Here")
+            delete_investigator_record(request, person_id, request.POST.get("investigator_delete_modal_id"))
+
 
     return render(request, template, context)
 
@@ -687,6 +689,7 @@ def edit_investigator_record(request,person_id,research_id):
 
 @staff_member_required
 def delete_investigator_record(request,person_id,research_id):
+    print ("Here")
     person = get_object_or_404(Person, pk=person_id)
     Investigator.objects.filter(id=research_id,person_id=person_id).delete()
     return HttpResponseRedirect(reverse('person', args=(person.id,)))

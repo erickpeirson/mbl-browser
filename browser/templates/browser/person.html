@@ -7,8 +7,6 @@
 
 <script>
         $(document).ready(function() {
-            var research_id = "";
-
             $('[data-curation-tooltip]').tooltip();
 
             $(document).on("click", "#open-InvestigatorDeleteModal", function () {
@@ -16,22 +14,14 @@
                 var subject = $(this).data('subject');
                 var role = $(this).data('role');
                 var year = $(this).data('year');
-                research_id= $(this).data('id');
 
-                $(".modal-body #investigator_delete_modal_year").val(year);
-                $(".modal-body #investigator_delete_modal_role").val(role);
-                $(".modal-body #investigator_delete_modal_subject").val(subject);
-
+                $(".modal-body #investigator_delete_modal_year").text(year);
+                $(".modal-body #investigator_delete_modal_role").text(role);
+                $(".modal-body #investigator_delete_modal_subject").text(subject);
+                $(".modal-body #investigator_delete_modal_id").val(id);
 
             });
-
-            $(document).on("click", "#investigator_delete_modal_deleteButton", function () {
-                window.location = 'investigator/'+ research_id+'/delete/' ;
-            });
-
         });
-
-
 </script>
 
 <div class="alert alert-mbl">
@@ -248,9 +238,9 @@
     </div>
 </div>
 
+    {% with person as instance %}
+    {% include "browser/investigator_delete_modal.html" %}
+    {% include "browser/history_modal.html" %}
+    {% endwith %}
 
-{% with person as instance %}
-{% include "browser/investigator_delete_modal.html" %}
-{% include "browser/history_modal.html" %}
-{% endwith %}
 {% endblock %}
