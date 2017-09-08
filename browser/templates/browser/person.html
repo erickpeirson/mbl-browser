@@ -175,6 +175,7 @@
                     {% for research in researches %}
                     <tr>
                         <td>
+                            {% if user.is_staff %}
                             <a class=" btn btn-xs fa fa-edit"
                                aria-hidden="true"
                                id="edit"
@@ -190,6 +191,7 @@
                                 data-role = "{{research.role}}"
                                 href="#InvestigatorDeleteModal" >
                             </a>
+                            {% endif %}
                         </td>
                         <td>{{ research.year }}</td>
                         <td>{{ research.subject }}</td>

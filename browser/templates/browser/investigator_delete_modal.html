@@ -11,15 +11,23 @@
       <div class="modal-body">
         <h5>
           Are you sure you want to delete following data for <strong>{{person.name}}</strong>: <br><br>
-          <strong>Year:</strong> <label style="font-weight:normal" id="investigator_delete_modal_year"></label> <br>
-          <strong>Subject:</strong> <label style="font-weight:normal" id="investigator_delete_modal_subject"></label> <br>
-          <strong>Role:</strong> <label style="font-weight:normal" name="investigator_delete_modal_role" id="investigator_delete_modal_role"></label><br>
-          <input type="text" id="investigator_delete_modal_id" name="investigator_delete_modal_id">
+          <div class="form-group">
+            <strong>Year:</strong> <label style="font-weight:normal" id="investigator_delete_modal_year"></label>
+          </div>
+
+          <div class="form-group">
+            <strong>Subject:</strong> <label style="font-weight:normal" id="investigator_delete_modal_subject"></label>
+          </div>
+
+          <div class="form-group">
+            <strong>Role:</strong> <label style="font-weight:normal" name="investigator_delete_modal_role" id="investigator_delete_modal_role"></label>
+          </div>
+            <input type="text" id="investigator_delete_modal_id" name="investigator_delete_modal_id" style="display:none;">
         </h5>
       </div>
 
       <div class="modal-footer">
-        <input class="btn btn-danger" type="submit" name="DeleteInvestigatorButton" id="DeleteInvestigatorButton" value="Delete">
+        <input class="btn btn-danger" type="submit" name="DeleteInvestigator" id="DeleteInvestigator" value="Delete">
         <button type="button" class="btn btn-default" id="investigator_delete_modal_closeButton" data-dismiss="modal">Close</button>
       </div>
       </form>
