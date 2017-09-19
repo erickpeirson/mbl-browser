@@ -682,6 +682,6 @@ def edit_investigator_record(request,person_id,research_id):
 
 
 @staff_member_required
-def delete_investigator_record(request, person_id):
-    Investigator.objects.filter(id=request.POST.get("investigator_delete_modal_id"), person_id=person_id).delete()
+def delete_investigator_record(request, person_id, research_id):
+    Investigator.objects.filter(id=research_id).delete()
     return HttpResponseRedirect(reverse('person', args=(person_id,)))

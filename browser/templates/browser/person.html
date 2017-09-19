@@ -8,19 +8,6 @@
 <script>
         $(document).ready(function() {
             $('[data-curation-tooltip]').tooltip();
-
-            $(document).on("click", "#open-InvestigatorDeleteModal", function () {
-                var id = $(this).data('id');
-                var subject = $(this).data('subject');
-                var role = $(this).data('role');
-                var year = $(this).data('year');
-
-                $(".modal-body #investigator_delete_modal_year").text(year);
-                $(".modal-body #investigator_delete_modal_role").text(role);
-                $(".modal-body #investigator_delete_modal_subject").text(subject);
-                $(".modal-body #investigator_delete_modal_id").val(id);
-
-            });
         });
 </script>
 
@@ -183,13 +170,10 @@
                             </a>
                             <a class="btn btn-xs fa fa-trash"
                                 aria-hidden="true"
-                                id="open-InvestigatorDeleteModal"
                                 data-toggle="modal"
-                                data-id="{{research.id}}"
-                                data-subject = "{{research.subject}}"
-                                data-year = "{{research.year}}"
-                                data-role = "{{research.role}}"
-                                href="#InvestigatorDeleteModal" >
+                                href="#"
+                                data-target="#InvestigatorDeleteModal{{research.id}}"
+                            >
                             </a>
                             {% endif %}
                         </td>
@@ -197,6 +181,44 @@
                         <td>{{ research.subject }}</td>
                         <td>{{ research.role }}</td>
                     </tr>
+
+                    <!-- Delete Investigator modal section starts here -->
+                    <div class="modal fade" id="InvestigatorDeleteModal{{research.id}}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="deleteModalLabel">Delete Investigation record</h4>
+                          </div>
+
+                          <form action=" {% url "delete-investigator" person.id research.id %}" method="post">
+                            {% csrf_token %}
+                          <div class="modal-body">
+                            <h5>
+                              Are you sure you want to delete following data for <strong>{{person.name}}</strong>: <br><br>
+                              <div class="form-group">
+                                <strong>Year:</strong> <br><label style="font-weight:normal" >{{research.year}}</label>
+                              </div>
+
+                              <div class="form-group">
+                                <strong>Subject:</strong> <br> <label style="font-weight:normal">{{research.subject}}</label>
+                              </div>
+
+                              <div class="form-group">
+                                <strong>Role:</strong> <br> <label style="font-weight:normal" >{{research.role}}</label>
+                              </div>
+                            </h5>
+                          </div>
+                          <div class="modal-footer">
+                            <input class="btn btn-danger" type="submit" name="DeleteInvestigator" id="DeleteInvestigator" value="Delete">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                          </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Delete Investigator modal section ends here -->
+
                     {% endfor %}
                 </tbody>
             </table>
@@ -241,7 +263,6 @@
 </div>
 
     {% with person as instance %}
-    {% include "browser/investigator_delete_modal.html" %}
     {% include "browser/history_modal.html" %}
     {% endwith %}
 
