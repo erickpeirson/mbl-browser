@@ -104,6 +104,7 @@ def person(request, person_id=None):
         context['persons'] = PersonFilter(request.GET, queryset=Person.objects.order_by('last_name').filter(merge_from=None))
         # context['persons'] = get_paginator(Person, request, 'last_name', 100)
         template = "browser/person_list.html"
+
     return render(request, template, context)
 
 
@@ -624,3 +625,65 @@ def attendee_create(request, course_id):
         'form': form,
     }
     return render(request, template, context)
+
+
+@staff_member_required
+def add_investigator_record(request, person_id):
+    person = get_object_or_404(Person, pk=person_id)
+    template = "browser/investigator.html"
+    form = InvestigatorForm()
+
+    if request.method == 'POST':
+        form = InvestigatorForm(request.POST, instance=person)
+        if form.is_valid():
+            investigator = Investigator(subject=form.cleaned_data.get('subject'),
+                                            role=form.cleaned_data.get('role'),
+                                            person_id=person_id, year=form.cleaned_data.get('year'),
+                                            changed_by=request.user)
+            investigator.save()
+            return HttpResponseRedirect(reverse('person', args=(person.id,)))
+
+    context = {
+        'form': form,
+        'person': person,
+        'type': 'create_investigator'
+    }
+
+    return render(request, template, context)
+
+
+@staff_member_required
+def edit_investigator_record(request,person_id,research_id):
+    person = get_object_or_404(Person, pk=person_id)
+    research = get_object_or_404(Investigator, pk=research_id)
+    template = "browser/investigator.html"
+
+    # Retreive investigator data already stored in database and display to the user
+    form = InvestigatorForm(initial={'subject': research.subject, 'role': research.role,
+                                             'year': research.year})
+
+    if request.method == 'POST':
+        form = InvestigatorForm(request.POST, instance=person)
+        if form.is_valid():
+            research.subject = form.cleaned_data.get('subject')
+            research.role = form.cleaned_data.get('role')
+            research.year = form.cleaned_data.get('year')
+            research.save()
+            return HttpResponseRedirect(reverse('person', args=(person.id,)))
+
+    context = {
+        'form': form,
+        'person': person,
+        'investigator_data': research,
+        'type': 'edit_investigator'
+    }
+
+    return render(request, template, context)
+
+
+@staff_member_required
+def delete_investigator_record(request, person_id, research_id):
+    if request.method == 'POST':
+        Investigator.objects.filter(id=research_id).delete()
+
+    return HttpResponseRedirect(reverse('person', args=(person_id,)))
