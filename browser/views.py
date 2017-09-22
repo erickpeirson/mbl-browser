@@ -685,4 +685,5 @@ def edit_investigator_record(request,person_id,research_id):
 def delete_investigator_record(request, person_id, research_id):
     if request.method == 'POST':
         Investigator.objects.filter(id=research_id).delete()
-        return HttpResponseRedirect(reverse('person', args=(person_id,)))
+
+    return HttpResponseRedirect(reverse('person', args=(person_id,)))
