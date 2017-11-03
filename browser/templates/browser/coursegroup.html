@@ -168,8 +168,11 @@ function updateBars() {
     .remove();
 
   u.on('click', function(d) {
-      alert('Clicking...');
-      window.location.href = '/course/' + d.id + '/';
+      // Declaring a variable url for creating a reverse for Django url
+      var url = "{% url "course" 1 %}";
+
+      // Replaced the 1 with the id of the clicked element of the graph in order to generate correct url
+      window.location.href = url.replace('1',d.id);
   });
 
   // Update bar position, width & height
