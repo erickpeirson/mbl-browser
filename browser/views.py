@@ -52,11 +52,9 @@ def course(request, course_id=None):
         context.update({
             'course': course,
         })
-        print "1st"
         template = "browser/course.html"
     else:
         context['courses'] = CourseFilter(request.GET, queryset=Course.objects.order_by('year'))
-        print "2nd"
         template = "browser/course_list.html"
     return render(request, template, context)
 
@@ -67,11 +65,9 @@ def coursegroup(request, coursegroup_id=None):
     """
     context = {}
     if coursegroup_id:
-        print "1"
         context['coursegroup'] = get_object_or_404(CourseGroup, pk=coursegroup_id)
         template = "browser/coursegroup.html"
     else:
-        print "2"
         # coursegroups = get_paginator(CourseGroup, request, order_by='name')
         coursegroups = CourseGroupFilter(request.GET, queryset=CourseGroup.objects.all())
         context['coursegroups'] = coursegroups
