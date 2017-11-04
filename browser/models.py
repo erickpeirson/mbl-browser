@@ -506,3 +506,37 @@ class MergeEvent(models.Model):
     @_history_user.setter
     def _history_user(self, value):
         self.changed_by = value
+
+
+class Position(YearMixin, CuratedMixin, LastUpdatedMixin):
+    history = HistoricalRecords()
+    person = models.ForeignKey('Person')
+    subject = models.CharField(max_length=255, blank=True)
+    role_choices = (('Corporation Member','Corporation Member'), ('Trustee','Trustee'),('Friday Evening Lecturer', 'Friday Evening Lecturer'))
+    role = models.CharField(max_length=255, blank=False,choices=role_choices)
+
+    start_date = models.DateField()
+    end_date = models.DateField()
+    changed_by = models.ForeignKey('auth.User', related_name='edited_position')
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.changed_by = value
+
+    def __unicode__(self):
+        rep = u''
+        if self.role:
+            rep += u'Role: %s' % self.role
+        if self.subject:
+            if self.role:
+                rep += u', '
+            rep += u'Subject: %s' % self.subject
+        if self.subject or self.role:
+            rep += u', in %s' % self.year
+        else:
+            rep = u'Investigator in %i' % self.year
+        return rep

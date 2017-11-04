@@ -43,6 +43,12 @@
                 title="Add an investigator record for {{person.name}}"
                 href="{% url "add-investigator" person.id %}">
             </a>
+            <a class="btn btn-lg fa fa-user"
+                aria-hidden="true"
+                data-toggle="tooltip"
+                title="Add a position record for {{person.name}}"
+                href="{% url "add-position" person.id%}">
+            </a>
         </span>
         {% endif %}
     </div>

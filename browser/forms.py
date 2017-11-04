@@ -336,3 +336,10 @@ class InvestigatorForm(forms.ModelForm):
     class Meta:
         model = Investigator
         fields = ['subject', 'role', 'year']
+
+
+class PositionForm(forms.ModelForm):
+
+    class Meta:
+        model = Position
+        fields = ['subject','role','year','start_date','end_date']

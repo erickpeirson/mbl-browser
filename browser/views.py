@@ -687,3 +687,27 @@ def delete_investigator_record(request, person_id, research_id):
         Investigator.objects.filter(id=research_id).delete()
 
     return HttpResponseRedirect(reverse('person', args=(person_id,)))
+
+
+@staff_member_required
+def add_position(request, person_id):
+    person = get_object_or_404(Person, pk=person_id)
+    template = "browser/position.html"
+    form = PositionForm()
+
+    # if request.method == 'POST':
+    #     form = InvestigatorForm(request.POST, instance=person)
+    #     if form.is_valid():
+    #         investigator = Investigator(subject=form.cleaned_data.get('subject'),
+    #                                         role=form.cleaned_data.get('role'),
+    #                                         person_id=person_id, year=form.cleaned_data.get('year'),
+    #                                         changed_by=request.user)
+    #         investigator.save()
+    #         return HttpResponseRedirect(reverse('person', args=(person.id,)))
+
+    context = {
+        'form': form,
+        'person': person,
+    }
+
+    return render(request, template, context)
