@@ -695,15 +695,18 @@ def add_position(request, person_id):
     template = "browser/position.html"
     form = PositionForm()
 
-    # if request.method == 'POST':
-    #     form = InvestigatorForm(request.POST, instance=person)
-    #     if form.is_valid():
-    #         investigator = Investigator(subject=form.cleaned_data.get('subject'),
-    #                                         role=form.cleaned_data.get('role'),
-    #                                         person_id=person_id, year=form.cleaned_data.get('year'),
-    #                                         changed_by=request.user)
-    #         investigator.save()
-    #         return HttpResponseRedirect(reverse('person', args=(person.id,)))
+    if request.method == 'POST':
+        form = PositionForm(request.POST, instance=person)
+        if form.is_valid():
+            print form.cleaned_data.get('role'), request.POST.get("test2")
+            position = Position(subject=form.cleaned_data.get('subject'),
+                                             role=form.cleaned_data.get('role'),
+                                             person_id=person_id, year=form.cleaned_data.get('year'),
+                                             start_date = request.POST.get("start_date"),
+                                             end_date = request.POST.get("end_date"),
+                                             changed_by=request.user)
+            position.save()
+            return HttpResponseRedirect(reverse('person', args=(person.id,)))
 
     context = {
         'form': form,

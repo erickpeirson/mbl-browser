@@ -4,28 +4,21 @@
 {% block title %}Add Person: {{ person.name }} (Person){% endblock %}
 
 <!-- Bootstrap Date-Picker Plugin -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
-
-
+{% load staticfiles %}
+<script src="{% static "browser/js/bootstrap-datepicker.min.js" %}"></script>
+<link rel="stylesheet" href="{% static "browser/css/bootstrap-datepicker3.css" %}"/>
 
 {% block main %}
 
  <script>
        $(document).ready(function(){
-           $(".optional_date").click(function(){
-                $(".show_date").datepicker({format:"yyyy-mm-dd",startView: "days",minViewMode: "days"}).focus();
-                //alert('Checked');
+
+           $("#start_date").click(function(){
+                $("#start_date").datepicker({format:"yyyy-mm-dd",changeMonth: true,changeYear: true,yearRange: "-100:+50"}).focus();
            });
 
-           $(".optional_date2").click(function(){
-                $(".optional_date2").datepicker({format:"yyyy-mm-dd",startView: "days",minViewMode: "days"}).focus();
-                //alert('Checked');
-           });
-
-            $(".show_date").click(function(){
-                $(".optional_date2").datepicker({format:"yyyy-mm-dd",startView: "days",minViewMode: "days"}).focus();
-                //alert('Checked');
+           $("#end_date").click(function(){
+                $("#end_date").datepicker({format:"yyyy-mm-dd"}).focus();
            });
 
        });
@@ -102,28 +95,28 @@
     </div>
     {% endwith %}
 
-    {% with form.start_date as field %}
     <div class="row">
-        <div class="col-xs-6 optional_date">
+    {% with form.start_date as field %}
+        <div class="col-xs-6">
         <div class="form-group">
             {% for error in field.errors %}
             <div class="alert alert-warning">{{ error }}</div>
             {% endfor %}
             <label>{{ field.label }}</label>
-            {{ field|addcss:"form-control input-sm" }}
+            <input type="text" class="form-control input-sm" id="start_date" name="start_date" onkeydown="return false">
             <p class="text-muted">{{ field.help_text }}</p>
         </div>
         </div>
     {% endwith %}
 
     {% with form.end_date as field %}
-        <div class="col-xs-6 optional_date2">
+        <div class="col-xs-6">
         <div class="form-group">
             {% for error in field.errors %}
             <div class="alert alert-warning">{{ error }}</div>
             {% endfor %}
             <label>{{ field.label }}</label>
-            {{ field|addcss:"form-control input-sm" }}
+            <input type="text" class="form-control input-sm" id="end_date" name="end_date" onkeydown="return false">
             <p class="text-muted">{{ field.help_text }}</p>
         </div>
         </div>
@@ -136,7 +129,6 @@
     <div class="text-center">
         <input class="btn btn-success" name="SaveButton" type="submit" value="Save">
         <a class="btn btn-danger" href="{% url "person" person.id %}">Cancel</a>
-
     </div>
     </div>
 

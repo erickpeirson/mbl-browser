@@ -515,8 +515,8 @@ class Position(YearMixin, CuratedMixin, LastUpdatedMixin):
     role_choices = (('Corporation Member','Corporation Member'), ('Trustee','Trustee'),('Friday Evening Lecturer', 'Friday Evening Lecturer'))
     role = models.CharField(max_length=255, blank=False,choices=role_choices)
 
-    start_date = models.DateField()
-    end_date = models.DateField()
+    start_date = models.DateField(blank=True)
+    end_date = models.DateField(blank=True)
     changed_by = models.ForeignKey('auth.User', related_name='edited_position')
 
     @property
