@@ -267,6 +267,36 @@
     </div>
     {% endif %}
     {% endwith %}
+
+    <!-- Positions -->
+    {% with person|get_positions as positions %}
+    <div role="tabpanel" class="tab-pane" id="person-positions">
+        <div class="panel panel-mbl">
+            <div class="panel-heading">
+                <h3>Positions</h3>
+            </div>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <td>Year</td>
+                        <td>Position</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for position in positions %}
+                    <tr>
+                        <td>{{ position.year }}</td>
+                        <td>{{ position.role }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+    {% endwith %}
+
     </div>
 </div>
 

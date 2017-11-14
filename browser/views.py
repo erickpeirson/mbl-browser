@@ -699,11 +699,20 @@ def add_position(request, person_id):
         form = PositionForm(request.POST, instance=person)
         if form.is_valid():
             print form.cleaned_data.get('role'), request.POST.get("test2")
+            # For optional start and end dates we need to set the result as None, otherwise a database error is thrown
+            # Initially they are set as null, and set according to user data if a date has been set
+            start_date = None
+            end_date = None
+            if request.POST.get("start_date") is not None:
+                pass
+            if request.POST.get("end_date") is not None:
+                pass
+
             position = Position(subject=form.cleaned_data.get('subject'),
                                              role=form.cleaned_data.get('role'),
                                              person_id=person_id, year=form.cleaned_data.get('year'),
-                                             start_date = request.POST.get("start_date"),
-                                             end_date = request.POST.get("end_date"),
+                                             start_date =start_date,
+                                             end_date =end_date,
                                              changed_by=request.user)
             position.save()
             return HttpResponseRedirect(reverse('person', args=(person.id,)))

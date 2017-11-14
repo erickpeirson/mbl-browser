@@ -141,3 +141,8 @@ def get_affiliates(institution):
     #  absolute URL.
 
     return qs
+
+
+@register.filter
+def get_positions(person):
+    return Position.objects.filter(person=person).distinct('id').order_by('year', 'id')
