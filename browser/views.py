@@ -698,15 +698,25 @@ def add_position(request, person_id):
     if request.method == 'POST':
         form = PositionForm(request.POST, instance=person)
         if form.is_valid():
-            print form.cleaned_data.get('role'), request.POST.get("test2")
             # For optional start and end dates we need to set the result as None, otherwise a database error is thrown
             # Initially they are set as null, and set according to user data if a date has been set
             start_date = None
             end_date = None
-            if request.POST.get("start_date") is not None:
-                pass
-            if request.POST.get("end_date") is not None:
-                pass
+            if '/' in request.POST.get("start_date"):
+                # Datepicker is returning the format as mm/dd/yyyy so, converting it into yyyy-mm-dd
+                start_date = request.POST.get("start_date")
+                start_month = start_date.split('/')[0]
+                start_year = start_date.split('/')[2]
+                start_day = start_date.split('/')[1]
+                start_date = start_year + '-' + start_month + '-' + start_day
+
+            if '/' in request.POST.get("end_date") :
+                # Datepicker is returning the format as mm/dd/yyyy so, converting it into yyyy-mm-dd
+                end_date = request.POST.get("end_date")
+                end_month = end_date.split('/')[0]
+                end_year = end_date.split('/')[2]
+                end_day = end_date.split('/')[1]
+                end_date = end_year + '-' + end_month + '-' + end_day
 
             position = Position(subject=form.cleaned_data.get('subject'),
                                              role=form.cleaned_data.get('role'),
@@ -720,6 +730,57 @@ def add_position(request, person_id):
     context = {
         'form': form,
         'person': person,
+        'type': 'create_position'
+    }
+
+    return render(request, template, context)
+
+
+@staff_member_required
+def edit_position(request, person_id, position_id):
+    person = get_object_or_404(Person, pk=person_id)
+    position = get_object_or_404(Position, pk=position_id)
+    template = "browser/position.html"
+    # Retreive position data already stored in database and display to the user
+    form = PositionForm(initial={'subject': position.subject, 'role': position.role,
+                                             'year': position.year, 'start_date':position.start_date,
+                                'end_date':position.end_date})
+
+    if request.method == 'POST':
+        form = PositionForm(request.POST, instance=person)
+        if form.is_valid():
+            # For optional start and end dates we need to set the result as None, otherwise a database error is thrown
+            # Initially they are set as null, and set according to user data if a date has been set
+            start_date = None
+            end_date = None
+            if '/' in request.POST.get("start_date"):
+                # Datepicker is returning the format as mm/dd/yyyy so, converting it into yyyy-mm-dd
+                start_date = request.POST.get("start_date")
+                start_month = start_date.split('/')[0]
+                start_year = start_date.split('/')[2]
+                start_day = start_date.split('/')[1]
+                start_date = start_year + '-' + start_month + '-' + start_day
+
+            if '/' in request.POST.get("end_date"):
+                # Datepicker is returning the format as mm/dd/yyyy so, converting it into yyyy-mm-dd
+                end_date = request.POST.get("end_date")
+                end_month = end_date.split('/')[0]
+                end_year = end_date.split('/')[2]
+                end_day = end_date.split('/')[1]
+                end_date = end_year + '-' + end_month + '-' + end_day
+
+            position.subject = form.cleaned_data.get('subject')
+            position.role = form.cleaned_data.get('role')
+            position.year = form.cleaned_data.get('year')
+            position.start_date = start_date
+            position.end_date = end_date
+            position.save()
+            return HttpResponseRedirect(reverse('person', args=(person.id,)))
+
+    context = {
+        'form': form,
+        'person': person,
+        'type': 'edit_position'
     }
 
     return render(request, template, context)
