@@ -285,7 +285,29 @@
     <div role="tabpanel" class="tab-pane" id="person-positions">
         <div class="panel panel-mbl">
             <div class="panel-heading">
-                <h3>Positions</h3>
+                <h3 style="display:inline;">Positions</h3>
+                <i class="fa fa-filter fa-2x" style="padding-top:15px;"></i>
+                <div class="dropdown">
+                  <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Dropdown Example
+                  <span class="caret"></span></button>
+                  <ul class="dropdown-menu">
+                    <li><a href="#">HTML</a></li>
+                    <li><a href="#">CSS</a></li>
+                    <li><a href="#">JavaScript</a></li>
+                  </ul>
+                </div>
+            </div>
+
+            <div class="container" style="padding-bottom:10px;">
+                <div class="input-group col-sm-8">
+                <span class="input-group-addon">Role</span>
+                <select id="SortPositionDropDown" class="form-control input-sm">
+                  <option value="All">All</option>
+                  <option value="Corporation Member">Corporation Member</option>
+                  <option value="Trustee">Trustee</option>
+                  <option value="Friday Evening Lecturer">Friday Evening Lecturer</option>
+                </select>
+                </div>
             </div>
 
             <table class="table">

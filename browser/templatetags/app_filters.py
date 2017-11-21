@@ -145,5 +145,4 @@ def get_affiliates(institution):
 
 @register.filter
 def get_positions(person):
-    print Position.objects.filter(person=person).distinct('year', 'id').order_by('year', 'id').values()
     return Position.objects.filter(person=person).distinct('year', 'id').order_by('year', 'id')
