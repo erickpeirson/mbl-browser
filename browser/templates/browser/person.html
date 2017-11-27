@@ -18,6 +18,11 @@
                 $(".modal-body #DeletePositionModalEndDate").text($(this).attr("data-end-date"));
                 $('#DeletePositionModal').modal('show');
            });
+
+           $(".PositionSelectOption").click(function(){
+                $( "#PositionTable" ).load( "person.html #PositionTable" );
+           });
+
         });
 </script>
 
@@ -285,23 +290,13 @@
     <div role="tabpanel" class="tab-pane" id="person-positions">
         <div class="panel panel-mbl">
             <div class="panel-heading">
-                <h3 style="display:inline;">Positions</h3>
-                <i class="fa fa-filter fa-2x" style="padding-top:15px;"></i>
-                <div class="dropdown">
-                  <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Dropdown Example
-                  <span class="caret"></span></button>
-                  <ul class="dropdown-menu">
-                    <li><a href="#">HTML</a></li>
-                    <li><a href="#">CSS</a></li>
-                    <li><a href="#">JavaScript</a></li>
-                  </ul>
-                </div>
+                <h3>Positions</h3>
             </div>
 
             <div class="container" style="padding-bottom:10px;">
                 <div class="input-group col-sm-8">
                 <span class="input-group-addon">Role</span>
-                <select id="SortPositionDropDown" class="form-control input-sm">
+                <select id="SortPositionDropDown" class="form-control input-sm PositionSelectOption">
                   <option value="All">All</option>
                   <option value="Corporation Member">Corporation Member</option>
                   <option value="Trustee">Trustee</option>
@@ -310,7 +305,7 @@
                 </div>
             </div>
 
-            <table class="table">
+            <table class="table" id="PositionTable">
                 <thead>
                     <tr>
                         {% if user.is_staff %}
