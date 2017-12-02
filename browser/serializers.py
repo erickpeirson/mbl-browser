@@ -479,3 +479,13 @@ class CourseGroupDetailSerializer(serializers.HyperlinkedModelSerializer):
         context = {'request': self._context['request']}
         serializer = CourseListSerializer(qs, many=True, context=context)
         return serializer.data
+
+
+class PositionListSerializer(serializers.Serializer):
+    subject = serializers.CharField(max_length=255)
+    role = serializers.CharField(max_length=255)
+    year = serializers.IntegerField(default=0)
+    last_updated = serializers.DateTimeField()
+    validated = serializers.BooleanField()
+    validated_by = serializers.CharField()
+    validated_on = serializers.DateTimeField()

@@ -753,7 +753,6 @@ def edit_position(request, person_id, position_id):
             # Initially they are set as null, and set according to user data if a date has been set
             start_date = None
             end_date = None
-            print request.POST.get("start_date"), request.POST.get("end_date")
             if '/' in request.POST.get("start_date"):
                 # Datepicker is returning the format as mm/dd/yyyy so, converting it into yyyy-mm-dd
                 start_date = request.POST.get("start_date")
@@ -770,7 +769,7 @@ def edit_position(request, person_id, position_id):
                 end_day = end_date.split('/')[1]
                 end_date = end_year + '-' + end_month + '-' + end_day
 
-            print start_date,end_date
+
             position.subject = form.cleaned_data.get('subject')
             position.role = form.cleaned_data.get('role')
             position.year = form.cleaned_data.get('year')

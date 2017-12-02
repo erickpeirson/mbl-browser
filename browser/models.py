@@ -228,6 +228,10 @@ class Person(URIMixin, CuratedMixin, LastUpdatedMixin):
     def is_investigator(self):
         return self.investigator_set.count() > 0
 
+    @property
+    def has_position(self):
+        return self.position_set.count() > 0
+
     def __unicode__(self):
         return self.name
 
