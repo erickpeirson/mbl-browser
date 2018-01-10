@@ -168,8 +168,7 @@ function updateBars() {
     .remove();
 
   u.on('click', function(d) {
-      // Split the url to preserve the part before coursegroup and added the clicked course from the graph to url
-      window.location.href = window.location.href.split('/coursegroup')[0] + '/course/' + d.id + '/';
+      window.location.href = "{% url 'courses' %}" + d.id;
   });
 
   // Update bar position, width & height
