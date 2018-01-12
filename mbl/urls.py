@@ -13,7 +13,6 @@ router.register(r'courses', rest.CourseViewSet)
 router.register(r'people', rest.PersonViewSet)
 router.register(r'institutions', rest.InstitutionViewSet)
 router.register(r'locations', rest.LocationViewSet)
-router.register(r'position', rest.LocationViewSet)
 
 
 urlpatterns = [

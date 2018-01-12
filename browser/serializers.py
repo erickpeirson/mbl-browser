@@ -235,6 +235,7 @@ class PersonDetailSerializer(serializers.HyperlinkedModelSerializer):
     locations = serializers.SerializerMethodField('has_location')
     investigation = serializers.SerializerMethodField('is_investigator')
     authority = KnownPersonSerializer(read_only=True)
+    positions = serializers.SerializerMethodField('positions_held')
 
     validated = serializers.BooleanField()
     validated_by = serializers.CharField()
@@ -244,10 +245,9 @@ class PersonDetailSerializer(serializers.HyperlinkedModelSerializer):
         model = Person
         fields = ('last_name', 'first_name', 'url', 'number_of_courses',
                   'is_investigator', 'number_of_affiliations', 'affiliations',
-                  'courses', 'locations', 'investigation', 'uri', 'authority',
+                  'courses', 'locations', 'investigation', 'positions', 'uri', 'authority',
                   'last_updated', 'id', 'validated', 'validated_by',
                   'validated_on')
-
 
     def affiliated_with(self, obj):
         """
@@ -339,6 +339,11 @@ class PersonDetailSerializer(serializers.HyperlinkedModelSerializer):
     def is_investigator(self, obj):
         qs = obj.investigator_set.all()
         serializer = InvestigatorSerializer(qs, many=True)
+        return serializer.data
+
+    def positions_held(self, obj):
+        qs = obj.position_set.all()
+        serializer = PositionListSerializer(qs, many=True)
         return serializer.data
 
 

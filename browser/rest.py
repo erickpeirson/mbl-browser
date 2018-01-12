@@ -57,12 +57,3 @@ class LocationViewSet(viewsets.ModelViewSet):
             return LocationListSerializer
         return LocationDetailSerializer
 
-
-class PositionViewSet(viewsets.ModelViewSet):
-    queryset = Position.objects.all()
-
-    def get_serializer_class(self):
-        if hasattr(self, 'action') and self.action == 'list':
-            return LocationListSerializer
-        return LocationListSerializer
-
