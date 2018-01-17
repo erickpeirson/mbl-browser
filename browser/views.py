@@ -702,21 +702,11 @@ def add_position(request, person_id):
             # Initially they are set as null, and set according to user data if a date has been set
             start_date = None
             end_date = None
-            if '/' in request.POST.get("start_date"):
-                # Datepicker is returning the format as mm/dd/yyyy so, converting it into yyyy-mm-dd
+            if '-' in request.POST.get("start_date"):
                 start_date = request.POST.get("start_date")
-                start_month = start_date.split('/')[0]
-                start_year = start_date.split('/')[2]
-                start_day = start_date.split('/')[1]
-                start_date = start_year + '-' + start_month + '-' + start_day
 
-            if '/' in request.POST.get("end_date") :
-                # Datepicker is returning the format as mm/dd/yyyy so, converting it into yyyy-mm-dd
+            if '-' in request.POST.get("end_date"):
                 end_date = request.POST.get("end_date")
-                end_month = end_date.split('/')[0]
-                end_year = end_date.split('/')[2]
-                end_day = end_date.split('/')[1]
-                end_date = end_year + '-' + end_month + '-' + end_day
 
             position = Position(subject=form.cleaned_data.get('subject'),
                                              role=form.cleaned_data.get('role'),
@@ -753,22 +743,11 @@ def edit_position(request, person_id, position_id):
             # Initially they are set as null, and set according to user data if a date has been set
             start_date = None
             end_date = None
-            if '/' in request.POST.get("start_date"):
-                # Datepicker is returning the format as mm/dd/yyyy so, converting it into yyyy-mm-dd
+            if '-' in request.POST.get("start_date"):
                 start_date = request.POST.get("start_date")
-                start_month = start_date.split('/')[0]
-                start_year = start_date.split('/')[2]
-                start_day = start_date.split('/')[1]
-                start_date = start_year + '-' + start_month + '-' + start_day
 
-            if '/' in request.POST.get("end_date"):
-                # Datepicker is returning the format as mm/dd/yyyy so, converting it into yyyy-mm-dd
+            if '-' in request.POST.get("end_date"):
                 end_date = request.POST.get("end_date")
-                end_month = end_date.split('/')[0]
-                end_year = end_date.split('/')[2]
-                end_day = end_date.split('/')[1]
-                end_date = end_year + '-' + end_month + '-' + end_day
-
 
             position.subject = form.cleaned_data.get('subject')
             position.role = form.cleaned_data.get('role')
