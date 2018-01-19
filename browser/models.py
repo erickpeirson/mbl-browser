@@ -322,6 +322,7 @@ class Investigator(YearMixin, CuratedMixin, LastUpdatedMixin):
     person = models.ForeignKey('Person')
     subject = models.CharField(max_length=255, blank=True)
     role = models.CharField(max_length=255, blank=True)
+    institution = models.ForeignKey('Institution')
 
     changed_by = models.ForeignKey('auth.User', related_name='edited_investigators')
 
