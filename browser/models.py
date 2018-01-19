@@ -516,7 +516,11 @@ class Position(YearMixin, CuratedMixin, LastUpdatedMixin):
     history = HistoricalRecords()
     person = models.ForeignKey('Person')
     subject = models.CharField(max_length=255, blank=True)
-    role_choices = (('Corporation Member','Corporation Member'), ('Trustee','Trustee'),('Friday Evening Lecturer', 'Friday Evening Lecturer'))
+    CORPORATION_MEMBER = 'Corporation Member'
+    TRUSTEE = 'Trustee'
+    FRIDAY_EVENING_LECTURER = 'Friday Evening Lecturer'
+    role_choices = ((CORPORATION_MEMBER, 'Corporation Member'), (TRUSTEE, 'Trustee'),
+                    (FRIDAY_EVENING_LECTURER, 'Friday Evening Lecturer'))
     role = models.CharField(max_length=255, blank=False,choices=role_choices)
 
     start_date = models.DateField(blank=True, null=True)
@@ -537,10 +541,10 @@ class Position(YearMixin, CuratedMixin, LastUpdatedMixin):
             rep += u'Role: %s' % self.role
         if self.subject:
             if self.role:
-                rep += u', '
+                rep += u' '
             rep += u'Subject: %s' % self.subject
         if self.subject or self.role:
-            rep += u', in %s' % self.year
+            rep += u' in %s' % self.year
         else:
             rep = u'Investigator in %i' % self.year
         return rep
