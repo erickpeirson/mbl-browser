@@ -82,21 +82,19 @@
 
     {% with form.institution as field %}
     <div class="row">
-        <div class="col-xs-8">
-        {% with form.institution as field %}
-                    <div class="form-group">
-                        {% for error in field.errors %}
-                        <div class="alert alert-warning">{{ error }}</div>
-                        {% endfor %}
-                        <label>{{ field.label }}</label>
-                        {{ form.institution_search|addcss:"form-control input-sm" }}
-                        <div class="list-group" id="institution-results-container"></div>
-                        {{ field|addcss:"form-control input-sm" }}
-                        <p class="text-muted">{{ field.help_text }}</p>
-                        <label class="control-label">{{ form.create_institution.label }} {{ form.create_institution }}</label>
-                        <span class="text-muted">{{ form.create_institution.help_text }}</span>
-                    </div>
-                    {% endwith %}
+        <div class="col-xs-12">
+            {% with form.institution as field %}
+                <div class="form-group">
+                    {% for error in field.errors %}
+                    <div class="alert alert-warning">{{ error }}</div>
+                    {% endfor %}
+                    <label>{{ field.label }}</label>
+                    {{ form.institution_search|addcss:"form-control input-sm" }}
+                    <div class="list-group" id="institution-results-container"></div>
+                    {{ field|addcss:"form-control input-sm" }}
+                    <p class="text-muted">{{ field.help_text }}</p>
+                </div>
+            {% endwith %}
         </div>
     </div>
     {% endwith %}
@@ -118,85 +116,23 @@
 
 <script>
 
-var toggleCreateFields = function() {
-    if ($('#id_create_person:checked').val()) {
-        $('.create-row').css('display', 'block');
-    } else {
-        $('.create-row').css('display', 'none');
-    }
-}
-
-$('#id_create_person').change(toggleCreateFields);
-$('body').ready(toggleCreateFields);
-
-var container = $('#person-results-container');
-var search = $('#id_person_search');
-var input = $('#id_person');
-
 var institution_search = $('#id_institution_search');
 var institution_container = $('#institution-results-container');
-var institution_input = $('#id_institution');
-
-var selectResult = function(id, name) {
-    container.empty();
-    search.val(name);
-    input.val(id);
-}
-
-var selectInstitutionResult = function(id, name) {
-    institution_container.empty();
-    institution_search.val(name);
-    institution_input.val(id);
-}
-
-var getName = function(result) {
-    return result.first_name + ' ' + result.last_name;
-}
 
 $(document).ready(function() {
     $(".dropdown-toggle").dropdown();
     $('[data-toggle="tooltip"]').tooltip();
 });
 
-var searchPromise = null;
-
-var toggleIndicator = function() {
-    var val = input.val();
-    if (val != '' && val != null) {
-        indicator.removeClass('glyphicon-search');
-        indicator.addClass('glyphicon-ok');
-    } else {
-        indicator.addClass('glyphicon-search');
-        indicator.removeClass('glyphicon-ok');
-    }
+var selectInstitutionResult = function(id, name) {
+    institution_container.empty();
+    institution_search.val(name);
 }
 
-search.on('keyup', function(e) {
-    var query = $(this).val();
-    input.val(null);
-
-    if (query.length == 0){
-        container.empty();
-    } else {
-        if (searchPromise) {
-            clearTimeout(searchPromise);
-        }
-        searchPromise = setTimeout(function() {
-            $.ajax("{% url "person-list" %}?name=" + query, {
-                success: function(result) {
-                    container.empty();
-                    result.results.forEach(function(r) {
-                        container.append('<a class="list-group-item search-result" id="' + r.id + '" onclick="selectResult(' + r.id + ', \''+ getName(r) +'\')">' + getName(r) + '</a>');
-                    });
-                }
-            });
-        }, 500);
-    }
-});
+var searchPromise = null;
 
 institution_search.on('keyup', function(e) {
     var query = $(this).val();
-    institution_input.val(null);
 
     if (query.length == 0){
         institution_container.empty();

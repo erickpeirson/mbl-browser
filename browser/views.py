@@ -639,7 +639,7 @@ def add_investigator_record(request, person_id):
                                             role=form.cleaned_data.get('role'),
                                             person_id=person_id, year=form.cleaned_data.get('year'),
                                             changed_by=request.user,
-                                        institution=form.cleaned_data.get('institution'))
+                                        institution=form.cleaned_data.get('institution_search'))
             investigator.save()
             return HttpResponseRedirect(reverse('person', args=(person.id,)))
 
@@ -660,7 +660,7 @@ def edit_investigator_record(request,person_id,research_id):
 
     # Retreive investigator data already stored in database and display to the user
     form = InvestigatorForm(initial={'subject': research.subject, 'role': research.role,
-                                             'year': research.year, 'institution': research.institution})
+                                             'year': research.year, 'institution_search': research.institution})
 
     if request.method == 'POST':
         form = InvestigatorForm(request.POST, instance=person)
@@ -668,7 +668,7 @@ def edit_investigator_record(request,person_id,research_id):
             research.subject = form.cleaned_data.get('subject')
             research.role = form.cleaned_data.get('role')
             research.year = form.cleaned_data.get('year')
-            research.institution = form.cleaned_data.get('institution')
+            research.institution = form.cleaned_data.get('institution_search')
             research.save()
             return HttpResponseRedirect(reverse('person', args=(person.id,)))
 

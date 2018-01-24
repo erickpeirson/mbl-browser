@@ -156,6 +156,7 @@
                         <th class="col-xs-1"></th>
                         {% endif %}
                         <td>Year</td>
+                        <td>Institution</td>
                         <td>Subject</td>
                         <td>Role</td>
                     </tr>
@@ -180,6 +181,7 @@
                         </td>
                         {% endif %}
                         <td>{{ research.year }}</td>
+                        <td>{{ research.institution }}</td>
                         <td>{{ research.subject }}</td>
                         <td>{{ research.role }}</td>
                     </tr>
@@ -208,6 +210,10 @@
 
                               <div class="form-group">
                                 <strong>Role:</strong> <br> <label style="font-weight:normal" >{{research.role}}</label>
+                              </div>
+
+                              <div class="form-group">
+                                <strong>Institution:</strong> <br> <label style="font-weight:normal" >{{research.institution}}</label>
                               </div>
                             </h5>
                           </div>
