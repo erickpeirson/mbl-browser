@@ -713,28 +713,20 @@ def position(request, person_id, position_id):
     if request.method == 'POST':
         form = PositionForm(request.POST, instance=person)
         if form.is_valid():
-            start_date = None
-            end_date = None
-            if '-' in request.POST.get("start_date"):
-                start_date = request.POST.get("start_date")
-
-            if '-' in request.POST.get("end_date"):
-                end_date = request.POST.get("end_date")
-
             if position_id == "0":
                 position = Position(subject=form.cleaned_data.get('subject'),
                                     role=form.cleaned_data.get('role'),
                                     person_id=person_id, year=form.cleaned_data.get('year'),
-                                    start_date=start_date,
-                                    end_date=end_date,
+                                    start_date=form.cleaned_data.get('start_date'),
+                                    end_date=form.cleaned_data.get('end_date'),
                                     changed_by=request.user)
                 position.save()
             else:
                 position.subject = form.cleaned_data.get('subject')
                 position.role = form.cleaned_data.get('role')
                 position.year = form.cleaned_data.get('year')
-                position.start_date = start_date
-                position.end_date = end_date
+                position.start_date = form.cleaned_data.get('start_date')
+                position.end_date = form.cleaned_data.get('end_date')
                 position.save()
             return HttpResponseRedirect(reverse('person', args=(person.id,)))
 
