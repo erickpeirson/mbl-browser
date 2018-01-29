@@ -696,38 +696,29 @@ def position(request, person_id, position_id):
     context = {
         'form': form,
         'person': person,
-        'type': 'create_position'
     }
 
-    # If position_id = 0 then, we are dealing with adding a new position request
-    if position_id != "0":
+    if position_id is not None:
         position = get_object_or_404(Position, pk=position_id)
         form = PositionForm(initial={'subject': position.subject, 'role': position.role,
                                      'year': position.year, 'start_date': position.start_date,
                                      'end_date': position.end_date})
         context.update({
-            'type': 'create_position',
+            'position_id': position_id,
             'form': form
         })
 
     if request.method == 'POST':
         form = PositionForm(request.POST, instance=person)
         if form.is_valid():
-            if position_id == "0":
-                position = Position(subject=form.cleaned_data.get('subject'),
-                                    role=form.cleaned_data.get('role'),
-                                    person_id=person_id, year=form.cleaned_data.get('year'),
-                                    start_date=form.cleaned_data.get('start_date'),
-                                    end_date=form.cleaned_data.get('end_date'),
-                                    changed_by=request.user)
-                position.save()
+            if position_id is None:
+                Position.objects.create(
+                    person_id=person_id,
+                    changed_by=request.user,
+                    **form.cleaned_data
+                )
             else:
-                position.subject = form.cleaned_data.get('subject')
-                position.role = form.cleaned_data.get('role')
-                position.year = form.cleaned_data.get('year')
-                position.start_date = form.cleaned_data.get('start_date')
-                position.end_date = form.cleaned_data.get('end_date')
-                position.save()
+                Position.objects.filter(id=position_id).update(**form.cleaned_data)
             return HttpResponseRedirect(reverse('person', args=(person.id,)))
 
     return render(request, template, context)

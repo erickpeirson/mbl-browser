@@ -98,7 +98,7 @@
                 aria-hidden="true"
                 data-toggle="tooltip"
                 title="Add a position record for {{person.name}}"
-                href="{% url "position" person.id 0 %}">
+                href="{% url "add-position" person.id %}">
             </a>
         </span>
         {% endif %}
@@ -367,7 +367,7 @@
                             <a class=" btn btn-sm fa fa-edit"
                                aria-hidden="true"
                                id="edit_position"
-                               href="{% url "position" person.id position.id %}">
+                               href="{% url "edit-position" person.id position.id %}">
                             </a>
                             <a class="btn btn-sm fa fa-trash DeletePosition"
                                 aria-hidden="true"
@@ -408,7 +408,7 @@
                         <td>
                             <a class=" btn btn-sm fa fa-edit"
                                aria-hidden="true"
-                               href="{% url "position" person.id position.id %}">
+                               href="{% url "edit-position" person.id position.id %}">
                             </a>
                             <a class="btn btn-sm fa fa-trash DeletePosition"
                                 aria-hidden="true"
@@ -449,7 +449,7 @@
                         <td>
                             <a class=" btn btn-sm fa fa-edit"
                                aria-hidden="true"
-                               href="{% url "position" person.id position.id %}">
+                               href="{% url "edit-position" person.id position.id %}">
                             </a>
                             <a class="btn btn-sm fa fa-trash DeletePosition"
                                 aria-hidden="true"
@@ -490,7 +490,7 @@
                         <td>
                             <a class=" btn btn-sm fa fa-edit"
                                aria-hidden="true"
-                               href="{% url "position" person.id position.id %}">
+                               href="{% url "edit-position" person.id position.id %}">
                             </a>
                             <a class="btn btn-sm fa fa-trash DeletePosition"
                                 aria-hidden="true"
