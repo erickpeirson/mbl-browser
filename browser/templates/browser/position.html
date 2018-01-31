@@ -54,10 +54,10 @@
 
 <div class="container">
     <p class="text-info">
-        {% if position_id == undefined or position_id == null %}
-        The below form will add a new <strong>Position</strong> record for <strong>{{ person.name }}</strong>.
-        {% else %}
+        {% if position_id %}
         The below form will edit this <strong>Position</strong> record for <strong>{{ person.name }}</strong>.
+        {% else %}
+        The below form will add a new <strong>Position</strong> record for <strong>{{ person.name }}</strong>.
         {% endif %}
     </p>
 
@@ -148,10 +148,10 @@
 
     <div class="row">
     <div class="text-center">
-        {% if position_id == undefined or position_id == null %}
-        <input class="btn btn-success" name="SaveButton" type="submit" value="Save">
-        {% else %}
+        {% if position_id %}
         <input class="btn btn-success" form="PositionForm" type="submit" name="UpdateButton" id="ValueButton" value="Update">
+        {% else %}
+        <input class="btn btn-success" name="SaveButton" type="submit" value="Save">
         {% endif %}
         <a class="btn btn-danger" href="{% url "person" person.id %}">Cancel</a>
     </div>

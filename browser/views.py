@@ -696,9 +696,10 @@ def position(request, person_id, position_id):
     context = {
         'form': form,
         'person': person,
+        'position_id': None
     }
 
-    if position_id is not None:
+    if position_id:
         position = get_object_or_404(Position, pk=position_id)
         form = PositionForm(initial={'subject': position.subject, 'role': position.role,
                                      'year': position.year, 'start_date': position.start_date,
