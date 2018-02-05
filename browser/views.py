@@ -710,7 +710,7 @@ def position(request, person_id, position_id):
         })
 
     if request.method == 'POST':
-        form = PositionForm(request.POST, instance=person)
+        form = PositionForm(request.POST)
         if form.is_valid():
             if position_id is None:
                 Position.objects.create(

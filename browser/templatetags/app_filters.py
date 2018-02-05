@@ -146,6 +146,6 @@ def get_affiliates(institution):
 @register.filter
 def get_positions(person, role_type):
     if role_type == 'All':
-        return Position.objects.filter(person=person).distinct('year', 'id').order_by('year', 'id')
+        return Position.objects.filter(person=person).order_by('year')
     else:
-        return Position.objects.filter(person=person, role=role_type).distinct('year', 'id').order_by('year', 'id')
+        return Position.objects.filter(person=person, role=role_type).order_by('year')
