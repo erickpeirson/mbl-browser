@@ -11,16 +11,16 @@ class Command(BaseCommand):
     help = 'Load MBL data from CSV'
 
     datatypes = [
-        ('coursegroup', 'coursegroup.csv'),
-        ('institution', 'institution.csv'),
-        ('location', 'location.csv'),
-        ('course', 'course.csv'),
+        #('coursegroup', 'coursegroup.csv'),
+        #('institution', 'institution.csv'),
+        #('location', 'location.csv'),
+        #('course', 'course.csv'),
         ('person', 'person.csv'),
-        ('affiliations', 'cleaned_affiliations.csv'),
-        ('attendance', 'cleaned_coursedata.csv'),
-        ('coursegroups', 'cleaned_coursegroups.csv'),
-        ('investigators', 'cleaned_investigators.csv'),
-        ('locations', 'cleaned_locations.csv')
+        #('affiliations', 'cleaned_affiliations.csv'),
+        #('attendance', 'cleaned_coursedata.csv'),
+        #('coursegroups', 'cleaned_coursegroups.csv'),
+        #('investigators', 'cleaned_investigators.csv'),
+        #('locations', 'cleaned_locations.csv')
     ]
 
     def add_arguments(self, parser):
@@ -59,10 +59,14 @@ class Command(BaseCommand):
         instance.save()
 
     def handle_person(self, datum):
-        instance = Person(first_name=datum['First Name'],
-                          last_name=datum['Last Name'],
-                          uri=datum['Person URI'])
-        instance.save()
+        try:
+            instance = Person(first_name=datum['First Name'],
+                              last_name=datum['Last Name'],
+                              uri=datum['Person URI'],
+                              changed_by=auth.User)
+            instance.save()
+        except Exception as e:
+            print "Error while importing: ", e
 
     def handle_affiliations(self, datum):
         if isnan(datum['Person URI']) or isnan(datum['Institution URI']):

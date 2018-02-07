@@ -631,7 +631,7 @@ def add_investigator_record(request, person_id):
     person = get_object_or_404(Person, pk=person_id)
     template = "browser/investigator.html"
     form = InvestigatorForm()
-
+    print "Request.user : ", request.user
     if request.method == 'POST':
         form = InvestigatorForm(request.POST, instance=person)
         if form.is_valid():
