@@ -60,8 +60,8 @@ class Command(BaseCommand):
 
     def handle_person(self, datum):
         instance = Person(first_name=datum['First Name'],
-                          last_name=datum['Last Name'],
-                          uri=datum['Person URI'])
+                              last_name=datum['Last Name'],
+                              uri=datum['Person URI'])
         instance.save()
 
     def handle_affiliations(self, datum):

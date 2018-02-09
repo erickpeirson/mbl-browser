@@ -516,11 +516,11 @@ class Position(YearMixin, CuratedMixin, LastUpdatedMixin):
     history = HistoricalRecords()
     person = models.ForeignKey('Person')
     subject = models.CharField(max_length=255, blank=True)
-    CORP = 'Corporation Member'
-    TRUSTEE = 'Trustee'
-    FEL = 'Friday Evening Lecturer'
-    role_choices = ((CORP, 'Corporation Member'), (TRUSTEE, 'Trustee'),
-                    (FEL, 'Friday Evening Lecturer'))
+    CORPORATION_MEMBER = 'CM'
+    TRUSTEE = 'TR'
+    FRIDAY_EVENING_LECTURER = 'FEL'
+    role_choices = ((CORPORATION_MEMBER, 'Corporation Member'), (TRUSTEE, 'Trustee'),
+                    (FRIDAY_EVENING_LECTURER, 'Friday Evening Lecturer'))
     role = models.CharField(max_length=255, blank=False, choices=role_choices)
 
     start_date = models.DateField(blank=True, null=True)

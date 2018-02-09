@@ -4,59 +4,36 @@
 
 
 {% block main %}
-
+<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css"/>
 <script>
+        $.fn.dataTable.ext.search.push(
+        function( settings, data, dataIndex ) {
+            var filtered_position = $('#SortPositionDropDown').val();
+            var position = data[5]; // This is the position number for Position data
+
+
+            if ( position == filtered_position )
+            {
+                return true;
+            }
+            else if ( filtered_position == 'All' )
+            {
+                return true;
+            }
+            return false;
+        }
+        );
+
         $(document).ready(function() {
+
+            var table = $('#PositionTable').DataTable();
+
+            $('#SortPositionDropDown').change( function() {
+                table.draw();
+            } );
+
             $('[data-curation-tooltip]').tooltip();
-            $( "#PositionTable" ).find(".AllPositionData").show();
-            $( "#PositionTable" ).find(".TrusteePositionData").hide();
-            $( "#PositionTable" ).find(".CorporationMemberPositionData").hide();
-            $( "#PositionTable" ).find(".FridayEveningLecturerPositionData").hide();
-
-            $(".DeletePosition").click(function(){
-                $('#DeletePositionModalForm').attr('action', $(this).attr("data-url"));
-                $(".modal-body #DeletePositionModalSubject").text($(this).attr("data-subject"));
-                $(".modal-body #DeletePositionModalRole").text($(this).attr("data-role"));
-                $(".modal-body #DeletePositionModalYear").text($(this).attr("data-year"));
-                $(".modal-body #DeletePositionModalStartDate").text($(this).attr("data-start-date"));
-                $(".modal-body #DeletePositionModalEndDate").text($(this).attr("data-end-date"));
-                $('#DeletePositionModal').modal('show');
-           });
-
-           $(".PositionSelectOption").change(function(){
-                var value = $(this).val();
-
-                if (value=='All')
-                {
-                    $( "#PositionTable" ).find(".AllPositionData").show();
-                    $( "#PositionTable" ).find(".TrusteePositionData").hide();
-                    $( "#PositionTable" ).find(".CorporationMemberPositionData").hide();
-                    $( "#PositionTable" ).find(".FridayEveningLecturerPositionData").hide();
-                }
-                else if(value=='Trustee')
-                {
-                    $( "#PositionTable" ).find(".AllPositionData").hide();
-                    $( "#PositionTable" ).find(".TrusteePositionData").show();
-                    $( "#PositionTable" ).find(".CorporationMemberPositionData").hide();
-                    $( "#PositionTable" ).find(".FridayEveningLecturerPositionData").hide();
-                }
-                else if(value=='Corporation Member')
-                {
-                    $( "#PositionTable" ).find(".AllPositionData").hide();
-                    $( "#PositionTable" ).find(".TrusteePositionData").hide();
-                    $( "#PositionTable" ).find(".CorporationMemberPositionData").show();
-                    $( "#PositionTable" ).find(".FridayEveningLecturerPositionData").hide();
-                }
-                else
-                {
-                    $( "#PositionTable" ).find(".AllPositionData").hide();
-                    $( "#PositionTable" ).find(".TrusteePositionData").hide();
-                    $( "#PositionTable" ).find(".CorporationMemberPositionData").hide();
-                    $( "#PositionTable" ).find(".FridayEveningLecturerPositionData").show();
-                }
-
-           });
-
 
 
         });
@@ -345,7 +322,7 @@
                 </div>
             </div>
 
-            <table class="table" id="PositionTable">
+            <table class="display" cellspacing="0" width="100%" id="PositionTable">
                 <thead>
                     <tr>
                         {% if user.is_staff %}
@@ -400,128 +377,7 @@
                     {% endwith %}
                 </tbody>
 
-                <tbody class="TrusteePositionData">
-                    {% with person|get_positions:'Trustee' as positions %}
-                    {% for position in positions %}
-                    <tr>
-                        {% if user.is_staff %}
-                        <td>
-                            <a class=" btn btn-sm fa fa-edit"
-                               aria-hidden="true"
-                               href="{% url "edit-position" person.id position.id %}">
-                            </a>
-                            <a class="btn btn-sm fa fa-trash DeletePosition"
-                                aria-hidden="true"
-                                data-toggle="modal"
-                                data-url="{% url "delete-position" person.id position.id %}"
-                                data-subject = "{{position.subject}}"
-                                data-role = "{{position.role}}"
-                                data-year = "{{position.year}}"
-                                data-start-date = "{{position.start_date}}"
-                                data-end-date = "{{position.end_date}}"
-                            >
-                            </a>
-                        </td>
-                        {% endif %}
-                        <td>{{ position.year }}</td>
-                        {% if position.start_date is None %}
-                        <td>-</td>
-                        {% else %}
-                        <td>{{ position.start_date }}</td>
-                        {% endif %}
-                        {% if position.end_date is None %}
-                        <td>-</td>
-                        {% else %}
-                        <td>{{ position.end_date }}</td>
-                        {% endif %}
-                        <td>{{ position.subject }}</td>
-                        <td>{{ position.role }}</td>
-                    </tr>
-                    {% endfor %}
-                    {% endwith %}
-                </tbody>
 
-                <tbody class="CorporationMemberPositionData">
-                    {% with person|get_positions:'Corporation Member' as positions %}
-                    {% for position in positions %}
-                    <tr>
-                        {% if user.is_staff %}
-                        <td>
-                            <a class=" btn btn-sm fa fa-edit"
-                               aria-hidden="true"
-                               href="{% url "edit-position" person.id position.id %}">
-                            </a>
-                            <a class="btn btn-sm fa fa-trash DeletePosition"
-                                aria-hidden="true"
-                                data-toggle="modal"
-                                data-url="{% url "delete-position" person.id position.id %}"
-                                data-subject = "{{position.subject}}"
-                                data-role = "{{position.role}}"
-                                data-year = "{{position.year}}"
-                                data-start-date = "{{position.start_date}}"
-                                data-end-date = "{{position.end_date}}"
-                            >
-                            </a>
-                        </td>
-                        {% endif %}
-                        <td>{{ position.year }}</td>
-                        {% if position.start_date is None %}
-                        <td>-</td>
-                        {% else %}
-                        <td>{{ position.start_date }}</td>
-                        {% endif %}
-                        {% if position.end_date is None %}
-                        <td>-</td>
-                        {% else %}
-                        <td>{{ position.end_date }}</td>
-                        {% endif %}
-                        <td>{{ position.subject }}</td>
-                        <td>{{ position.role }}</td>
-                    </tr>
-                    {% endfor %}
-                    {% endwith %}
-                </tbody>
-
-                <tbody class="FridayEveningLecturerPositionData">
-                    {% with person|get_positions:'Friday Evening Lecturer' as positions %}
-                    {% for position in positions %}
-                    <tr>
-                        {% if user.is_staff %}
-                        <td>
-                            <a class=" btn btn-sm fa fa-edit"
-                               aria-hidden="true"
-                               href="{% url "edit-position" person.id position.id %}">
-                            </a>
-                            <a class="btn btn-sm fa fa-trash DeletePosition"
-                                aria-hidden="true"
-                                data-toggle="modal"
-                                data-url="{% url "delete-position" person.id position.id %}"
-                                data-subject = "{{position.subject}}"
-                                data-role = "{{position.role}}"
-                                data-year = "{{position.year}}"
-                                data-start-date = "{{position.start_date}}"
-                                data-end-date = "{{position.end_date}}"
-                            >
-                            </a>
-                        </td>
-                        {% endif %}
-                        <td>{{ position.year }}</td>
-                        {% if position.start_date is None %}
-                        <td>-</td>
-                        {% else %}
-                        <td>{{ position.start_date }}</td>
-                        {% endif %}
-                        {% if position.end_date is None %}
-                        <td>-</td>
-                        {% else %}
-                        <td>{{ position.end_date }}</td>
-                        {% endif %}
-                        <td>{{ position.subject }}</td>
-                        <td>{{ position.role }}</td>
-                    </tr>
-                    {% endfor %}
-                    {% endwith %}
-                </tbody>
 
             </table>
         </div>

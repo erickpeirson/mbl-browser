@@ -689,7 +689,7 @@ def delete_investigator_record(request, person_id, research_id):
 
 
 @staff_member_required
-def position(request, person_id, position_id):
+def position(request, person_id, position_id=None):
     person = get_object_or_404(Person, pk=person_id)
     template = "browser/position.html"
     form = PositionForm()
@@ -718,10 +718,10 @@ def position(request, person_id, position_id):
                     changed_by=request.user,
                     **form.cleaned_data
                 )
+
             else:
                 Position.objects.filter(id=position_id).update(**form.cleaned_data)
             return HttpResponseRedirect(reverse('person', args=(person.id,)))
-
     return render(request, template, context)
 
 
@@ -729,5 +729,4 @@ def position(request, person_id, position_id):
 def delete_position(request, person_id, position_id):
     if request.method == 'POST':
         Position.objects.filter(id=position_id).delete()
-
     return HttpResponseRedirect(reverse('person', args=(person_id,)))
