@@ -521,7 +521,7 @@ class Position(YearMixin, CuratedMixin, LastUpdatedMixin):
     FRIDAY_EVENING_LECTURER = 'FEL'
     role_choices = ((CORPORATION_MEMBER, 'Corporation Member'), (TRUSTEE, 'Trustee'),
                     (FRIDAY_EVENING_LECTURER, 'Friday Evening Lecturer'))
-    role = models.CharField(max_length=255, blank=False, choices=role_choices)
+    role = models.CharField(max_length=255, blank=False, choices=role_choices, default=CORPORATION_MEMBER)
 
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)

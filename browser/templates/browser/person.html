@@ -35,6 +35,16 @@
 
             $('[data-curation-tooltip]').tooltip();
 
+            $(".DeletePosition").click(function(){
+                $('#DeletePositionModalForm').attr('action', $(this).attr("data-url"));
+                $(".modal-body #DeletePositionModalSubject").text($(this).attr("data-subject"));
+                $(".modal-body #DeletePositionModalRole").text($(this).attr("data-role"));
+                $(".modal-body #DeletePositionModalYear").text($(this).attr("data-year"));
+                $(".modal-body #DeletePositionModalStartDate").text($(this).attr("data-start-date"));
+                $(".modal-body #DeletePositionModalEndDate").text($(this).attr("data-end-date"));
+                $('#DeletePositionModal').modal('show');
+           });
+
 
         });
 </script>
@@ -75,7 +85,7 @@
                 aria-hidden="true"
                 data-toggle="tooltip"
                 title="Add a position record for {{person.name}}"
-                href="{% url "add-position" person.id %}">
+                href="{% url "position" person.id %}">
             </a>
         </span>
         {% endif %}
@@ -315,11 +325,18 @@
                 <span class="input-group-addon">Role</span>
                 <select id="SortPositionDropDown" class="form-control input-sm PositionSelectOption">
                   <option value="All">All</option>
+                  <!--
                   <option value="Corporation Member">Corporation Member</option>
                   <option value="Trustee">Trustee</option>
-                  <option value="Friday Evening Lecturer">Friday Evening Lecturer</option>
+                  <option value="Friday Evening Lecturer">Friday Evening Lecturer</option>-->
                 </select>
                 </div>
+
+                {% with get_positions_roles as i %}
+                    {% for j in i %}
+                        {{ j }}
+                    {% endfor %}
+                {% endwith %}
             </div>
 
             <table class="display" cellspacing="0" width="100%" id="PositionTable">
@@ -344,14 +361,14 @@
                             <a class=" btn btn-sm fa fa-edit"
                                aria-hidden="true"
                                id="edit_position"
-                               href="{% url "edit-position" person.id position.id %}">
+                               href="{% url "position" person.id position.id %}">
                             </a>
                             <a class="btn btn-sm fa fa-trash DeletePosition"
                                 aria-hidden="true"
                                 data-toggle="modal"
                                 data-url="{% url "delete-position" person.id position.id %}"
                                 data-subject = "{{position.subject}}"
-                                data-role = "{{position.role}}"
+                                data-role = "{{position.get_role_display}}"
                                 data-year = "{{position.year}}"
                                 data-start-date = "{{position.start_date}}"
                                 data-end-date = "{{position.end_date}}"
@@ -371,7 +388,7 @@
                         <td>{{ position.end_date }}</td>
                         {% endif %}
                         <td>{{ position.subject }}</td>
-                        <td>{{ position.role }}</td>
+                        <td>{{ position.get_role_display }}</td>
                     </tr>
                     {% endfor %}
                     {% endwith %}
