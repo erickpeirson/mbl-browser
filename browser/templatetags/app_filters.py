@@ -144,15 +144,7 @@ def get_affiliates(institution):
 
 
 @register.filter
-def get_positions(person, role_type):
-    print Position.get_role_display
-    if role_type == 'All':
-        return Position.objects.filter(person=person).order_by('year')
-    else:
-        return Position.objects.filter(person=person, role=role_type).order_by('year')
+def get_positions(person):
+    return Position.objects.filter(person=person).order_by('year')
 
 
-@register.assignment_tag(takes_context=True)
-def get_positions_roles(context):
-    print "Here"
-    return Position.role_choices

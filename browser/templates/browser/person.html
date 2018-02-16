@@ -2,36 +2,37 @@
 {% load app_filters %}
 {% block title %}{{ person.name }} (Person){% endblock %}
 
-
+{% load staticfiles %}
 {% block main %}
-<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-<link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css"/>
+<script src="{% static "browser/js/jquery.dataTables.min.js" %}"></script>
+<link rel="stylesheet" href="{% static "browser/css/jquery.dataTables.min.css" %}"/>
 <script>
-        $.fn.dataTable.ext.search.push(
-        function( settings, data, dataIndex ) {
-            var filtered_position = $('#SortPositionDropDown').val();
-            var position = data[5]; // This is the position number for Position data
-
-
-            if ( position == filtered_position )
-            {
-                return true;
-            }
-            else if ( filtered_position == 'All' )
-            {
-                return true;
-            }
-            return false;
-        }
-        );
 
         $(document).ready(function() {
 
-            var table = $('#PositionTable').DataTable();
+            var table = $('#PositionTable').DataTable({
+            initComplete : function() {
+            this.api().column(5).every( function () {
+                     var column = this;
+                     var select = jQuery('<select style="border:none;"><option value="">All Roles</option></select>')
+                     .appendTo( jQuery(column.header()).empty() )
+                     .on( 'change', function () {
+                         var val = jQuery.fn.dataTable.util.escapeRegex(
+                             jQuery(this).val()
+                         );
 
-            $('#SortPositionDropDown').change( function() {
-                table.draw();
-            } );
+                         column
+                             .search( val ? '^'+val+'$' : '', true, false )
+                             .draw();
+                     });
+
+                     column.data().unique().sort().each( function ( d, j ) {
+                         select.append( '<option value="'+d+'">'+d+'</option>' )
+                     });
+                 });
+            }
+            });
+
 
             $('[data-curation-tooltip]').tooltip();
 
@@ -111,7 +112,7 @@
         {% if person.number_of_courses > 0 %}<li role="presentation"{% if person.number_of_affiliations == 0 %} class="active"{% endif %}><a href="#person-courses" aria-controls="courses" role="tab" data-toggle="tab">Courses</a></li>{% endif %}
         {% if person.is_investigator %}<li role="presentation"{% if person.number_of_courses == 0 and person.number_of_affiliations == 0 %} class="active"{% endif %}><a href="#person-investigations" aria-controls="research" role="tab" data-toggle="tab">Research</a></li>{% endif %}
         {% if person.number_of_locations > 0 %}<li role="presentation">{% if person.number_of_courses == 0 and person.number_of_affiliations == 0 and not person.is_investigator %} class="active"{% endif %}<a href="#person-locations" aria-controls="locations" role="tab" data-toggle="tab">Locations</a></li>{% endif %}
-        {% with person|get_positions:'All' as positions %}
+        {% with person|get_positions as positions %}
         {% if positions|length > 0 %}
         <li role="presentation"><a href="#person-positions" aria-controls="positions" role="tab" data-toggle="tab">Positions</a></li>
         {% endif %}
@@ -312,31 +313,12 @@
     {% endwith %}
 
     <!-- Positions -->
-    {% with person|get_positions:'All' as positions %}
+    {% with person|get_positions as positions %}
     {% if positions|length > 0 %}
     <div role="tabpanel" class="tab-pane" id="person-positions">
         <div class="panel panel-mbl">
             <div class="panel-heading">
                 <h3>Positions</h3>
-            </div>
-
-            <div class="container" style="padding-bottom:10px;">
-                <div class="input-group col-sm-8">
-                <span class="input-group-addon">Role</span>
-                <select id="SortPositionDropDown" class="form-control input-sm PositionSelectOption">
-                  <option value="All">All</option>
-                  <!--
-                  <option value="Corporation Member">Corporation Member</option>
-                  <option value="Trustee">Trustee</option>
-                  <option value="Friday Evening Lecturer">Friday Evening Lecturer</option>-->
-                </select>
-                </div>
-
-                {% with get_positions_roles as i %}
-                    {% for j in i %}
-                        {{ j }}
-                    {% endfor %}
-                {% endwith %}
             </div>
 
             <table class="display" cellspacing="0" width="100%" id="PositionTable">
@@ -353,7 +335,6 @@
                     </tr>
                 </thead>
                 <tbody class="AllPositionData">
-                    {% with person|get_positions:'All' as positions %}
                     {% for position in positions %}
                     <tr>
                         {% if user.is_staff %}
@@ -391,7 +372,6 @@
                         <td>{{ position.get_role_display }}</td>
                     </tr>
                     {% endfor %}
-                    {% endwith %}
                 </tbody>
 
 
