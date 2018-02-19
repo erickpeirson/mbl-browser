@@ -332,9 +332,6 @@ class SplitPersonForm(forms.Form):
 
 
 class InvestigatorForm(forms.ModelForm):
-    institution = forms.ModelChoiceField(queryset=Institution.objects.all(),
-                                         required=False,
-                                         widget=forms.HiddenInput())
     institution_search = forms.CharField(required=False, widget=forms.TextInput(attrs={'autocomplete': 'off'}))
 
     class Meta:

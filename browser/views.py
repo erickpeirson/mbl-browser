@@ -635,13 +635,17 @@ def add_investigator_record(request, person_id):
     if request.method == 'POST':
         form = InvestigatorForm(request.POST, instance=person)
         if form.is_valid():
+            if form.cleaned_data.get('institution') and not Institution.objects.filter(name=form.cleaned_data.get('institution_search')).exists:
+                print "Create Institution"
             investigator = Investigator(subject=form.cleaned_data.get('subject'),
                                             role=form.cleaned_data.get('role'),
                                             person_id=person_id, year=form.cleaned_data.get('year'),
                                             changed_by=request.user,
-                                        institution=form.cleaned_data.get('institution_search'))
+                                  institution=Institution.objects.get(name=form.cleaned_data.get('institution_search')))
             investigator.save()
             return HttpResponseRedirect(reverse('person', args=(person.id,)))
+        else:
+            print "Error in validating InvestigatorForm : ", form.errors
 
     context = {
         'form': form,
@@ -668,7 +672,7 @@ def edit_investigator_record(request,person_id,research_id):
             research.subject = form.cleaned_data.get('subject')
             research.role = form.cleaned_data.get('role')
             research.year = form.cleaned_data.get('year')
-            research.institution = form.cleaned_data.get('institution_search')
+            research.institution = Institution.objects.get(name=form.cleaned_data.get('institution_search'))
             research.save()
             return HttpResponseRedirect(reverse('person', args=(person.id,)))
 

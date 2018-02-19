@@ -80,7 +80,7 @@
     </div>
     {% endwith %}
 
-    {% with form.institution as field %}
+    {% with form.institution_search as field %}
     <div class="row">
         <div class="col-xs-12">
             <div class="form-group">
@@ -88,7 +88,7 @@
                 <div class="alert alert-warning">{{ error }}</div>
                 {% endfor %}
                 <label>{{ field.label }}</label>
-                {{ form.institution_search|addcss:"form-control input-sm" }}
+                {{ field|addcss:"form-control input-sm" }}
                 <div class="list-group" id="institution-results-container"></div>
                 <p class="text-muted">{{ field.help_text }}</p>
             </div>
