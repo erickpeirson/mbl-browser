@@ -332,8 +332,9 @@ class SplitPersonForm(forms.Form):
 
 
 class InvestigatorForm(forms.ModelForm):
-    institution_search = forms.CharField(required=False, widget=forms.TextInput(attrs={'autocomplete': 'off'}))
+    institution_search = forms.CharField(label='Institute', required=False,
+                                         widget=forms.TextInput(attrs={'autocomplete': 'off'}))
 
     class Meta:
         model = Investigator
-        fields = ['subject', 'role', 'year', 'institution']
+        fields = ['subject', 'role', 'year']

@@ -635,8 +635,13 @@ def add_investigator_record(request, person_id):
     if request.method == 'POST':
         form = InvestigatorForm(request.POST, instance=person)
         if form.is_valid():
-            if form.cleaned_data.get('institution') and not Institution.objects.filter(name=form.cleaned_data.get('institution_search')).exists:
-                print "Create Institution"
+            if form.cleaned_data.get('institution_search'):
+                # Create a new institution if it does not exist in the database
+                if not Institution.objects.filter(name=form.cleaned_data.get('institution_search')).exists():
+                    institution = Institution.objects.get_or_create(
+                        name=form.cleaned_data.get('institution_search'),
+                        changed_by=request.user
+                    )
             investigator = Investigator(subject=form.cleaned_data.get('subject'),
                                             role=form.cleaned_data.get('role'),
                                             person_id=person_id, year=form.cleaned_data.get('year'),
@@ -644,8 +649,6 @@ def add_investigator_record(request, person_id):
                                   institution=Institution.objects.get(name=form.cleaned_data.get('institution_search')))
             investigator.save()
             return HttpResponseRedirect(reverse('person', args=(person.id,)))
-        else:
-            print "Error in validating InvestigatorForm : ", form.errors
 
     context = {
         'form': form,
@@ -669,6 +672,13 @@ def edit_investigator_record(request,person_id,research_id):
     if request.method == 'POST':
         form = InvestigatorForm(request.POST, instance=person)
         if form.is_valid():
+            if form.cleaned_data.get('institution_search'):
+                # Create a new institution if it does not exist in the database
+                if not Institution.objects.filter(name=form.cleaned_data.get('institution_search')).exists():
+                    institution = Institution.objects.get_or_create(
+                        name=form.cleaned_data.get('institution_search'),
+                        changed_by=request.user
+                    )
             research.subject = form.cleaned_data.get('subject')
             research.role = form.cleaned_data.get('role')
             research.year = form.cleaned_data.get('year')
