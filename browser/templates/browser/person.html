@@ -83,6 +83,9 @@
             <table class="table">
                 <thead>
                     <tr>
+                        {% if user.is_staff %}
+                        <th class="col-xs-1"></th>
+                        {% endif %}
                         <td>Year</td>
                         <td>Position</td>
                         <td>Institution</td>
@@ -92,6 +95,14 @@
                     {% for affiliation in affiliations %}
 
                     <tr>
+                        {% if user.is_staff %}
+                        <td>
+                            <a class=" btn btn-xs fa fa-edit"
+                               aria-hidden="true"
+                               href="{% url "edit-affiliation" person.id affiliation.id %}">
+                            </a>
+                        </td>
+                        {% endif %}
                         <td>{{ affiliation.year }}</td>
                         <td>{{ affiliation.position }}</td>
                         <td>

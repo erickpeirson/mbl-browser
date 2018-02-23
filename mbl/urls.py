@@ -36,6 +36,7 @@ urlpatterns = [
     url(r'^person/(?P<person_id>[0-9]+)/investigator/add/$',views.add_investigator_record,name='add-investigator'),
     url(r'^person/(?P<person_id>[0-9]+)/investigator/(?P<research_id>[0-9]+)/edit/$',views.edit_investigator_record,name='edit-investigator'),
     url(r'^person/(?P<person_id>[0-9]+)/investigator/(?P<research_id>[0-9]+)/delete/$', views.delete_investigator_record, name='delete-investigator'),
+    url(r'^person/(?P<person_id>[0-9]+)/affiliation/(?P<affiliation_id>[0-9]+)/edit/$', views.edit_affiliation, name='edit-affiliation'),
     url(r'^institution/(?P<institution_id>[0-9]+)/$', views.institution, name="institution"),
     url(r'^institution/(?P<institution_id>[0-9]+)/edit/$', views.edit_institution, name="edit-institution"),
     url(r'^institution/$', views.institution, name="institution_list"),

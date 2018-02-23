@@ -336,3 +336,11 @@ class InvestigatorForm(forms.ModelForm):
     class Meta:
         model = Investigator
         fields = ['subject', 'role', 'year']
+
+
+class EditAffiliationForm(forms.ModelForm):
+    institution = forms.CharField(required=False, widget=forms.TextInput(attrs={'autocomplete': 'off'}))
+
+    class Meta:
+        model = Affiliation
+        fields = ['position']

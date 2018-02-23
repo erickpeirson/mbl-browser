@@ -686,3 +686,31 @@ def delete_investigator_record(request, person_id, research_id):
         Investigator.objects.filter(id=research_id).delete()
 
     return HttpResponseRedirect(reverse('person', args=(person_id,)))
+
+
+@staff_member_required
+def edit_affiliation(request, person_id, affiliation_id):
+    person = get_object_or_404(Person, pk=person_id)
+    affiliation = get_object_or_404(Affiliation, pk=affiliation_id)
+    template = "browser/affiliation_edit.html"
+    form = EditAffiliationForm(initial={'institution': affiliation.institution, 'position': affiliation.position})
+    context = {
+        'form': form,
+        'person': person
+    }
+
+    if request.method == 'POST':
+        form = EditAffiliationForm(request.POST, instance=person)
+        if form.is_valid():
+            if form.cleaned_data.get('institution'):
+                if not Institution.objects.filter(name=form.cleaned_data.get('institution')).exists():
+                    institution = Institution.objects.get_or_create(
+                        name=form.cleaned_data.get('institution'),
+                        changed_by=request.user
+                    )
+            Affiliation.objects.select_related().filter(person_id=affiliation.person_id, year=affiliation.year,
+                        institution=affiliation.institution).update(position=form.cleaned_data.get('position'),
+                                        institution=Institution.objects.get(name=form.cleaned_data.get('institution')))
+            return HttpResponseRedirect(reverse('person', args=(person_id,)))
+
+    return render(request, template, context)
