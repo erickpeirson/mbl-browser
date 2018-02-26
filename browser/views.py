@@ -686,3 +686,11 @@ def delete_investigator_record(request, person_id, research_id):
         Investigator.objects.filter(id=research_id).delete()
 
     return HttpResponseRedirect(reverse('person', args=(person_id,)))
+
+
+@staff_member_required
+def add_person(request):
+    template = "browser/add_person.html"
+    form = PersonForm()
+    context = {'form':form}
+    return render(request, template, context)
