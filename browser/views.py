@@ -696,7 +696,7 @@ def position(request, person_id, position_id=None):
     context = {
         'form': form,
         'person': person,
-        'position_id': None
+        'position_id': position_id
     }
 
     if position_id:
