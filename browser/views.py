@@ -7,7 +7,7 @@ from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.db.models.query_utils import Q
 from django.db.models import Count
 from django.db import transaction
-
+from django.contrib import messages
 from browser.models import *
 from browser.filters import *
 from browser.forms import *
@@ -669,29 +669,31 @@ def edit_investigator_record(request,person_id,research_id):
     form = InvestigatorForm(initial={'subject': research.subject, 'role': research.role,
                                              'year': research.year, 'institution_search': research.institution})
 
-    if request.method == 'POST':
-        form = InvestigatorForm(request.POST, instance=person)
-        if form.is_valid():
-            if form.cleaned_data.get('institution_search'):
-                # Create a new institution if it does not exist in the database
-                if not Institution.objects.filter(name=form.cleaned_data.get('institution_search')).exists():
-                    institution = Institution.objects.get_or_create(
-                        name=form.cleaned_data.get('institution_search'),
-                        changed_by=request.user
-                    )
-            research.subject = form.cleaned_data.get('subject')
-            research.role = form.cleaned_data.get('role')
-            research.year = form.cleaned_data.get('year')
-            research.institution = Institution.objects.get(name=form.cleaned_data.get('institution_search'))
-            research.save()
-            return HttpResponseRedirect(reverse('person', args=(person.id,)))
-
     context = {
         'form': form,
         'person': person,
         'investigator_data': research,
         'type': 'edit_investigator'
     }
+
+    if request.method == 'POST':
+        form = InvestigatorForm(request.POST, instance=person)
+        if form.is_valid():
+            if form.cleaned_data.get('institution_search'):
+                # Create a new institution if it does not exist in the database
+                if not Institution.objects.filter(name=form.cleaned_data.get('institution_search')).exists():
+                    messages.add_message(request, messages.INFO, 'The institute does not exist')
+                    return render(request, template, context)
+                    # institution = Institution.objects.get_or_create(
+                    #     name=form.cleaned_data.get('institution_search'),
+                    #     changed_by=request.user
+                    # )
+            research.subject = form.cleaned_data.get('subject')
+            research.role = form.cleaned_data.get('role')
+            research.year = form.cleaned_data.get('year')
+            research.institution = Institution.objects.get(name=form.cleaned_data.get('institution_search'))
+            research.save()
+            return HttpResponseRedirect(reverse('person', args=(person.id,)))
 
     return render(request, template, context)
 

@@ -34,6 +34,14 @@
         {% endif %}
     </p>
 
+    {% if messages %}
+    <ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+
     <form action="." method="post" id="InvestigatorForm">
     {% csrf_token %}
     {% block form_fields %}
@@ -94,6 +102,10 @@
             </div>
         </div>
     </div>
+
+        <div class="checkbox">
+            <label><input type="checkbox" value="">Please check to create a new institution</label>
+        </div>
     {% endwith %}
 
     {% endblock %}

@@ -141,3 +141,8 @@ def get_affiliates(institution):
     #  absolute URL.
 
     return qs
+
+
+@register.filter
+def get_institute(institution):
+    return Institution.objects.filter(name=institution).exists()
