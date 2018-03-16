@@ -692,22 +692,26 @@ def delete_investigator_record(request, person_id, research_id):
 def position(request, person_id, position_id=None):
     person = get_object_or_404(Person, pk=person_id)
     template = "browser/position.html"
-    form = PositionForm()
+
     context = {
-        'form': form,
         'person': person,
         'position_id': position_id
     }
 
-    if position_id:
-        position = get_object_or_404(Position, pk=position_id)
-        form = PositionForm(initial={'subject': position.subject, 'role': position.role,
-                                     'year': position.year, 'start_date': position.start_date,
-                                     'end_date': position.end_date})
-        context.update({
-            'position_id': position_id,
-            'form': form
-        })
+    if request.method == 'GET':
+        if position_id:
+            position = get_object_or_404(Position, pk=position_id)
+            form = PositionForm(initial={'subject': position.subject, 'role': position.role,
+                                         'year': position.year, 'start_date': position.start_date,
+                                         'end_date': position.end_date})
+            context.update({
+                'form': form
+            })
+        else:
+            form = PositionForm()
+            context.update({
+                'form': form
+            })
 
     if request.method == 'POST':
         form = PositionForm(request.POST)
@@ -718,7 +722,6 @@ def position(request, person_id, position_id=None):
                     changed_by=request.user,
                     **form.cleaned_data
                 )
-
             else:
                 Position.objects.filter(id=position_id).update(**form.cleaned_data)
             return HttpResponseRedirect(reverse('person', args=(person.id,)))
