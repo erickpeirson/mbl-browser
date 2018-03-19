@@ -632,16 +632,33 @@ def add_investigator_record(request, person_id):
     template = "browser/investigator.html"
     form = InvestigatorForm()
 
+    context = {
+        'form': form,
+        'person': person,
+        'type': 'create_investigator'
+    }
+
     if request.method == 'POST':
         form = InvestigatorForm(request.POST, instance=person)
         if form.is_valid():
+            context.update({
+                'form': form
+            })
             if form.cleaned_data.get('institution_search'):
                 # Create a new institution if it does not exist in the database
                 if not Institution.objects.filter(name=form.cleaned_data.get('institution_search')).exists():
-                    institution = Institution.objects.get_or_create(
-                        name=form.cleaned_data.get('institution_search'),
-                        changed_by=request.user
-                    )
+                    # Check if the checkbox is checked
+                    if form.cleaned_data.get('create_institution'):
+                        institution = Institution.objects.get_or_create(
+                            name=form.cleaned_data.get('institution_search'),
+                            changed_by=request.user
+                        )
+                    else:
+                        messages.add_message(request, messages.ERROR,
+                                             'The above institute does not exist in the database. '
+                                             'Please check the checkbox below to create '
+                                             'information about the institute.')
+                        return render(request, template, context)
             investigator = Investigator(subject=form.cleaned_data.get('subject'),
                                             role=form.cleaned_data.get('role'),
                                             person_id=person_id, year=form.cleaned_data.get('year'),
@@ -649,12 +666,6 @@ def add_investigator_record(request, person_id):
                                   institution=Institution.objects.get(name=form.cleaned_data.get('institution_search')))
             investigator.save()
             return HttpResponseRedirect(reverse('person', args=(person.id,)))
-
-    context = {
-        'form': form,
-        'person': person,
-        'type': 'create_investigator'
-    }
 
     return render(request, template, context)
 
@@ -678,16 +689,24 @@ def edit_investigator_record(request,person_id,research_id):
 
     if request.method == 'POST':
         form = InvestigatorForm(request.POST, instance=person)
+        context.update({
+            'form': form
+        })
         if form.is_valid():
             if form.cleaned_data.get('institution_search'):
                 # Create a new institution if it does not exist in the database
                 if not Institution.objects.filter(name=form.cleaned_data.get('institution_search')).exists():
-                    messages.add_message(request, messages.INFO, 'The institute does not exist')
-                    return render(request, template, context)
-                    # institution = Institution.objects.get_or_create(
-                    #     name=form.cleaned_data.get('institution_search'),
-                    #     changed_by=request.user
-                    # )
+                    # Check if the checkbox is checked
+                    if form.cleaned_data.get('create_institution'):
+                        institution = Institution.objects.get_or_create(
+                            name=form.cleaned_data.get('institution_search'),
+                            changed_by=request.user
+                        )
+                    else:
+                        messages.add_message(request, messages.ERROR, 'The above institute does not exist in the database. '
+                                                                  'Please check the checkbox below to create '
+                                                                  'information about the institute.')
+                        return render(request, template, context)
             research.subject = form.cleaned_data.get('subject')
             research.role = form.cleaned_data.get('role')
             research.year = form.cleaned_data.get('year')
