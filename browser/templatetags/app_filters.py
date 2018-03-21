@@ -148,3 +148,7 @@ def get_positions(person):
     return Position.objects.filter(person=person).order_by('year')
 
 
+@register.simple_tag
+def get_roles_of_positions():
+    print Position.objects.distinct('role').values('role')
+    return Position.objects.distinct('role').values('role')

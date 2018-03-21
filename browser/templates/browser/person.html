@@ -10,7 +10,25 @@
 
         $(document).ready(function() {
 
-            var table = $('#PositionTable').DataTable({
+            $('#dropdownTest').change(function(){
+                alert(this.value);
+                var table, tr, td, i;
+                  table = document.getElementById("PositionTable");
+                  tr = table.getElementsByTagName("tr");
+
+                  for (i = 0; i < tr.length; i++) {
+                    td = tr[i].getElementsByTagName("td")[5];
+                    if (td) {
+                      if (td.innerHTML.indexOf(this.value) > -1) {
+                        tr[i].style.display = "";
+                      } else {
+                        tr[i].style.display = "none";
+                      }
+                    }
+                  }
+            });
+
+            var table = $('#PositionTableuuu').DataTable({bFilter: false, bInfo: false,
             initComplete : function() {
             this.api().column(5).every( function () {
                      var column = this;
@@ -82,7 +100,7 @@
                 title="Add an investigator record for {{person.name}}"
                 href="{% url "add-investigator" person.id %}">
             </a>
-            <a class="btn btn-lg fa fa-user"
+            <a class="btn btn-lg fa fa-battery-full"
                 aria-hidden="true"
                 data-toggle="tooltip"
                 title="Add a position record for {{person.name}}"
@@ -320,8 +338,16 @@
             <div class="panel-heading">
                 <h3>Positions</h3>
             </div>
-
-            <table class="display" cellspacing="0" width="100%" id="PositionTable">
+            {% get_roles_of_positions as o %}
+            {{ o }}
+            <label for="dropdownTest" >Role:</label>
+            <select id="dropdownTest" name="cars">
+                <option value="All Roles">All Roles</option>
+                <option value="Corporation Member">Corporation Member</option>
+                <option value="fiat">Fiat</option>
+                <option value="audi">Audi</option>
+            </select>
+            <table class="table" id="PositionTable">
                 <thead>
                     <tr>
                         {% if user.is_staff %}
