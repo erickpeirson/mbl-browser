@@ -69,10 +69,14 @@ class Command(BaseCommand):
         instance.save()
 
     def handle_person(self, datum):
-        instance = Person(first_name=datum['First Name'],
-                          last_name=datum['Last Name'],
-                          uri=datum['Person URI'])
-        instance.save()
+        try:
+            instance = Person(first_name=datum['First Name'],
+                              last_name=datum['Last Name'],
+                              uri=datum['Person URI'],
+                              changed_by=auth.User)
+            instance.save()
+        except Exception as e:
+            print "Error while importing: ", e
 
     def handle_affiliations(self, datum):
         if isnan(datum['Person URI']) or isnan(datum['Institution URI']):
