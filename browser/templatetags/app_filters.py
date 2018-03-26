@@ -150,5 +150,7 @@ def get_positions(person):
 
 @register.simple_tag
 def get_roles_of_positions():
-    print Position.objects.distinct('role').values('role')
-    return Position.objects.distinct('role').values('role')
+    list_of_roles = []
+    for i in Position.role_choices:
+        list_of_roles.append(i[1])
+    return list_of_roles

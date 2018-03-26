@@ -11,7 +11,6 @@
         $(document).ready(function() {
 
             $('#dropdownTest').change(function(){
-                alert(this.value);
                 var table, tr, td, i;
                   table = document.getElementById("PositionTable");
                   tr = table.getElementsByTagName("tr");
@@ -19,36 +18,13 @@
                   for (i = 0; i < tr.length; i++) {
                     td = tr[i].getElementsByTagName("td")[5];
                     if (td) {
-                      if (td.innerHTML.indexOf(this.value) > -1) {
+                      if (this.value=="All Roles" || td.innerHTML.indexOf(this.value) > -1) {
                         tr[i].style.display = "";
                       } else {
                         tr[i].style.display = "none";
                       }
                     }
                   }
-            });
-
-            var table = $('#PositionTableuuu').DataTable({bFilter: false, bInfo: false,
-            initComplete : function() {
-            this.api().column(5).every( function () {
-                     var column = this;
-                     var select = jQuery('<select style="border:none;"><option value="">All Roles</option></select>')
-                     .appendTo( jQuery(column.header()).empty() )
-                     .on( 'change', function () {
-                         var val = jQuery.fn.dataTable.util.escapeRegex(
-                             jQuery(this).val()
-                         );
-
-                         column
-                             .search( val ? '^'+val+'$' : '', true, false )
-                             .draw();
-                     });
-
-                     column.data().unique().sort().each( function ( d, j ) {
-                         select.append( '<option value="'+d+'">'+d+'</option>' )
-                     });
-                 });
-            }
             });
 
 
@@ -100,7 +76,7 @@
                 title="Add an investigator record for {{person.name}}"
                 href="{% url "add-investigator" person.id %}">
             </a>
-            <a class="btn btn-lg fa fa-battery-full"
+            <a class="btn btn-lg fa fa-id-badge"
                 aria-hidden="true"
                 data-toggle="tooltip"
                 title="Add a position record for {{person.name}}"
@@ -338,14 +314,14 @@
             <div class="panel-heading">
                 <h3>Positions</h3>
             </div>
-            {% get_roles_of_positions as o %}
-            {{ o }}
-            <label for="dropdownTest" >Role:</label>
+            <label for="dropdownTest" >Select a Role:</label>
             <select id="dropdownTest" name="cars">
+                <!-- Constructs role dropdown with 'All Roles' and values from databases  -->
                 <option value="All Roles">All Roles</option>
-                <option value="Corporation Member">Corporation Member</option>
-                <option value="fiat">Fiat</option>
-                <option value="audi">Audi</option>
+                {% get_roles_of_positions as role_types %}
+                    {% for i in role_types %}
+                <option value="{{i}}">{{i}}</option>
+                    {% endfor %}
             </select>
             <table class="table" id="PositionTable">
                 <thead>

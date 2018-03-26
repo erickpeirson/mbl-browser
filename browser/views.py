@@ -704,14 +704,12 @@ def position(request, person_id, position_id=None):
             form = PositionForm(initial={'subject': position.subject, 'role': position.role,
                                          'year': position.year, 'start_date': position.start_date,
                                          'end_date': position.end_date})
-            context.update({
-                'form': form
-            })
         else:
             form = PositionForm()
-            context.update({
-                'form': form
-            })
+
+        context.update({
+            'form': form
+        })
 
     if request.method == 'POST':
         form = PositionForm(request.POST)

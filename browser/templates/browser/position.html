@@ -116,7 +116,7 @@
             {% endfor %}
             <label>{{ field.label }}</label>
             <div class="input-group">
-                <input type="text" class="form-control input-sm" value="{{field.value|date:"Y-m-d"}}" id="start_date" name="start_date" onkeydown="return false">
+                <input type="text" class="form-control input-sm" value="{{field.value|date:"Y-m-d"}}" id="start_date" name="start_date">
                 <span class="input-group-btn">
                 <button class="btn btn-sm btn-info" type="button" id="ClearStartDateButton">Clear</button>
                 </span>
@@ -134,7 +134,7 @@
             {% endfor %}
             <label>{{ field.label }}</label>
             <div class="input-group">
-                <input type="text" class="form-control input-sm" value="{{field.value|date:"Y-m-d"}}" id="end_date" name="end_date" onkeydown="return false">
+                <input type="text" class="form-control input-sm" value="{{field.value|date:"Y-m-d"}}" id="end_date" name="end_date">
                 <span class="input-group-btn">
                 <button class="btn btn-sm btn-info" type="button" id="ClearEndDateButton">Clear</button>
                 </span>
