@@ -144,12 +144,14 @@ class Command(BaseCommand):
             return
 
         person = None
+        person_first_name = datum['First Name'].decode('utf-8')
+        person_last_name = datum['Last Name'].decode('utf-8')
         person_candidates = Person.objects.filter(last_name__iexact=datum['Last Name'])
         if person_candidates:
             for person_candidate in person_candidates:
-                if datum['First Name'] in person_candidate.first_name:
+                if person_first_name in person_candidate.first_name:
                     person = person_candidate
-                    print '[WARNING] It seems like %s %s already exists. Using existing person.' % (datum['First Name'], datum['Last Name'])
+                    print '[WARNING] It seems like %s %s already exists. Using existing person.' % (person_first_name, person_last_name)
                     break
 
         # add imported by user
@@ -157,8 +159,8 @@ class Command(BaseCommand):
 
         # create person
         if not person:
-            person = Person(first_name=datum['First Name'],
-                              last_name=datum['Last Name'], changed_by_id=user.pk)
+            person = Person(first_name=person_first_name,
+                              last_name=person_last_name, changed_by_id=user.pk)
         try:
             person.save()
         except Exception as e:
