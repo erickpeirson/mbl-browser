@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.db.utils import IntegrityError
 from django.contrib.auth.models import User
+from django.conf import settings
 
 from browser.models import *
 import csv
@@ -11,7 +12,7 @@ import codecs
 def isnan(value):
     return str(value) == 'nan' or str(value) == ''
 
-USER_RUNNING_IMPORT = 'jdamerow'
+USER_RUNNING_IMPORT = settings.IMPORT_USER
 
 class Command(BaseCommand):
     help = 'Load MBL data from CSV'
