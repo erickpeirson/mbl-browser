@@ -28,7 +28,7 @@ class Command(BaseCommand):
         ('coursegroups', 'cleaned_coursegroups.csv'),
         ('investigators', 'cleaned_investigators.csv'),
         ('locations', 'cleaned_locations.csv'),
-        ('combined_students', 'combined_students.csv')
+        ('combined_attendances', 'combined_attendances.csv')
     ]
 
     def add_arguments(self, parser):
@@ -131,7 +131,7 @@ class Command(BaseCommand):
                                 year=datum['Year'])
         instance.save()
 
-    def handle_combined_students(self, datum):
+    def handle_combined_attendances(self, datum):
         # if there is no course uri set, return
         if isnan(datum['Course URI']):
             return
@@ -170,27 +170,29 @@ class Command(BaseCommand):
 
 
         # create affiliation
-        institutions = Institution.objects.filter(name__iexact=datum['Institution'])
-        if institutions:
-            institution = institutions[0]
-            print '[INFO] found %s. Using existing institution.' % (datum['Institution'])
-        else:
-            institution = Institution(name=datum['Institution'], changed_by_id=user.pk)
+        institution_name = datum['Institution'].decode('utf-8').strip()
+        if institution_name:
+            institutions = Institution.objects.filter(name__iexact=institution_name)
+            if institutions:
+                institution = institutions[0]
+                print '[INFO] found %s. Using existing institution.' % (institution_name)
+            else:
+                institution = Institution(name=institution_name, changed_by_id=user.pk)
+                try:
+                    institution.save()
+                except Exception as e:
+                    print e
+                    return
+
+            affiliation = Affiliation(person=person,
+                                   institution=institution,
+                                   year=datum['Year'],
+                                   position=datum['Position'], changed_by_id=user.pk)
             try:
-                institution.save()
+                affiliation.save()
             except Exception as e:
                 print e
                 return
-
-        affiliation = Affiliation(person=person,
-                               institution=institution,
-                               year=datum['Year'],
-                               position=datum['Position'], changed_by_id=user.pk)
-        try:
-            affiliation.save()
-        except Exception as e:
-            print e
-            return
 
         attendance = Attendance.objects.filter(person=person, course=course)
         if attendance:
