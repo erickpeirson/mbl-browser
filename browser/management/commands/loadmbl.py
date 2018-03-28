@@ -28,7 +28,8 @@ class Command(BaseCommand):
         ('coursegroups', 'cleaned_coursegroups.csv'),
         ('investigators', 'cleaned_investigators.csv'),
         ('locations', 'cleaned_locations.csv'),
-        ('combined_attendances', 'combined_attendances.csv')
+        ('combined_attendances', 'combined_attendances.csv'),
+        ('investigators_by_name', 'investigators_by_name.csv')
     ]
 
     def add_arguments(self, parser):
@@ -144,55 +145,15 @@ class Command(BaseCommand):
             print "[ERROR] Course with id %s does not exist." % (course_id)
             return
 
-        person = None
-        person_first_name = datum['First Name'].decode('utf-8')
-        person_last_name = datum['Last Name'].decode('utf-8')
-        person_candidates = Person.objects.filter(last_name__iexact=datum['Last Name'])
-        if person_candidates:
-            for person_candidate in person_candidates:
-                if person_first_name in person_candidate.first_name:
-                    person = person_candidate
-                    print '[WARNING] It seems like %s %s already exists. Using existing person.' % (person_first_name, person_last_name)
-                    break
-
         # add imported by user
         user = User.objects.get(username=USER_RUNNING_IMPORT)
 
-        # create person
+        person = self.find_or_create_person(datum, user)
         if not person:
-            person = Person(first_name=person_first_name,
-                              last_name=person_last_name, changed_by_id=user.pk)
-        try:
-            person.save()
-        except Exception as e:
-            print e
             return
 
-
         # create affiliation
-        institution_name = datum['Institution'].decode('utf-8').strip()
-        if institution_name:
-            institutions = Institution.objects.filter(name__iexact=institution_name)
-            if institutions:
-                institution = institutions[0]
-                print '[INFO] found %s. Using existing institution.' % (institution_name)
-            else:
-                institution = Institution(name=institution_name, changed_by_id=user.pk)
-                try:
-                    institution.save()
-                except Exception as e:
-                    print e
-                    return
-
-            affiliation = Affiliation(person=person,
-                                   institution=institution,
-                                   year=datum['Year'],
-                                   position=datum['Position'], changed_by_id=user.pk)
-            try:
-                affiliation.save()
-            except Exception as e:
-                print e
-                return
+        self.create_affiliation(person, datum, user)
 
         attendance = Attendance.objects.filter(person=person, course=course)
         if attendance:
@@ -208,8 +169,84 @@ class Command(BaseCommand):
             attendance.save()
         except Exception as e:
             print e
+
+    def handle_investigators_by_name(self, datum):
+        # add imported by user
+        user = User.objects.get(username=USER_RUNNING_IMPORT)
+
+        person = self.find_or_create_person(datum, user)
+        if not person:
             return
 
+        self.create_affiliation(person, datum, user)
+
+        investigator = Investigator(person=person,
+                                year=datum['Year'],
+                                role=datum['Role'],
+                                subject=datum['Subject'], changed_by_id=user.pk)
+
+        try:
+            investigator.save()
+        except Exception as e:
+            print e
+
+
+    def find_or_create_person(self, datum, user):
+        person_first_name = datum['First Name'].decode('utf-8')
+        person_last_name = datum['Last Name'].decode('utf-8')
+        person_candidates = Person.objects.filter(last_name__iexact=datum['Last Name'])
+        if person_candidates:
+            for person_candidate in person_candidates:
+                if person_first_name in person_candidate.first_name:
+                    person = person_candidate
+                    print '[WARNING] It seems like %s %s already exists. Using existing person.' % (person_first_name, person_last_name)
+                    return person
+
+        # create person
+        person = Person(first_name=person_first_name,
+                              last_name=person_last_name, changed_by_id=user.pk)
+        try:
+            person.save()
+            return person
+        except Exception as e:
+            print e
+            return None
+
+    def find_or_create_institution(self, institution_name, user):
+        institutions = Institution.objects.filter(name__iexact=institution_name)
+        if institutions:
+            print '[INFO] found %s. Using existing institution.' % (institution_name)
+            return institutions[0]
+
+        institution = Institution(name=institution_name, changed_by_id=user.pk)
+        try:
+            institution.save()
+            return institution
+        except Exception as e:
+            print e
+            return None
+
+    def create_affiliation(self, person, datum, user):
+        institution_name = datum['Institution'].decode('utf-8').strip()
+        if not institution_name:
+            return None
+
+        institution = self.find_or_create_institution(institution_name, user)
+        if not institution:
+            return None
+
+        affiliation = Affiliation(person=person,
+                               institution=institution,
+                               year=datum['Year'],
+                               position=datum['Position'], changed_by_id=user.pk)
+
+        try:
+            affiliation.save()
+            return affiliation
+        except Exception as e:
+            print "[ERROR] an error occurred while creating an affiliation for %s." % (person)
+            print e
+            return None
 
     def load_csv(self, path):
         with open(path, 'r') as f:
