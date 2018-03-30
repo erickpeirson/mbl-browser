@@ -342,4 +342,4 @@ class PositionForm(forms.ModelForm):
 
     class Meta:
         model = Position
-        fields = ['subject','role','year','start_date','end_date']
+        fields = ['subject', 'role', 'year', 'start_date', 'end_date']

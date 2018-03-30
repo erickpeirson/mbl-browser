@@ -4,10 +4,7 @@
 
 {% load staticfiles %}
 {% block main %}
-<script src="{% static "browser/js/jquery.dataTables.min.js" %}"></script>
-<link rel="stylesheet" href="{% static "browser/css/jquery.dataTables.min.css" %}"/>
 <script>
-
         $(document).ready(function() {
 
             $('#dropdownTest').change(function(){
@@ -307,6 +304,17 @@
     {% endwith %}
 
     <!-- Positions -->
+    {% if showPositionTab %}
+    <script>
+    $(document).ready(function() {
+        setActiveTab('person-positions');
+
+        function setActiveTab(tab){
+            $('.nav-tabs a[href="#' + tab + '"]').tab('show');
+        };
+    });
+    </script>
+    {% endif %}
     {% with person|get_positions as positions %}
     {% if positions|length > 0 %}
     <div role="tabpanel" class="tab-pane" id="person-positions">
@@ -314,7 +322,8 @@
             <div class="panel-heading">
                 <h3>Positions</h3>
             </div>
-            <label for="dropdownTest" >Select a Role:</label>
+            <div class="container">
+            <label for="dropdownTest" >Sort by Role:</label>
             <select id="dropdownTest" name="cars">
                 <!-- Constructs role dropdown with 'All Roles' and values from databases  -->
                 <option value="All Roles">All Roles</option>
@@ -323,6 +332,7 @@
                 <option value="{{i}}">{{i}}</option>
                     {% endfor %}
             </select>
+            </div>
             <table class="table" id="PositionTable">
                 <thead>
                     <tr>
@@ -375,9 +385,6 @@
                     </tr>
                     {% endfor %}
                 </tbody>
-
-
-
             </table>
         </div>
 
