@@ -168,7 +168,7 @@ function updateBars() {
     .remove();
 
   u.on('click', function(d) {
-      window.location.href = '/course/' + d.id + '/';
+      window.location.href = "{% url 'courses' %}" + d.id;
   });
 
   // Update bar position, width & height

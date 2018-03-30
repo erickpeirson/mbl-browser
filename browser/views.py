@@ -70,7 +70,6 @@ def coursegroup(request, coursegroup_id=None):
         context['coursegroup'] = get_object_or_404(CourseGroup, pk=coursegroup_id)
         template = "browser/coursegroup.html"
     else:
-
         # coursegroups = get_paginator(CourseGroup, request, order_by='name')
         coursegroups = CourseGroupFilter(request.GET, queryset=CourseGroup.objects.all())
         context['coursegroups'] = coursegroups
