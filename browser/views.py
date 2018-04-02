@@ -15,9 +15,6 @@ from browser.forms import *
 from itertools import chain, groupby
 import datetime
 
-# This is used to assess whether Position tab needs to be shown
-showPositionTab = False
-
 
 def get_paginator(model, request, order_by=None, pagesize=25):
     """
@@ -93,17 +90,14 @@ def person(request, person_id=None):
     """
     Handles both list and detail views for :class:`.Person`\s.
     """
-    global showPositionTab
     context = {}
     if person_id:
         person = get_object_or_404(Person, pk=person_id)
         context.update({
-            'showPositionTab' : showPositionTab,
             'person': person,
             # 'affiliated_with': affiliated_with(person),
         })
         template = "browser/person.html"
-        showPositionTab = False
     else:
         context['persons'] = PersonFilter(request.GET, queryset=Person.objects.order_by('last_name').filter(merge_from=None))
         # context['persons'] = get_paginator(Person, request, 'last_name', 100)
@@ -727,9 +721,7 @@ def position(request, person_id, position_id=None):
                 )
             else:
                 Position.objects.filter(id=position_id).update(**form.cleaned_data)
-            global showPositionTab
-            showPositionTab = True
-            return HttpResponseRedirect(reverse('person', args=(person.id,)))
+            return HttpResponseRedirect(reverse('person', args=(person.id,),)+'?person-positions')
         context.update({
             'form': form
         })

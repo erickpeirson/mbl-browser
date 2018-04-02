@@ -7,6 +7,12 @@
 <script>
         $(document).ready(function() {
 
+            var person_url_params = window.location.href.split("?");
+            if(typeof person_url_params[1] !== 'undefined' && typeof person_url_params[1] !== 'null' )
+            {
+                $('.nav-tabs a[href="#' + person_url_params[1] + '"]').tab('show');
+            }
+
             $('#dropdownTest').change(function(){
                 var table, tr, td, i;
                   table = document.getElementById("PositionTable");
@@ -304,17 +310,6 @@
     {% endwith %}
 
     <!-- Positions -->
-    {% if showPositionTab %}
-    <script>
-    $(document).ready(function() {
-        setActiveTab('person-positions');
-
-        function setActiveTab(tab){
-            $('.nav-tabs a[href="#' + tab + '"]').tab('show');
-        };
-    });
-    </script>
-    {% endif %}
     {% with person|get_positions as positions %}
     {% if positions|length > 0 %}
     <div role="tabpanel" class="tab-pane" id="person-positions">
