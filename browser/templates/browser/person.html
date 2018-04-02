@@ -5,6 +5,7 @@
 {% load staticfiles %}
 {% block main %}
 <script>
+//@ sourceURL=position.js
         $(document).ready(function() {
 
             {% if request.GET.tab %}
@@ -12,20 +13,16 @@
             {% endif %}
 
             $('#dropdownRoles').change(function(){
-                var table, tr, td, i;
-                  table = document.getElementById("PositionTable");
-                  tr = table.getElementsByTagName("tr");
-
-                  for (i = 0; i < tr.length; i++) {
-                    td = tr[i].getElementsByTagName("td")[5];
-                    if (td) {
-                      if (this.value=="All Roles" || td.innerHTML.indexOf(this.value) > -1) {
-                        tr[i].style.display = "";
-                      } else {
-                        tr[i].style.display = "none";
-                      }
+                  var roleToShow = $('#dropdownRoles').val();
+                  $("#PositionTable").find("tbody>tr").each(function(idx, item) {
+                    var roleTd = $(item).children()[5];
+                    var roleId = $(roleTd).data('role-id');
+                    if(roleId == roleToShow || roleToShow=="ALL") {
+                      $(item).show();
+                    } else {
+                      $(item).hide();
                     }
-                  }
+                  });
             });
 
             $('[data-curation-tooltip]').tooltip();
@@ -318,10 +315,10 @@
               <div>
                 <select style="width: 200px" class="form-control input-sm pull-right" id="dropdownRoles">
                   <!-- Constructs role dropdown with 'All Roles' and values from databases  -->
-                  <option value="All Roles">All Roles</option>
+                  <option value="ALL">Show all Roles</option>
                   {% get_roles_of_positions as role_types %}
                       {% for i in role_types %}
-                  <option value="{{i}}">{{i}}</option>
+                  <option value="{{i.0}}">{{i.1}}</option>
                       {% endfor %}
                 </select>
               </div>
@@ -374,7 +371,7 @@
                         <td>{{ position.end_date }}</td>
                         {% endif %}
                         <td>{{ position.subject }}</td>
-                        <td>{{ position.get_role_display }}</td>
+                        <td data-role-id="{{ position.role }}">{{ position.get_role_display }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
