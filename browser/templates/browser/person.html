@@ -315,15 +315,16 @@
                 <h3>Positions</h3>
             </div>
             <div class="container">
-            <label for="dropdownRoles" >Sort by Role:</label>
-            <select id="dropdownRoles">
-                <!-- Constructs role dropdown with 'All Roles' and values from databases  -->
-                <option value="All Roles">All Roles</option>
-                {% get_roles_of_positions as role_types %}
-                    {% for i in role_types %}
-                <option value="{{i}}">{{i}}</option>
-                    {% endfor %}
-            </select>
+              <div>
+                <select style="width: 200px" class="form-control input-sm pull-right" id="dropdownRoles">
+                  <!-- Constructs role dropdown with 'All Roles' and values from databases  -->
+                  <option value="All Roles">All Roles</option>
+                  {% get_roles_of_positions as role_types %}
+                      {% for i in role_types %}
+                  <option value="{{i}}">{{i}}</option>
+                      {% endfor %}
+                </select>
+              </div>
             </div>
             <table class="table" id="PositionTable">
                 <thead>
