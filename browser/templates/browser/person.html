@@ -6,11 +6,10 @@
 {% block main %}
 <script>
         $(document).ready(function() {
-            var tab = "{{request.GET.tab}}";
-            if(typeof tab !== 'undefined' && typeof tab !== 'null' )
-            {
-                $('.nav-tabs a[href="#' + tab + '"]').tab('show');
-            }
+
+            {% if request.GET.tab %}
+                $('.nav-tabs a[href="#' + "{{request.GET.tab}}" + '"]').tab('show');
+            {% endif %}
 
             $('#dropdownRoles').change(function(){
                 var table, tr, td, i;
