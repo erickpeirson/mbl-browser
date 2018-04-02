@@ -150,7 +150,4 @@ def get_positions(person):
 
 @register.simple_tag
 def get_roles_of_positions():
-    list_of_roles = []
-    for i in Position.role_choices:
-        list_of_roles.append(i[1])
-    return list_of_roles
+    return [i[1] for i in Position.role_choices]

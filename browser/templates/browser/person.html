@@ -7,13 +7,13 @@
 <script>
         $(document).ready(function() {
 
-            var person_url_params = window.location.href.split("?");
+            var person_url_params = window.location.href.split("?tab=");
             if(typeof person_url_params[1] !== 'undefined' && typeof person_url_params[1] !== 'null' )
             {
                 $('.nav-tabs a[href="#' + person_url_params[1] + '"]').tab('show');
             }
 
-            $('#dropdownTest').change(function(){
+            $('#dropdownRoles').change(function(){
                 var table, tr, td, i;
                   table = document.getElementById("PositionTable");
                   tr = table.getElementsByTagName("tr");
@@ -29,7 +29,6 @@
                     }
                   }
             });
-
 
             $('[data-curation-tooltip]').tooltip();
 
@@ -318,8 +317,8 @@
                 <h3>Positions</h3>
             </div>
             <div class="container">
-            <label for="dropdownTest" >Sort by Role:</label>
-            <select id="dropdownTest" name="cars">
+            <label for="dropdownRoles" >Sort by Role:</label>
+            <select id="dropdownRoles">
                 <!-- Constructs role dropdown with 'All Roles' and values from databases  -->
                 <option value="All Roles">All Roles</option>
                 {% get_roles_of_positions as role_types %}

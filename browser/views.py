@@ -721,7 +721,7 @@ def position(request, person_id, position_id=None):
                 )
             else:
                 Position.objects.filter(id=position_id).update(**form.cleaned_data)
-            return HttpResponseRedirect(reverse('person', args=(person.id,),)+'?person-positions')
+            return HttpResponseRedirect(reverse('person', args=(person.id,),)+'?tab=person-positions')
         context.update({
             'form': form
         })
