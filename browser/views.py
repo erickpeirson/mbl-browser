@@ -16,7 +16,6 @@ from itertools import chain, groupby
 import datetime
 
 
-
 def get_paginator(model, request, order_by=None, pagesize=25):
     """
     Generic paginator functionality for views.
@@ -685,4 +684,52 @@ def delete_investigator_record(request, person_id, research_id):
     if request.method == 'POST':
         Investigator.objects.filter(id=research_id).delete()
 
+    return HttpResponseRedirect(reverse('person', args=(person_id,)))
+
+
+@staff_member_required
+def position(request, person_id, position_id=None):
+    person = get_object_or_404(Person, pk=person_id)
+    template = "browser/position.html"
+
+    context = {
+        'person': person,
+        'position_id': position_id
+    }
+
+    if request.method == 'GET':
+        if position_id:
+            position = get_object_or_404(Position, pk=position_id)
+            form = PositionForm(initial={'subject': position.subject, 'role': position.role,
+                                         'year': position.year, 'start_date': position.start_date,
+                                         'end_date': position.end_date})
+        else:
+            form = PositionForm()
+
+        context.update({
+            'form': form
+        })
+
+    if request.method == 'POST':
+        form = PositionForm(request.POST)
+        if form.is_valid():
+            if position_id is None:
+                Position.objects.create(
+                    person_id=person_id,
+                    changed_by=request.user,
+                    **form.cleaned_data
+                )
+            else:
+                Position.objects.filter(id=position_id).update(**form.cleaned_data)
+            return HttpResponseRedirect(reverse('person', args=(person.id,),)+'?tab=person-positions')
+        context.update({
+            'form': form
+        })
+    return render(request, template, context)
+
+
+@staff_member_required
+def delete_position(request, person_id, position_id):
+    if request.method == 'POST':
+        Position.objects.filter(id=position_id).delete()
     return HttpResponseRedirect(reverse('person', args=(person_id,)))
