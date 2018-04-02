@@ -6,11 +6,10 @@
 {% block main %}
 <script>
         $(document).ready(function() {
-
-            var person_url_params = window.location.href.split("?tab=");
-            if(typeof person_url_params[1] !== 'undefined' && typeof person_url_params[1] !== 'null' )
+            var tab = "{{request.GET.tab}}";
+            if(typeof tab !== 'undefined' && typeof tab !== 'null' )
             {
-                $('.nav-tabs a[href="#' + person_url_params[1] + '"]').tab('show');
+                $('.nav-tabs a[href="#' + tab + '"]').tab('show');
             }
 
             $('#dropdownRoles').change(function(){
