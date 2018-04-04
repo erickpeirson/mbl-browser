@@ -692,5 +692,24 @@ def delete_investigator_record(request, person_id, research_id):
 def add_person(request):
     template = "browser/add_person.html"
     form = PersonForm()
-    context = {'form':form}
+    knownPersonForm = KnownPersonForm()
+    context = {'form': form,
+               'knownPersonForm': knownPersonForm}
+    if request.method == 'POST':
+        form = PersonForm(request.POST)
+        knownPersonForm = KnownPersonForm(request.POST)
+        context.update(
+            {'form': form}
+        )
+        if form.is_valid():
+                Person.objects.create(
+                    changed_by=request.user,
+                    first_name=form.cleaned_data.get('first_name'),
+                    last_name=form.cleaned_data.get('last_name')
+                )
+        else:
+            return render(request, template, context)
+        if knownPersonForm.is_valid():
+            _handle_known_person_form(request, knownPersonForm, person)
+        return HttpResponseRedirect(reverse('person_list', args=()))
     return render(request, template, context)

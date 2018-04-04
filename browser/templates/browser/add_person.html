@@ -5,9 +5,8 @@
 {% block main %}
 
 <div class="alert alert-mbl">
-    Person
     <div>
-        <span class="h1">{{ person.name }}</span>
+        <span class="h1">Add  Person</span>
 
     </div>
     {% if person.authority %}
@@ -29,10 +28,10 @@
         The below form will add a new <strong>Person</strong>.
     </p>
 
-    <form action="." method="post" id="EditAffiliationForm">
+    <form action="." method="post" >
     {% csrf_token %}
     {% block form_fields %}
-    {% with form.first as field %}
+    {% with form.first_name as field %}
     <div class="row">
         <div class="col-xs-6">
         <div class="form-group">
@@ -62,11 +61,65 @@
     </div>
     {% endwith %}
 
+    <div class="row">
+    <div class="col-xs-12">
+        {% with form.validated as field %}
+        <div class="checkbox">
+            {% for error in field.errors %}
+            <div class="alert alert-warning">{{ error }}</div>
+            {% endfor %}
+            <label>
+                {{ field }} {{ field.label }}
+            </label>
+            <p class="text-muted">{{ field.help_text }}</p>
+        </div>
+        {% endwith %}
+    </div>
+    </div>
+
+    {% with knownPersonForm.conceptpower_uri as field %}
+    <div class="row">
+        <div class="col-xs-6">
+        <div class="form-group">
+            {% for error in field.errors %}
+            <div class="alert alert-warning">{{ error }}</div>
+            {% endfor %}
+            <label>{{ field.label }}</label>
+            <div class="input-group">
+                <span class="input-group-btn">
+                    <a class="btn glyphicon glyphicon-search"
+                        href="https://chps.asu.edu/conceptpower/home/conceptsearch?word={{ person.name|plusencode }}&pos=noun"
+                        target="_blank"
+                        data-toggle="tooltip"
+                        data-title="Search for this person in Conceptpower authority service">
+                    </a>
+                </span>
+                {{ field|addcss:"form-control input-sm" }}
+            </div>
+            <p class="text-muted">{{ field.help_text }}</p>
+        </div>
+        </div>
+    {% endwith %}
+
+    {% with knownPersonForm.description as field %}
+        <div class="col-xs-6">
+        <div class="form-group">
+            {% for error in field.errors %}
+            <div class="alert alert-warning">{{ error }}</div>
+            {% endfor %}
+            <label>{{ field.label }}</label>
+            {{ field|addcss:"form-control input-sm" }}
+            <p class="text-muted">{{ field.help_text }}</p>
+        </div>
+        </div>
+    {% endwith %}
+    </div>
+
     {% endblock %}
 
     <div class="row">
     <div class="text-center">
-        <input class="btn btn-success" type="submit" value="Update">
+        <input class="btn btn-success" type="submit" value="Create">
         <a class="btn btn-danger" href="{% url "person_list" %}">Cancel</a>
     </div>
     </div>
@@ -74,6 +127,5 @@
     </form>
 
 
-{% endblock %}
-
 </div>
+{% endblock %}
