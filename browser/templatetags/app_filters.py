@@ -141,3 +141,13 @@ def get_affiliates(institution):
     #  absolute URL.
 
     return qs
+
+
+@register.filter
+def get_positions(person):
+    return Position.objects.filter(person=person).order_by('year')
+
+
+@register.simple_tag
+def get_roles_of_positions():
+    return [i for i in Position.role_choices]

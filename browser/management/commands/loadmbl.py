@@ -14,6 +14,12 @@ def isnan(value):
 
 USER_RUNNING_IMPORT = settings.IMPORT_USER
 
+POSITION_MAP = {
+    'Friday Evening Lecturer': Position.FRIDAY_EVENING_LECTURER,
+    'Corporation Member': Position.CORPORATION_MEMBER,
+    'Trustee': Position.TRUSTEE
+}
+
 class Command(BaseCommand):
     help = 'Load MBL data from CSV'
 
@@ -29,7 +35,8 @@ class Command(BaseCommand):
         ('investigators', 'cleaned_investigators.csv'),
         ('locations', 'cleaned_locations.csv'),
         ('combined_attendances', 'combined_attendances.csv'),
-        ('investigators_by_name', 'investigators_by_name.csv')
+        ('investigators_by_name', 'investigators_by_name.csv'),
+        ('positions', 'positions.csv')
     ]
 
     def add_arguments(self, parser):
@@ -148,12 +155,12 @@ class Command(BaseCommand):
         # add imported by user
         user = User.objects.get(username=USER_RUNNING_IMPORT)
 
-        person = self.find_or_create_person(datum, user)
+        person = self._find_or_create_person(datum, user)
         if not person:
             return
 
         # create affiliation
-        self.create_affiliation(person, datum, user)
+        self._create_affiliation(person, datum, user)
 
         attendance = Attendance.objects.filter(person=person, course=course)
         if attendance:
@@ -174,11 +181,11 @@ class Command(BaseCommand):
         # add imported by user
         user = User.objects.get(username=USER_RUNNING_IMPORT)
 
-        person = self.find_or_create_person(datum, user)
+        person = self._find_or_create_person(datum, user)
         if not person:
             return
 
-        self.create_affiliation(person, datum, user)
+        self._create_affiliation(person, datum, user)
 
         investigator = Investigator(person=person,
                                 year=datum['Year'],
@@ -190,8 +197,23 @@ class Command(BaseCommand):
         except Exception as e:
             print e
 
+    def handle_positions(self, datum):
+        # add imported by user
+        user = User.objects.get(username=USER_RUNNING_IMPORT)
 
-    def find_or_create_person(self, datum, user):
+        person = self._find_or_create_person(datum, user)
+        if not person:
+            return
+
+        self._create_affiliation(person, datum, user)
+
+        position = Position(person=person, role=POSITION_MAP[datum['Role']], year=datum['Year'], changed_by=user)
+        try:
+            position.save()
+        except Exception as e:
+            print e
+
+    def _find_or_create_person(self, datum, user):
         person_first_name = datum['First Name'].decode('utf-8')
         person_last_name = datum['Last Name'].decode('utf-8')
         person_candidates = Person.objects.filter(last_name__iexact=datum['Last Name'])
@@ -212,7 +234,7 @@ class Command(BaseCommand):
             print e
             return None
 
-    def find_or_create_institution(self, institution_name, user):
+    def _find_or_create_institution(self, institution_name, user):
         institutions = Institution.objects.filter(name__iexact=institution_name)
         if institutions:
             print '[INFO] found %s. Using existing institution.' % (institution_name)
@@ -226,12 +248,17 @@ class Command(BaseCommand):
             print e
             return None
 
-    def create_affiliation(self, person, datum, user):
+    def _create_affiliation(self, person, datum, user):
+        """
+        Get the institution from the sheet. If there is one, check if an
+        institution with that name already exists, if not, create it. Then
+        create an affiliation between the person and institution.
+        """
         institution_name = datum['Institution'].decode('utf-8').strip()
         if not institution_name:
             return None
 
-        institution = self.find_or_create_institution(institution_name, user)
+        institution = self._find_or_create_institution(institution_name, user)
         if not institution:
             return None
 

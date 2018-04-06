@@ -1,0 +1,164 @@
+{% extends "browser/change_base.html" %}
+{% load addcss %}
+
+{% block title %}Position: {{ person.name }} (Person){% endblock %}
+
+<!-- Bootstrap Date-Picker Plugin -->
+{% load staticfiles %}
+<script src="{% static "browser/js/bootstrap-datepicker.min.js" %}"></script>
+<link rel="stylesheet" href="{% static "browser/css/bootstrap-datepicker3.css" %}"/>
+
+{% block main %}
+
+ <script>
+       $(document).ready(function(){
+
+           $("#start_date").click(function(){
+                $("#start_date").datepicker({dateFormat: 'yy-mm-dd',changeMonth: true,changeYear: true,yearRange: "-150:+50"}).focus();
+           });
+
+           $("#end_date").click(function(){
+                $("#end_date").datepicker({dateFormat: 'yy-mm-dd',changeMonth: true,changeYear: true,yearRange: "-150:+50"}).focus();
+           });
+
+           $("#ClearStartDateButton").click(function(){
+                $("#start_date").val("");
+           });
+
+           $("#ClearEndDateButton").click(function(){
+                $("#end_date").val("");
+           });
+
+       });
+ </script>
+
+<div class="alert alert-mbl">
+    Person
+    <div>
+        <span class="h1">{{ person.name }}</span>
+
+    </div>
+    {% if person.authority %}
+    <div class="text-warning">
+        <span class="glyphicon glyphicon-barcode"></span>
+        {{ person.authority.conceptpower_uri|urlize }}
+    </div>
+    {% endif %}
+    {% if person.validated %}
+    <div>
+        <span class="glyphicon glyphicon-ok" style="color:green;"></span>&nbsp;
+        Validated by {{ person.validated_by }} on {{ person.validated_on }}.
+    </div>
+    {% endif %}
+</div>
+
+<div class="container">
+    <p class="text-info">
+        {% if position_id %}
+        The below form will edit this <strong>Position</strong> record for <strong>{{ person.name }}</strong>.
+        {% else %}
+        The below form will add a new <strong>Position</strong> record for <strong>{{ person.name }}</strong>.
+        {% endif %}
+    </p>
+
+    <form action="." method="post" id="PositionForm">
+    {% csrf_token %}
+    {% block form_fields %}
+    {% with form.subject as field %}
+    <div class="row">
+        <div class="col-xs-12">
+        <div class="form-group">
+            {% for error in field.errors %}
+            <div class="alert alert-warning">{{ error }}</div>
+            {% endfor %}
+            <label>{{ field.label }}</label>
+            {{ field|addcss:"form-control input-sm" }}
+            <p class="text-muted">{{ field.help_text }}</p>
+        </div>
+        </div>
+    </div>
+    {% endwith %}
+
+    {% with form.role as field %}
+    <div class="row">
+        <div class="col-xs-8">
+        <div class="form-group">
+            {% for error in field.errors %}
+            <div class="alert alert-warning">{{ error }}</div>
+            {% endfor %}
+            <label>{{ field.label }}</label>
+            {{ field|addcss:"form-control input-sm" }}
+            <p class="text-muted">{{ field.help_text }}</p>
+        </div>
+        </div>
+    {% endwith %}
+
+    {% with form.year as field %}
+        <div class="col-xs-4">
+        <div class="form-group">
+            {% for error in field.errors %}
+            <div class="alert alert-warning">{{ error }}</div>
+            {% endfor %}
+            <label>{{ field.label }}</label>
+            {{ field|addcss:"form-control input-sm" }}
+            <p class="text-muted">{{ field.help_text }}</p>
+        </div>
+        </div>
+    </div>
+    {% endwith %}
+
+    <div class="row">
+    {% with form.start_date as field %}
+        <div class="col-xs-6">
+        <div class="form-group">
+            {% for error in field.errors %}
+            <div class="alert alert-warning">{{ error }}</div>
+            {% endfor %}
+            <label>{{ field.label }}</label>
+            <div class="input-group">
+                <input type="text" class="form-control input-sm" value="{{field.value|date:"Y-m-d"}}" id="start_date" name="start_date">
+                <span class="input-group-btn">
+                <button class="btn btn-sm btn-info" type="button" id="ClearStartDateButton">Clear</button>
+                </span>
+            </div>
+            <p class="text-muted">{{ field.help_text }}</p>
+        </div>
+        </div>
+    {% endwith %}
+
+    {% with form.end_date as field %}
+        <div class="col-xs-6">
+        <div class="form-group">
+            {% for error in field.errors %}
+            <div class="alert alert-warning">{{ error }}</div>
+            {% endfor %}
+            <label>{{ field.label }}</label>
+            <div class="input-group">
+                <input type="text" class="form-control input-sm" value="{{field.value|date:"Y-m-d"}}" id="end_date" name="end_date">
+                <span class="input-group-btn">
+                <button class="btn btn-sm btn-info" type="button" id="ClearEndDateButton">Clear</button>
+                </span>
+            </div>
+            <p class="text-muted">{{ field.help_text }}</p>
+        </div>
+        </div>
+    </div>
+    {% endwith %}
+    {% endblock %}
+
+    <div class="row">
+    <div class="text-center">
+        {% if position_id %}
+        <input class="btn btn-success" form="PositionForm" type="submit" name="UpdateButton" id="ValueButton" value="Update">
+        {% else %}
+        <input class="btn btn-success" name="SaveButton" type="submit" value="Save">
+        {% endif %}
+        <a class="btn btn-danger" href="{% url "person" person.id %}?person-positions">Cancel</a>
+    </div>
+    </div>
+
+    </form>
+
+{% endblock %}
+
+</div>

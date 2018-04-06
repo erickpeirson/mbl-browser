@@ -2,12 +2,42 @@
 {% load app_filters %}
 {% block title %}{{ person.name }} (Person){% endblock %}
 
-
+{% load staticfiles %}
 {% block main %}
-
 <script>
+//@ sourceURL=position.js
         $(document).ready(function() {
+
+            {% if request.GET.tab %}
+                $('.nav-tabs a[href="#' + "{{request.GET.tab}}" + '"]').tab('show');
+            {% endif %}
+
+            $('#dropdownRoles').change(function(){
+                  var roleToShow = $('#dropdownRoles').val();
+                  $("#PositionTable").find("tbody>tr").each(function(idx, item) {
+                    var roleTd = $(item).children()[5];
+                    var roleId = $(roleTd).data('role-id');
+                    if(roleId == roleToShow || roleToShow=="ALL") {
+                      $(item).show();
+                    } else {
+                      $(item).hide();
+                    }
+                  });
+            });
+
             $('[data-curation-tooltip]').tooltip();
+
+            $(".DeletePosition").click(function(){
+                $('#DeletePositionModalForm').attr('action', $(this).attr("data-url"));
+                $(".modal-body #DeletePositionModalSubject").text($(this).attr("data-subject"));
+                $(".modal-body #DeletePositionModalRole").text($(this).attr("data-role"));
+                $(".modal-body #DeletePositionModalYear").text($(this).attr("data-year"));
+                $(".modal-body #DeletePositionModalStartDate").text($(this).attr("data-start-date"));
+                $(".modal-body #DeletePositionModalEndDate").text($(this).attr("data-end-date"));
+                $('#DeletePositionModal').modal('show');
+           });
+
+
         });
 </script>
 
@@ -43,6 +73,12 @@
                 title="Add an investigator record for {{person.name}}"
                 href="{% url "add-investigator" person.id %}">
             </a>
+            <a class="btn btn-lg fa fa-id-badge"
+                aria-hidden="true"
+                data-toggle="tooltip"
+                title="Add a position record for {{person.name}}"
+                href="{% url "position" person.id %}">
+            </a>
         </span>
         {% endif %}
     </div>
@@ -67,6 +103,11 @@
         {% if person.number_of_courses > 0 %}<li role="presentation"{% if person.number_of_affiliations == 0 %} class="active"{% endif %}><a href="#person-courses" aria-controls="courses" role="tab" data-toggle="tab">Courses</a></li>{% endif %}
         {% if person.is_investigator %}<li role="presentation"{% if person.number_of_courses == 0 and person.number_of_affiliations == 0 %} class="active"{% endif %}><a href="#person-investigations" aria-controls="research" role="tab" data-toggle="tab">Research</a></li>{% endif %}
         {% if person.number_of_locations > 0 %}<li role="presentation">{% if person.number_of_courses == 0 and person.number_of_affiliations == 0 and not person.is_investigator %} class="active"{% endif %}<a href="#person-locations" aria-controls="locations" role="tab" data-toggle="tab">Locations</a></li>{% endif %}
+        {% with person|get_positions as positions %}
+        {% if positions|length > 0 %}
+        <li role="presentation"><a href="#person-positions" aria-controls="positions" role="tab" data-toggle="tab">Positions</a></li>
+        {% endif %}
+        {% endwith %}
     </ul>
 
     <div class="tab-content">
@@ -261,11 +302,134 @@
     </div>
     {% endif %}
     {% endwith %}
+
+    <!-- Positions -->
+    {% with person|get_positions as positions %}
+    {% if positions|length > 0 %}
+    <div role="tabpanel" class="tab-pane" id="person-positions">
+        <div class="panel panel-mbl">
+            <div class="panel-heading">
+                <h3>Positions</h3>
+            </div>
+            <div class="container">
+              <div>
+                <select style="width: 200px" class="form-control input-sm pull-right" id="dropdownRoles">
+                  <!-- Constructs role dropdown with 'All Roles' and values from databases  -->
+                  <option value="ALL">Show all Roles</option>
+                  {% get_roles_of_positions as role_types %}
+                      {% for i in role_types %}
+                  <option value="{{i.0}}">{{i.1}}</option>
+                      {% endfor %}
+                </select>
+              </div>
+            </div>
+            <table class="table" id="PositionTable">
+                <thead>
+                    <tr>
+                        {% if user.is_staff %}
+                        <th class="col-xs-1"></th>
+                        {% endif %}
+                        <td>Year</td>
+                        <td>Start Date</td>
+                        <td>End Date</td>
+                        <td>Subject</td>
+                        <td>Role</td>
+                    </tr>
+                </thead>
+                <tbody class="AllPositionData">
+                    {% for position in positions %}
+                    <tr>
+                        {% if user.is_staff %}
+                        <td>
+                            <a class=" btn btn-sm fa fa-edit"
+                               aria-hidden="true"
+                               id="edit_position"
+                               href="{% url "position" person.id position.id %}">
+                            </a>
+                            <a class="btn btn-sm fa fa-trash DeletePosition"
+                                aria-hidden="true"
+                                data-toggle="modal"
+                                data-url="{% url "delete-position" person.id position.id %}"
+                                data-subject = "{{position.subject}}"
+                                data-role = "{{position.get_role_display}}"
+                                data-year = "{{position.year}}"
+                                data-start-date = "{{position.start_date}}"
+                                data-end-date = "{{position.end_date}}"
+                            >
+                            </a>
+                        </td>
+                        {% endif %}
+                        <td>{{ position.year }}</td>
+                        {% if position.start_date is None %}
+                        <td>-</td>
+                        {% else %}
+                        <td>{{ position.start_date }}</td>
+                        {% endif %}
+                        {% if position.end_date is None %}
+                        <td>-</td>
+                        {% else %}
+                        <td>{{ position.end_date }}</td>
+                        {% endif %}
+                        <td>{{ position.subject }}</td>
+                        <td data-role-id="{{ position.role }}">{{ position.get_role_display }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+    {% endif %}
+    {% endwith %}
+
     </div>
 </div>
 
     {% with person as instance %}
     {% include "browser/history_modal.html" %}
     {% endwith %}
+
+<!-- Delete Position modal section starts here -->
+<div class="modal fade" id="DeletePositionModal" tabindex="-1" role="dialog" aria-labelledby="DeletePositionModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="DeletePositionModalLabel"><strong>Delete Position</strong></h4>
+            </div>
+
+            <form id="DeletePositionModalForm" action="." method="post">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <h4>
+                        Are you sure you want to delete the following position record: <br><br>
+                        <div class="form-group">
+                            <strong>Subject:</strong><br><label style="font-weight:normal" id="DeletePositionModalSubject"/>
+                        </div>
+                        <div class="form-group">
+                            <strong>Role:</strong><br><label style="font-weight:normal" id="DeletePositionModalRole"/>
+                        </div>
+                        <div class="form-group">
+                            <strong>Year:</strong><br><label style="font-weight:normal" id="DeletePositionModalYear"/>
+                        </div>
+                        <div class="form-group">
+                            <strong>Start Date:</strong><br><label style="font-weight:normal" id="DeletePositionModalStartDate"/>
+                        </div>
+                        <div class="form-group">
+                            <strong>End Date:</strong><br><label style="font-weight:normal" id="DeletePositionModalEndDate"/>
+                        </div>
+                    </h4>
+                </div>
+                <div class="modal-footer">
+                    <input class="btn btn-danger" type="submit" value="Delete">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+<!-- Delete Position modal section ends here -->
+
 
 {% endblock %}
