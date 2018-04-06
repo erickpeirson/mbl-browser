@@ -7,6 +7,7 @@ from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.db.models.query_utils import Q
 from django.db.models import Count
 from django.db import transaction
+from django.contrib import messages
 
 from browser.models import *
 from browser.filters import *
@@ -14,7 +15,6 @@ from browser.forms import *
 
 from itertools import chain, groupby
 import datetime
-
 
 
 def get_paginator(model, request, order_by=None, pagesize=25):
@@ -702,9 +702,11 @@ def add_person(request):
             {'form': form}
         )
         if form.is_valid():
-            if Person.objects.get(first_name=form.cleaned_data.get('first_name'),
+            # Check if the person already exists in the database
+            if Person.objects.filter(first_name=form.cleaned_data.get('first_name'),
                     last_name=form.cleaned_data.get('last_name')).exists():
-                pass
+                messages.add_message(request, messages.ERROR, 'Error in creating new user : This user already exists')
+                return render(request, template, context)
             else:
                 Person.objects.create(
                     changed_by=request.user,
@@ -713,9 +715,60 @@ def add_person(request):
                 )
         else:
             return render(request, template, context)
+        person = Person.objects.get(first_name=form.cleaned_data.get('first_name'),
+                                    last_name=form.cleaned_data.get('last_name'))
+        if person.validated and person.validated_by is None:
+            person.validated_by = request.user
+            person.validated_on = datetime.datetime.now()
+            person.save()
         if knownPersonForm.is_valid():
-            person = Person.objects.get(first_name=form.cleaned_data.get('first_name'),
-                    last_name=form.cleaned_data.get('last_name'))
             _handle_known_person_form(request, knownPersonForm, person)
         return HttpResponseRedirect(reverse('person_list', args=()))
     return render(request, template, context)
+
+
+def position(request, person_id, position_id=None):
+    person = get_object_or_404(Person, pk=person_id)
+    template = "browser/position.html"
+
+    context = {
+        'person': person,
+        'position_id': position_id
+    }
+
+    if request.method == 'GET':
+        if position_id:
+            position = get_object_or_404(Position, pk=position_id)
+            form = PositionForm(initial={'subject': position.subject, 'role': position.role,
+                                         'year': position.year, 'start_date': position.start_date,
+                                         'end_date': position.end_date})
+        else:
+            form = PositionForm()
+
+        context.update({
+            'form': form
+        })
+
+    if request.method == 'POST':
+        form = PositionForm(request.POST)
+        if form.is_valid():
+            if position_id is None:
+                Position.objects.create(
+                    person_id=person_id,
+                    changed_by=request.user,
+                    **form.cleaned_data
+                )
+            else:
+                Position.objects.filter(id=position_id).update(**form.cleaned_data)
+            return HttpResponseRedirect(reverse('person', args=(person.id,),)+'?tab=person-positions')
+        context.update({
+            'form': form
+        })
+    return render(request, template, context)
+
+
+@staff_member_required
+def delete_position(request, person_id, position_id):
+    if request.method == 'POST':
+        Position.objects.filter(id=position_id).delete()
+    return HttpResponseRedirect(reverse('person', args=(person_id,)))

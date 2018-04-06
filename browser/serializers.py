@@ -235,6 +235,7 @@ class PersonDetailSerializer(serializers.HyperlinkedModelSerializer):
     locations = serializers.SerializerMethodField('has_location')
     investigation = serializers.SerializerMethodField('is_investigator')
     authority = KnownPersonSerializer(read_only=True)
+    positions = serializers.SerializerMethodField('positions_held')
 
     validated = serializers.BooleanField()
     validated_by = serializers.CharField()
@@ -244,10 +245,9 @@ class PersonDetailSerializer(serializers.HyperlinkedModelSerializer):
         model = Person
         fields = ('last_name', 'first_name', 'url', 'number_of_courses',
                   'is_investigator', 'number_of_affiliations', 'affiliations',
-                  'courses', 'locations', 'investigation', 'uri', 'authority',
+                  'courses', 'locations', 'investigation', 'positions', 'uri', 'authority',
                   'last_updated', 'id', 'validated', 'validated_by',
                   'validated_on')
-
 
     def affiliated_with(self, obj):
         """
@@ -339,6 +339,11 @@ class PersonDetailSerializer(serializers.HyperlinkedModelSerializer):
     def is_investigator(self, obj):
         qs = obj.investigator_set.all()
         serializer = InvestigatorSerializer(qs, many=True)
+        return serializer.data
+
+    def positions_held(self, obj):
+        qs = obj.position_set.all()
+        serializer = PositionListSerializer(qs, many=True)
         return serializer.data
 
 
@@ -479,3 +484,13 @@ class CourseGroupDetailSerializer(serializers.HyperlinkedModelSerializer):
         context = {'request': self._context['request']}
         serializer = CourseListSerializer(qs, many=True, context=context)
         return serializer.data
+
+
+class PositionListSerializer(serializers.Serializer):
+    subject = serializers.CharField(max_length=255)
+    role = serializers.CharField(max_length=255)
+    year = serializers.IntegerField(default=0)
+    last_updated = serializers.DateTimeField()
+    validated = serializers.BooleanField()
+    validated_by = serializers.CharField()
+    validated_on = serializers.DateTimeField()

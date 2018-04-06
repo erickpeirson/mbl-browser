@@ -25,6 +25,7 @@ SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 DEBUG = eval(os.environ.get('DEBUG', 'True'))
 
 ALLOWED_HOSTS = ['*']
+IMPORT_USER = os.environ.get('IMPORT_USER', '')
 
 
 # Application definition

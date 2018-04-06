@@ -28,6 +28,10 @@
         The below form will add a new <strong>Person</strong>.
     </p>
 
+    {% for message in messages %}
+    <div class="alert alert-danger"><h5>{{ message }}</h5></div>
+    {% endfor %}
+
     <form action="." method="post" >
     {% csrf_token %}
     {% block form_fields %}

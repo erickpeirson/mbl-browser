@@ -228,6 +228,10 @@ class Person(URIMixin, CuratedMixin, LastUpdatedMixin):
     def is_investigator(self):
         return self.investigator_set.count() > 0
 
+    @property
+    def has_position(self):
+        return self.position_set.count() > 0
+
     def __unicode__(self):
         return self.name
 
@@ -506,3 +510,41 @@ class MergeEvent(models.Model):
     @_history_user.setter
     def _history_user(self, value):
         self.changed_by = value
+
+
+class Position(YearMixin, CuratedMixin, LastUpdatedMixin):
+    history = HistoricalRecords()
+    person = models.ForeignKey('Person')
+    subject = models.CharField(max_length=255, blank=True)
+    CORPORATION_MEMBER = 'CM'
+    TRUSTEE = 'TR'
+    FRIDAY_EVENING_LECTURER = 'FEL'
+    role_choices = ((CORPORATION_MEMBER, 'Corporation Member'), (TRUSTEE, 'Trustee'),
+                    (FRIDAY_EVENING_LECTURER, 'Friday Evening Lecturer'))
+    role = models.CharField(max_length=3, blank=False, choices=role_choices, default=CORPORATION_MEMBER)
+
+    start_date = models.DateField(blank=True, null=True)
+    end_date = models.DateField(blank=True, null=True)
+    changed_by = models.ForeignKey('auth.User', related_name='edited_position')
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.changed_by = value
+
+    def __unicode__(self):
+        rep = u''
+        if self.role:
+            rep += u'Role: %s' % self.role
+        if self.subject:
+            if self.role:
+                rep += u' '
+            rep += u'Subject: %s' % self.subject
+        if self.subject or self.role:
+            rep += u' in %s' % self.year
+        else:
+            rep = u'Investigator in %i' % self.year
+        return rep
