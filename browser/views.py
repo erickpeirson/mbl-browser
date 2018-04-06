@@ -690,40 +690,35 @@ def delete_investigator_record(request, person_id, research_id):
 
 @staff_member_required
 def add_person(request):
-    template = "browser/add_person.html"
-    form = PersonForm()
-    knownPersonForm = KnownPersonForm()
-    context = {'form': form,
-               'knownPersonForm': knownPersonForm}
-    if request.method == 'POST':
+    if request.method == 'GET':
+        form = PersonForm()
+        extra_form = KnownPersonForm()
+
+    elif request.method == 'POST':
         form = PersonForm(request.POST)
-        knownPersonForm = KnownPersonForm(request.POST)
-        context.update(
-            {'form': form}
-        )
+        extra_form = KnownPersonForm(request.POST)
         if form.is_valid():
-            # Check if the person already exists in the database
-            if Person.objects.filter(first_name=form.cleaned_data.get('first_name'),
-                    last_name=form.cleaned_data.get('last_name')).exists():
-                messages.add_message(request, messages.ERROR, 'Error in creating new user : This user already exists')
-                return render(request, template, context)
-            else:
-                Person.objects.create(
-                    changed_by=request.user,
-                    first_name=form.cleaned_data.get('first_name'),
-                    last_name=form.cleaned_data.get('last_name')
-                )
-        else:
-            return render(request, template, context)
-        person = Person.objects.get(first_name=form.cleaned_data.get('first_name'),
-                                    last_name=form.cleaned_data.get('last_name'))
-        if person.validated and person.validated_by is None:
-            person.validated_by = request.user
-            person.validated_on = datetime.datetime.now()
-            person.save()
-        if knownPersonForm.is_valid():
-            _handle_known_person_form(request, knownPersonForm, person)
-        return HttpResponseRedirect(reverse('person_list', args=()))
+            Person.objects.create(
+                                 changed_by=request.user,
+                                 first_name=form.cleaned_data.get('first_name'),
+                                 last_name=form.cleaned_data.get('last_name')
+                             )
+            person = Person.objects.get(first_name=form.cleaned_data.get('first_name'),
+                                     last_name=form.cleaned_data.get('last_name'))
+            if person.validated and person.validated_by is None:
+                person.validated_by = request.user
+                person.validated_on = datetime.datetime.now()
+                person.save()
+            if extra_form.is_valid():
+                _handle_known_person_form(request, extra_form, person)
+            return HttpResponseRedirect(reverse('person', args=(person.id,)))
+    context = {
+        'form': form,
+        'extra_form': extra_form,
+        'add_person': True
+    }
+
+    template = "browser/change_person.html"
     return render(request, template, context)
 
 

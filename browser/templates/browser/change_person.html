@@ -1,7 +1,13 @@
 {% extends "browser/change_base.html" %}
 {% load addcss %}
 
-{% block title %}Editing: {{ person.name }} (Person){% endblock %}
+{% block title %}
+{% if add_person %}
+    Adding new Person
+{% else %}
+    Editing: {{ person.name }} (Person)
+{% endif %}
+{% endblock %}
 
 {% block form_fields %}
 <div class="row">
