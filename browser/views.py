@@ -702,6 +702,10 @@ def add_person(request):
             {'form': form}
         )
         if form.is_valid():
+            if Person.objects.get(first_name=form.cleaned_data.get('first_name'),
+                    last_name=form.cleaned_data.get('last_name')).exists():
+                pass
+            else:
                 Person.objects.create(
                     changed_by=request.user,
                     first_name=form.cleaned_data.get('first_name'),
@@ -710,6 +714,8 @@ def add_person(request):
         else:
             return render(request, template, context)
         if knownPersonForm.is_valid():
+            person = Person.objects.get(first_name=form.cleaned_data.get('first_name'),
+                    last_name=form.cleaned_data.get('last_name'))
             _handle_known_person_form(request, knownPersonForm, person)
         return HttpResponseRedirect(reverse('person_list', args=()))
     return render(request, template, context)
