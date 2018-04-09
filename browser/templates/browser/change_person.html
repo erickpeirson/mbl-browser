@@ -2,10 +2,10 @@
 {% load addcss %}
 
 {% block title %}
-{% if add_person %}
-    Adding new Person
-{% else %}
+{% if person %}
     Editing: {{ person.name }} (Person)
+{% else %}
+    Adding new Person
 {% endif %}
 {% endblock %}
 

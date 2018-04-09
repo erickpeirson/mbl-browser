@@ -221,24 +221,43 @@ def _handle_known_person_form(request, extra_form, person):
 
 
 @staff_member_required
-def edit_person(request, person_id):
-    person = get_object_or_404(Person, pk=person_id)
+def edit_person(request, person_id=None):
+    person = None
     if request.method == 'GET':
-        form = PersonForm(instance=person)
-        extra_form = KnownPersonForm(instance=person.authority, prefix='known')
+        if person_id:
+            person = get_object_or_404(Person, pk=person_id)
+            form = PersonForm(instance=person)
+            extra_form = KnownPersonForm(instance=person.authority, prefix='known')
+        else:
+            form = PersonForm()
+            extra_form = KnownPersonForm()
 
-    elif request.method == 'POST':
-        form = PersonForm(request.POST, instance=person)
-        extra_form = KnownPersonForm(request.POST, instance=person.authority, prefix='known')
-        if form.is_valid():
-            person = form.save()
-            if person.validated and person.validated_by is None:
-                person.validated_by = request.user
-                person.validated_on = datetime.datetime.now()
-                person.save()
-            if extra_form.is_valid():
-                _handle_known_person_form(request, extra_form, person)
-            return HttpResponseRedirect(reverse('person', args=(person.id,)))
+    if request.method == 'POST':
+        if person_id:
+            person = get_object_or_404(Person, pk=person_id)
+            form = PersonForm(request.POST, instance=person)
+            extra_form = KnownPersonForm(request.POST, instance=person.authority, prefix='known')
+            if form.is_valid():
+                person = form.save()
+        else:
+            form = PersonForm(request.POST)
+            extra_form = KnownPersonForm(request.POST)
+            if form.is_valid():
+                person = Person.objects.create(
+                    changed_by=request.user,
+                    first_name=form.cleaned_data.get('first_name'),
+                    last_name=form.cleaned_data.get('last_name')
+                )
+
+        if person.validated and person.validated_by is None:
+            person.validated_by = request.user
+            person.validated_on = datetime.datetime.now()
+            person.save()
+
+        if extra_form.is_valid():
+            _handle_known_person_form(request, extra_form, person)
+        return HttpResponseRedirect(reverse('person', args=(person.id,)))
+
     context = {
         'form': form,
         'person': person,
@@ -686,40 +705,6 @@ def delete_investigator_record(request, person_id, research_id):
         Investigator.objects.filter(id=research_id).delete()
 
     return HttpResponseRedirect(reverse('person', args=(person_id,)))
-
-
-@staff_member_required
-def add_person(request):
-    if request.method == 'GET':
-        form = PersonForm()
-        extra_form = KnownPersonForm()
-
-    elif request.method == 'POST':
-        form = PersonForm(request.POST)
-        extra_form = KnownPersonForm(request.POST)
-        if form.is_valid():
-            Person.objects.create(
-                                 changed_by=request.user,
-                                 first_name=form.cleaned_data.get('first_name'),
-                                 last_name=form.cleaned_data.get('last_name')
-                             )
-            person = Person.objects.get(first_name=form.cleaned_data.get('first_name'),
-                                     last_name=form.cleaned_data.get('last_name'))
-            if person.validated and person.validated_by is None:
-                person.validated_by = request.user
-                person.validated_on = datetime.datetime.now()
-                person.save()
-            if extra_form.is_valid():
-                _handle_known_person_form(request, extra_form, person)
-            return HttpResponseRedirect(reverse('person', args=(person.id,)))
-    context = {
-        'form': form,
-        'extra_form': extra_form,
-        'add_person': True
-    }
-
-    template = "browser/change_person.html"
-    return render(request, template, context)
 
 
 def position(request, person_id, position_id=None):
