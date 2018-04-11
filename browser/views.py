@@ -221,11 +221,13 @@ def _handle_known_person_form(request, extra_form, person):
 
 
 @staff_member_required
-def edit_person(request, person_id=None):
+def handle_person(request, person_id=None):
     person = None
+    if person_id:
+        person = get_object_or_404(Person, pk=person_id)
+
     if request.method == 'GET':
         if person_id:
-            person = get_object_or_404(Person, pk=person_id)
             form = PersonForm(instance=person)
             extra_form = KnownPersonForm(instance=person.authority, prefix='known')
         else:
@@ -234,7 +236,6 @@ def edit_person(request, person_id=None):
 
     if request.method == 'POST':
         if person_id:
-            person = get_object_or_404(Person, pk=person_id)
             form = PersonForm(request.POST, instance=person)
             extra_form = KnownPersonForm(request.POST, instance=person.authority, prefix='known')
             if form.is_valid():
@@ -707,6 +708,7 @@ def delete_investigator_record(request, person_id, research_id):
     return HttpResponseRedirect(reverse('person', args=(person_id,)))
 
 
+@staff_member_required
 def position(request, person_id, position_id=None):
     person = get_object_or_404(Person, pk=person_id)
     template = "browser/position.html"
