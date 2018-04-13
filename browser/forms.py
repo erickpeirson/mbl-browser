@@ -143,7 +143,7 @@ class PersonForm(forms.ModelForm):
 
     class Meta:
         model = Person
-        fields = ['last_name', 'first_name', 'validated']
+        fields = ['last_name', 'first_name', 'validated', 'changed_by']
 
 
 class DenizenMultipleChoiceField(forms.ModelMultipleChoiceField):

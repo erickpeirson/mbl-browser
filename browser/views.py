@@ -222,7 +222,10 @@ def _handle_known_person_form(request, extra_form, person):
 
 @staff_member_required
 def handle_person(request, person_id=None):
+    template = "browser/change_person.html"
+    context = {}
     person = None
+
     if person_id:
         person = get_object_or_404(Person, pk=person_id)
 
@@ -231,24 +234,27 @@ def handle_person(request, person_id=None):
             form = PersonForm(instance=person)
             extra_form = KnownPersonForm(instance=person.authority, prefix='known')
         else:
-            form = PersonForm()
+            form = PersonForm(initial={'changed_by': request.user})
             extra_form = KnownPersonForm()
 
     if request.method == 'POST':
         if person_id:
             form = PersonForm(request.POST, instance=person)
             extra_form = KnownPersonForm(request.POST, instance=person.authority, prefix='known')
-            if form.is_valid():
-                person = form.save()
         else:
             form = PersonForm(request.POST)
             extra_form = KnownPersonForm(request.POST)
-            if form.is_valid():
-                person = Person.objects.create(
-                    changed_by=request.user,
-                    first_name=form.cleaned_data.get('first_name'),
-                    last_name=form.cleaned_data.get('last_name')
-                )
+
+        if form.is_valid():
+            person = form.save()
+        else:
+            # Return to change_person.html if form is invalid
+            context.update({
+                'form': form,
+                'person': person,
+                'extra_form': extra_form
+            })
+            return render(request, template, context)
 
         if person.validated and person.validated_by is None:
             person.validated_by = request.user
@@ -259,13 +265,11 @@ def handle_person(request, person_id=None):
             _handle_known_person_form(request, extra_form, person)
         return HttpResponseRedirect(reverse('person', args=(person.id,)))
 
-    context = {
+    context.update({
         'form': form,
         'person': person,
         'extra_form': extra_form
-    }
-
-    template = "browser/change_person.html"
+    })
     return render(request, template, context)
 
 

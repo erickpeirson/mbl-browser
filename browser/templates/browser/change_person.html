@@ -51,6 +51,20 @@
         {% endwith %}
     </div>
 </div>
+
+<!-- This is the changed_by field required by PersonModel -->
+{% with form.changed_by as field %}
+    <div class="form-group hidden">
+        {% for error in field.errors %}
+            <div class="alert alert-warning">{{ error }}</div>
+        {% endfor %}
+        <label>
+            {{ field }} {{ field.label }}
+        </label>
+        <p class="text-muted">{{ field.help_text }}</p>
+    </div>
+{% endwith %}
+
 {% endblock %}
 
 {% block extra_form_fields %}
