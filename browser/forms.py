@@ -144,6 +144,9 @@ class PersonForm(forms.ModelForm):
     class Meta:
         model = Person
         fields = ['last_name', 'first_name', 'validated', 'changed_by']
+        widgets = {
+            'changed_by': forms.HiddenInput()
+        }
 
 
 class DenizenMultipleChoiceField(forms.ModelMultipleChoiceField):

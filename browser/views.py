@@ -248,6 +248,7 @@ def handle_person(request, person_id=None):
         if form.is_valid():
             person = form.save()
         else:
+            print form.errors
             # Return to change_person.html if form is invalid
             context.update({
                 'form': form,
