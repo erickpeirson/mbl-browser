@@ -246,9 +246,9 @@ def handle_person(request, person_id=None):
             extra_form = KnownPersonForm(request.POST)
 
         if form.is_valid():
+            form.cleaned_data["changed_by"] = request.user
             person = form.save()
         else:
-            print form.errors
             # Return to change_person.html if form is invalid
             context.update({
                 'form': form,
