@@ -294,7 +294,7 @@ class PersonDetailSerializer(serializers.HyperlinkedModelSerializer):
         for attendance in aqs.values('last_updated', *afields):
             person_attendances[attendance['course_id']].append(attendance['role'])
 
-        pfields = ['last_updated', 'name', 'pk', 'validated',
+        pfields = ['last_updated', 'name', 'pk', 'validated', 'year',
                    'validated_by__username', 'validated_on']
         qs = []
         for course in obj.courses.distinct('pk').values(*pfields):
@@ -390,6 +390,7 @@ class AttendanceSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=255)
     url = serializers.HyperlinkedIdentityField(view_name='course-detail')
     role = serializers.ListField()
+    year = serializers.IntegerField()
     last_updated = serializers.DateTimeField()
     validated = serializers.BooleanField()
     validated_by = serializers.CharField()
