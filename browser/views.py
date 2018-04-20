@@ -7,6 +7,7 @@ from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.db.models.query_utils import Q
 from django.db.models import Count
 from django.db import transaction
+from django.contrib import messages
 
 from browser.models import *
 from browser.filters import *
@@ -14,7 +15,6 @@ from browser.forms import *
 
 from itertools import chain, groupby
 import datetime
-
 
 
 def get_paginator(model, request, order_by=None, pagesize=25):
@@ -704,10 +704,18 @@ def edit_affiliation(request, person_id, affiliation_id):
         if form.is_valid():
             if form.cleaned_data.get('institution'):
                 if not Institution.objects.filter(name=form.cleaned_data.get('institution')).exists():
-                    institution = Institution.objects.get_or_create(
-                        name=form.cleaned_data.get('institution'),
-                        changed_by=request.user
-                    )
+                    if not form.cleaned_data.get('create_institution'):
+                        messages.add_message(request, messages.ERROR,
+                                             'The above institute does not exist in the database. '
+                                             'Please check the checkbox below to create '
+                                             'information about the institute.')
+                        context.update({'form': form})
+                        return render(request, template, context)
+                    else:
+                        institution = Institution.objects.create(
+                            name=form.cleaned_data.get('institution'),
+                            changed_by=request.user
+                        )
             Affiliation.objects.select_related().filter(person_id=affiliation.person_id, year=affiliation.year,
                         institution=affiliation.institution).update(position=form.cleaned_data.get('position'),
                                         institution=Institution.objects.get(name=form.cleaned_data.get('institution')))

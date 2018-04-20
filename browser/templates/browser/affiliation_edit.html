@@ -57,6 +57,15 @@
             {{ field|addcss:"form-control input-sm" }}
             <div class="list-group" id="institution-results-container"></div>
             <p class="text-muted">{{ field.help_text }}</p>
+            {% if messages %}
+                <div class="alert alert-danger">
+                {% for message in messages %}
+                    {{message}}
+                {% endfor %}
+                </div>
+            {% endif %}
+            <label class="control-label">{{ form.create_institution.label }} {{ form.create_institution }}</label>
+            <span class="text-muted">{{ form.create_institution.help_text }}</span>
         </div>
         </div>
     </div>
