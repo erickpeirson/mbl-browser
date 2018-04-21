@@ -7,6 +7,7 @@ from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.db.models.query_utils import Q
 from django.db.models import Count
 from django.db import transaction
+from django.contrib import messages
 
 from browser.models import *
 from browser.filters import *
@@ -220,31 +221,56 @@ def _handle_known_person_form(request, extra_form, person):
 
 
 @staff_member_required
-def edit_person(request, person_id):
-    person = get_object_or_404(Person, pk=person_id)
-    if request.method == 'GET':
-        form = PersonForm(instance=person)
-        extra_form = KnownPersonForm(instance=person.authority, prefix='known')
+def handle_person(request, person_id=None):
+    template = "browser/change_person.html"
+    context = {}
+    person = None
 
-    elif request.method == 'POST':
-        form = PersonForm(request.POST, instance=person)
-        extra_form = KnownPersonForm(request.POST, instance=person.authority, prefix='known')
+    if person_id:
+        person = get_object_or_404(Person, pk=person_id)
+
+    if request.method == 'GET':
+        if person_id:
+            form = PersonForm(instance=person)
+            extra_form = KnownPersonForm(instance=person.authority, prefix='known')
+        else:
+            form = PersonForm(initial={'changed_by': request.user})
+            extra_form = KnownPersonForm()
+
+    if request.method == 'POST':
+        if person_id:
+            form = PersonForm(request.POST, instance=person)
+            extra_form = KnownPersonForm(request.POST, instance=person.authority, prefix='known')
+        else:
+            form = PersonForm(request.POST)
+            extra_form = KnownPersonForm(request.POST)
+
         if form.is_valid():
+            form.cleaned_data["changed_by"] = request.user
             person = form.save()
-            if person.validated and person.validated_by is None:
-                person.validated_by = request.user
-                person.validated_on = datetime.datetime.now()
-                person.save()
-            if extra_form.is_valid():
-                _handle_known_person_form(request, extra_form, person)
-            return HttpResponseRedirect(reverse('person', args=(person.id,)))
-    context = {
+        else:
+            # Return to change_person.html if form is invalid
+            context.update({
+                'form': form,
+                'person': person,
+                'extra_form': extra_form
+            })
+            return render(request, template, context)
+
+        if person.validated and person.validated_by is None:
+            person.validated_by = request.user
+            person.validated_on = datetime.datetime.now()
+            person.save()
+
+        if extra_form.is_valid():
+            _handle_known_person_form(request, extra_form, person)
+        return HttpResponseRedirect(reverse('person', args=(person.id,)))
+
+    context.update({
         'form': form,
         'person': person,
         'extra_form': extra_form
-    }
-
-    template = "browser/change_person.html"
+    })
     return render(request, template, context)
 
 
