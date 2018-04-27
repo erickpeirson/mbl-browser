@@ -693,7 +693,8 @@ def edit_affiliation(request, person_id, affiliation_id):
     person = get_object_or_404(Person, pk=person_id)
     affiliation = get_object_or_404(Affiliation, pk=affiliation_id)
     template = "browser/affiliation_edit.html"
-    form = EditAffiliationForm(initial={'institution': affiliation.institution, 'position': affiliation.position})
+    form = EditAffiliationForm(initial={'institution': affiliation.institution,
+                                        'position': affiliation.position, 'institution_id': affiliation.institution.id})
     context = {
         'form': form,
         'person': person
@@ -725,3 +726,11 @@ def edit_affiliation(request, person_id, affiliation_id):
             return HttpResponseRedirect(reverse('person', args=(person_id,)))
 
     return render(request, template, context)
+
+
+@staff_member_required
+def delete_affiliation_record(request, person_id, affiliation_id):
+    if request.method == 'POST':
+        Affiliation.objects.filter(id=affiliation_id).delete()
+
+    return HttpResponseRedirect(reverse('person', args=(person_id,)))

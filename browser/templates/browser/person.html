@@ -8,6 +8,13 @@
 <script>
         $(document).ready(function() {
             $('[data-curation-tooltip]').tooltip();
+
+            $(".DeleteAffiliation").click(function(){
+                $('#DeleteAffiliationModalForm').attr('action', $(this).attr("data-url"));
+                $(".modal-body #DeleteAffiliationModalPosition").text($(this).attr("data-position"));
+                $(".modal-body #DeleteAffiliationModalInstitution").text($(this).attr("data-institution"));
+                $('#DeleteAffiliationModal').modal('show');
+           });
         });
 </script>
 
@@ -100,6 +107,14 @@
                             <a class=" btn btn-xs fa fa-edit"
                                aria-hidden="true"
                                href="{% url "edit-affiliation" person.id affiliation.id %}">
+                            </a>
+                            <a class="btn btn-sm fa fa-trash DeleteAffiliation"
+                                aria-hidden="true"
+                                data-toggle="modal"
+                                data-url="{% url "delete-affiliation" person.id affiliation.id %}"
+                                data-position = "{{affiliation.position}}"
+                                data-institution = "{{affiliation.institution}}"
+                            >
                             </a>
                         </td>
                         {% endif %}
@@ -278,5 +293,38 @@
     {% with person as instance %}
     {% include "browser/history_modal.html" %}
     {% endwith %}
+
+<!-- Delete Affiliation modal section starts here -->
+<div class="modal fade" id="DeleteAffiliationModal" tabindex="-1" role="dialog" aria-labelledby="DeleteAffiliationModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="DeleteAffiliationModalLabel"><strong>Delete Affiliation</strong></h4>
+            </div>
+
+            <form id="DeleteAffiliationModalForm" action="." method="post">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <h4>
+                        Are you sure you want to delete the following affiliation record: <br><br>
+                        <div class="form-group">
+                            <strong>Position:</strong><br><label style="font-weight:normal" id="DeleteAffiliationModalPosition"/>
+                        </div>
+                        <div class="form-group">
+                            <strong>Institution:</strong><br><label style="font-weight:normal" id="DeleteAffiliationModalInstitution"/>
+                        </div>
+                    </h4>
+                </div>
+                <div class="modal-footer">
+                    <input class="btn btn-danger" type="submit" value="Delete">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+<!-- Delete Position modal section ends here -->
 
 {% endblock %}

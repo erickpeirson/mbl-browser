@@ -102,6 +102,7 @@ var selectInstitutionResult = function(id, name) {
 }
 var searchPromise = null;
 institution_search.on('keyup', function(e) {
+    institution_id.val('');
     var query = $(this).val();
     if (query.length == 0){
         institution_container.empty();
