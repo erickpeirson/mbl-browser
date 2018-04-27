@@ -703,7 +703,9 @@ def edit_affiliation(request, person_id, affiliation_id):
         form = EditAffiliationForm(request.POST, instance=person)
         if form.is_valid():
             if form.cleaned_data.get('institution'):
-                if not Institution.objects.filter(name=form.cleaned_data.get('institution')).exists():
+                # If institution_id is not populated then create the institution before updating affiliation
+                if not form.cleaned_data.get('institution_id'):
+                    # Checking if create institution radio button has been checked
                     if not form.cleaned_data.get('create_institution'):
                         messages.add_message(request, messages.ERROR,
                                              'The above institute does not exist in the database. '
@@ -716,9 +718,10 @@ def edit_affiliation(request, person_id, affiliation_id):
                             name=form.cleaned_data.get('institution'),
                             changed_by=request.user
                         )
+                        form.cleaned_data["institution_id"] = institution.id
             Affiliation.objects.select_related().filter(person_id=affiliation.person_id, year=affiliation.year,
                         institution=affiliation.institution).update(position=form.cleaned_data.get('position'),
-                                        institution=Institution.objects.get(name=form.cleaned_data.get('institution')))
+                                        institution=Institution.objects.get(id=form.cleaned_data.get('institution_id')))
             return HttpResponseRedirect(reverse('person', args=(person_id,)))
 
     return render(request, template, context)

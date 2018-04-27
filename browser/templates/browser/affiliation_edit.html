@@ -71,6 +71,10 @@
     </div>
     {% endwith %}
 
+    {% with form.institution_id as field %}
+        {{ field }}
+    {% endwith %}
+
     {% endblock %}
 
     <div class="row">
@@ -85,6 +89,8 @@
 <script>
 var institution_search = $('#id_institution');
 var institution_container = $('#institution-results-container');
+var institution_id = $('#id_institution_id');
+
 $(document).ready(function() {
     $(".dropdown-toggle").dropdown();
     $('[data-toggle="tooltip"]').tooltip();
@@ -92,6 +98,7 @@ $(document).ready(function() {
 var selectInstitutionResult = function(id, name) {
     institution_container.empty();
     institution_search.val(name);
+    institution_id.val(id);
 }
 var searchPromise = null;
 institution_search.on('keyup', function(e) {
