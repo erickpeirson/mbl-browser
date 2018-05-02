@@ -1,7 +1,13 @@
 {% extends "browser/change_base.html" %}
 {% load addcss %}
 
-{% block title %}Editing: {{ person.name }} (Person){% endblock %}
+{% block title %}
+{% if person %}
+    Editing: {{ person.name }} (Person)
+{% else %}
+    Adding new Person
+{% endif %}
+{% endblock %}
 
 {% block form_fields %}
 <div class="row">
@@ -45,6 +51,12 @@
         {% endwith %}
     </div>
 </div>
+
+<!-- This is the changed_by field required by PersonModel -->
+{% with form.changed_by as field %}
+    {{ field }}
+{% endwith %}
+
 {% endblock %}
 
 {% block extra_form_fields %}

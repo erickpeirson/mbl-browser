@@ -56,3 +56,4 @@ class LocationViewSet(viewsets.ModelViewSet):
         if hasattr(self, 'action') and self.action == 'list':
             return LocationListSerializer
         return LocationDetailSerializer
+

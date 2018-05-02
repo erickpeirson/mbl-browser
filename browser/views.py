@@ -221,31 +221,56 @@ def _handle_known_person_form(request, extra_form, person):
 
 
 @staff_member_required
-def edit_person(request, person_id):
-    person = get_object_or_404(Person, pk=person_id)
-    if request.method == 'GET':
-        form = PersonForm(instance=person)
-        extra_form = KnownPersonForm(instance=person.authority, prefix='known')
+def handle_person(request, person_id=None):
+    template = "browser/change_person.html"
+    context = {}
+    person = None
 
-    elif request.method == 'POST':
-        form = PersonForm(request.POST, instance=person)
-        extra_form = KnownPersonForm(request.POST, instance=person.authority, prefix='known')
+    if person_id:
+        person = get_object_or_404(Person, pk=person_id)
+
+    if request.method == 'GET':
+        if person_id:
+            form = PersonForm(instance=person)
+            extra_form = KnownPersonForm(instance=person.authority, prefix='known')
+        else:
+            form = PersonForm(initial={'changed_by': request.user})
+            extra_form = KnownPersonForm()
+
+    if request.method == 'POST':
+        if person_id:
+            form = PersonForm(request.POST, instance=person)
+            extra_form = KnownPersonForm(request.POST, instance=person.authority, prefix='known')
+        else:
+            form = PersonForm(request.POST)
+            extra_form = KnownPersonForm(request.POST)
+
         if form.is_valid():
+            form.cleaned_data["changed_by"] = request.user
             person = form.save()
-            if person.validated and person.validated_by is None:
-                person.validated_by = request.user
-                person.validated_on = datetime.datetime.now()
-                person.save()
-            if extra_form.is_valid():
-                _handle_known_person_form(request, extra_form, person)
-            return HttpResponseRedirect(reverse('person', args=(person.id,)))
-    context = {
+        else:
+            # Return to change_person.html if form is invalid
+            context.update({
+                'form': form,
+                'person': person,
+                'extra_form': extra_form
+            })
+            return render(request, template, context)
+
+        if person.validated and person.validated_by is None:
+            person.validated_by = request.user
+            person.validated_on = datetime.datetime.now()
+            person.save()
+
+        if extra_form.is_valid():
+            _handle_known_person_form(request, extra_form, person)
+        return HttpResponseRedirect(reverse('person', args=(person.id,)))
+
+    context.update({
         'form': form,
         'person': person,
         'extra_form': extra_form
-    }
-
-    template = "browser/change_person.html"
+    })
     return render(request, template, context)
 
 
@@ -726,3 +751,51 @@ def edit_affiliation(request, person_id, affiliation_id):
             return HttpResponseRedirect(reverse('person', args=(person_id,)))
 
     return render(request, template, context)
+
+
+@staff_member_required
+def position(request, person_id, position_id=None):
+    person = get_object_or_404(Person, pk=person_id)
+    template = "browser/position.html"
+
+    context = {
+        'person': person,
+        'position_id': position_id
+    }
+
+    if request.method == 'GET':
+        if position_id:
+            position = get_object_or_404(Position, pk=position_id)
+            form = PositionForm(initial={'subject': position.subject, 'role': position.role,
+                                         'year': position.year, 'start_date': position.start_date,
+                                         'end_date': position.end_date})
+        else:
+            form = PositionForm()
+
+        context.update({
+            'form': form
+        })
+
+    if request.method == 'POST':
+        form = PositionForm(request.POST)
+        if form.is_valid():
+            if position_id is None:
+                Position.objects.create(
+                    person_id=person_id,
+                    changed_by=request.user,
+                    **form.cleaned_data
+                )
+            else:
+                Position.objects.filter(id=position_id).update(**form.cleaned_data)
+            return HttpResponseRedirect(reverse('person', args=(person.id,),)+'?tab=person-positions')
+        context.update({
+            'form': form
+        })
+    return render(request, template, context)
+
+
+@staff_member_required
+def delete_position(request, person_id, position_id):
+    if request.method == 'POST':
+        Position.objects.filter(id=position_id).delete()
+    return HttpResponseRedirect(reverse('person', args=(person_id,)))
