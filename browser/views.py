@@ -745,6 +745,10 @@ def edit_affiliation(request, person_id, affiliation_id):
                             changed_by=request.user
                         )
                         form.cleaned_data["institution_id"] = institution.id
+            # If no institution is given, then get id of institute with None as name
+            if not form.cleaned_data.get('institution_id') and not form.cleaned_data.get('institution'):
+                form.cleaned_data["institution_id"] = \
+                                Institution.objects.get(name=form.cleaned_data.get('institution')).id
             Affiliation.objects.select_related().filter(person_id=affiliation.person_id, year=affiliation.year,
                         institution=affiliation.institution).update(position=form.cleaned_data.get('position'),
                                         institution=Institution.objects.get(id=form.cleaned_data.get('institution_id')))
