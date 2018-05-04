@@ -659,6 +659,11 @@ def add_investigator_record(request, person_id):
                                              'Please check the checkbox below to create '
                                              'information about the institute.')
                         return render(request, template, context)
+            # If no institution is given, then get id of institute with None as name
+            if not form.cleaned_data.get('institution_id') and not form.cleaned_data.get('institution_search'):
+                form.cleaned_data["institution_id"] = \
+                    Institution.objects.get(name=form.cleaned_data.get('institution_search')).id
+
             investigator = Investigator(subject=form.cleaned_data.get('subject'),
                                             role=form.cleaned_data.get('role'),
                                             person_id=person_id, year=form.cleaned_data.get('year'),
@@ -708,6 +713,12 @@ def edit_investigator_record(request,person_id,research_id):
                                              'The above institute does not exist in the database. '
                                         'Please check the checkbox below to create information about the institute.')
                         return render(request, template, context)
+
+            # If no institution is given, then get id of institute with None as name
+            if not form.cleaned_data.get('institution_id') and not form.cleaned_data.get('institution_search'):
+                form.cleaned_data["institution_id"] = \
+                    Institution.objects.get(name=form.cleaned_data.get('institution_search')).id
+
             research.subject = form.cleaned_data.get('subject')
             research.role = form.cleaned_data.get('role')
             research.year = form.cleaned_data.get('year')
