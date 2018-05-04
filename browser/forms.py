@@ -143,7 +143,10 @@ class PersonForm(forms.ModelForm):
 
     class Meta:
         model = Person
-        fields = ['last_name', 'first_name', 'validated']
+        fields = ['last_name', 'first_name', 'validated', 'changed_by']
+        widgets = {
+            'changed_by': forms.HiddenInput()
+        }
 
 
 class DenizenMultipleChoiceField(forms.ModelMultipleChoiceField):
@@ -271,7 +274,7 @@ class MergePersonForm(forms.Form):
                 'changed_by': user,
             })
 
-            for field in ['affiliations', 'attendance_set', 'localization_set', 'investigator_set']:
+            for field in ['affiliation_set', 'attendance_set', 'localization_set', 'investigator_set', 'position_set', 'courses']:
                 for relation in getattr(person, field).all():
                     relation.person = parent
                     relation.save()
@@ -341,3 +344,10 @@ class InvestigatorForm(forms.ModelForm):
     class Meta:
         model = Investigator
         fields = ['subject', 'role', 'year']
+
+
+class PositionForm(forms.ModelForm):
+
+    class Meta:
+        model = Position
+        fields = ['subject', 'role', 'year', 'start_date', 'end_date']

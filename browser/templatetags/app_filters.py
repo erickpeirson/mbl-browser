@@ -146,3 +146,13 @@ def get_affiliates(institution):
 @register.filter
 def get_institute(institution):
     return Institution.objects.filter(name=institution).exists()
+
+
+@register.filter
+def get_positions(person):
+    return Position.objects.filter(person=person).order_by('year')
+
+
+@register.simple_tag
+def get_roles_of_positions():
+    return [i for i in Position.role_choices]

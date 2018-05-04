@@ -188,3 +188,5 @@ class LocationFilter(filters.FilterSet):
     class Meta:
         model = Location
         fields = ['name', 'validated']
+
+

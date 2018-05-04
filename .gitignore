@@ -57,7 +57,8 @@ docs/_build/
 target/
 
 staticfiles
-
+browser/static
+venv
 
 *.csv
 *.xml

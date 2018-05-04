@@ -27,6 +27,7 @@ BASE_URL = os.environ.get('BASE_URL', '/')
 
 ALLOWED_HOSTS = ['.herokuapp.com']
 
+IMPORT_USER = os.environ.get('IMPORT_USER', '')
 
 # Application definition
 
