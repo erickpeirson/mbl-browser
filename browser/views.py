@@ -659,8 +659,7 @@ def add_investigator_record(request, person_id):
 
     context = {
         'form': form,
-        'person': person,
-        'type': 'create_investigator'
+        'person': person
     }
 
     if request.method == 'POST':
@@ -677,17 +676,13 @@ def add_investigator_record(request, person_id):
                             name=form.cleaned_data.get('institution_search'),
                             changed_by=request.user
                         )
-                        form.cleaned_data["institution_id"] = institution.id
                     else:
                         messages.add_message(request, messages.ERROR,
                                              'The above institute does not exist in the database. '
                                              'Please check the checkbox below to create a new institute')
                         return render(request, template, context)
-
-            if form.cleaned_data.get('institution_search'):
-                institution = Institution.objects.get(id=form.cleaned_data.get('institution_id'))
-            else:
-                institution = None
+                else:
+                    institution = Institution.objects.get(id=form.cleaned_data.get('institution_id'))
 
             investigator = Investigator(subject=form.cleaned_data.get('subject'),
                                             role=form.cleaned_data.get('role'),
@@ -705,9 +700,7 @@ def edit_investigator_record(request,person_id,research_id):
     person = get_object_or_404(Person, pk=person_id)
     research = get_object_or_404(Investigator, pk=research_id)
     template = "browser/investigator.html"
-    institution_id = None
-    if research.institution:
-        institution_id = research.institution.id
+    institution_id = research.institution.id if research.institution else None
 
     # Retreive investigator data already stored in database and display to the user
     form = InvestigatorForm(initial={'subject': research.subject, 'role': research.role,
@@ -717,8 +710,7 @@ def edit_investigator_record(request,person_id,research_id):
     context = {
         'form': form,
         'person': person,
-        'investigator_data': research,
-        'type': 'edit_investigator'
+        'investigator_data': research
     }
 
     if request.method == 'POST':
@@ -741,14 +733,13 @@ def edit_investigator_record(request,person_id,research_id):
                                              'The above institute does not exist in the database. '
                                              'Please check the checkbox below to create a new institute.')
                         return render(request, template, context)
+                research.institution = Institution.objects.get(id=form.cleaned_data.get('institution_id'))
+            else:
+                research.institution = None
 
             research.subject = form.cleaned_data.get('subject')
             research.role = form.cleaned_data.get('role')
             research.year = form.cleaned_data.get('year')
-            if not form.cleaned_data.get('institution_search'):
-                research.institution = None
-            else:
-                research.institution = Institution.objects.get(id=form.cleaned_data.get('institution_id'))
             research.save()
             return HttpResponseRedirect(reverse('person', args=(person.id,)))
 
