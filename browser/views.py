@@ -655,6 +655,7 @@ def add_investigator_record(request, person_id):
     person = get_object_or_404(Person, pk=person_id)
     template = "browser/investigator.html"
     form = InvestigatorForm()
+    institution = None
 
     context = {
         'form': form,
@@ -680,19 +681,19 @@ def add_investigator_record(request, person_id):
                     else:
                         messages.add_message(request, messages.ERROR,
                                              'The above institute does not exist in the database. '
-                                             'Please check the checkbox below to create '
-                                             'information about the institute.')
+                                             'Please check the checkbox below to create a new institute')
                         return render(request, template, context)
-            # If no institution is given, then get id of institute with None as name
-            if not form.cleaned_data.get('institution_id') and not form.cleaned_data.get('institution_search'):
-                form.cleaned_data["institution_id"] = \
-                    Institution.objects.get(name=form.cleaned_data.get('institution_search')).id
+
+            if form.cleaned_data.get('institution_search'):
+                institution = Institution.objects.get(id=form.cleaned_data.get('institution_id'))
+            else:
+                institution = None
 
             investigator = Investigator(subject=form.cleaned_data.get('subject'),
                                             role=form.cleaned_data.get('role'),
                                             person_id=person_id, year=form.cleaned_data.get('year'),
                                             changed_by=request.user,
-                                  institution=Institution.objects.get(id=form.cleaned_data.get('institution_id')))
+                                            institution=institution)
             investigator.save()
             return HttpResponseRedirect(reverse('person', args=(person.id,)))
 
@@ -704,11 +705,14 @@ def edit_investigator_record(request,person_id,research_id):
     person = get_object_or_404(Person, pk=person_id)
     research = get_object_or_404(Investigator, pk=research_id)
     template = "browser/investigator.html"
+    institution_id = None
+    if research.institution:
+        institution_id = research.institution.id
 
     # Retreive investigator data already stored in database and display to the user
     form = InvestigatorForm(initial={'subject': research.subject, 'role': research.role,
                                              'year': research.year, 'institution_search': research.institution,
-                                     'institution_id': research.institution.id})
+                                     'institution_id': institution_id})
 
     context = {
         'form': form,
@@ -735,18 +739,16 @@ def edit_investigator_record(request,person_id,research_id):
                     else:
                         messages.add_message(request, messages.ERROR,
                                              'The above institute does not exist in the database. '
-                                        'Please check the checkbox below to create information about the institute.')
+                                             'Please check the checkbox below to create a new institute.')
                         return render(request, template, context)
-
-            # If no institution is given, then get id of institute with None as name
-            if not form.cleaned_data.get('institution_id') and not form.cleaned_data.get('institution_search'):
-                form.cleaned_data["institution_id"] = \
-                    Institution.objects.get(name=form.cleaned_data.get('institution_search')).id
 
             research.subject = form.cleaned_data.get('subject')
             research.role = form.cleaned_data.get('role')
             research.year = form.cleaned_data.get('year')
-            research.institution = Institution.objects.get(id=form.cleaned_data.get('institution_id'))
+            if not form.cleaned_data.get('institution_search'):
+                research.institution = None
+            else:
+                research.institution = Institution.objects.get(id=form.cleaned_data.get('institution_id'))
             research.save()
             return HttpResponseRedirect(reverse('person', args=(person.id,)))
 
