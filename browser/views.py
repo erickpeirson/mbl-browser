@@ -100,7 +100,6 @@ def person(request, person_id=None):
         })
         template = "browser/person.html"
     else:
-        print "Request:", request.GET, "\nName:", request.GET.get('name'), " ", type(request.GET.get('name'))
         context['persons'] = PersonFilter(request.GET, queryset=Person.objects.order_by('last_name').filter(merge_from=None))
         # context['persons'] = get_paginator(Person, request, 'last_name', 100)
         template = "browser/person_list.html"
