@@ -173,6 +173,7 @@ class PersonFilter(filters.FilterSet):
 class LocationFilter(filters.FilterSet):
     last_updated = df.DateTimeFilter(name='last_updated', lookup_expr='gte',
                                      label='Last updated')
+    name = df.CharFilter(lookup_expr='icontains')
                                      
     o = df.OrderingFilter(
         # tuple-mapping retains order
