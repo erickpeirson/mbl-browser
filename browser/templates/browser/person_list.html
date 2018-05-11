@@ -16,7 +16,7 @@
                 <div class="input-group">
                     <input type="text" class="form-control" name="name" id="id_name" autofocus placeholder="Search by name"{% if persons.form.name.value %} value="{{ persons.form.name.value }}"{% endif %}>
                     <span class="input-group-btn">
-                        <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-search"></span>&nbsp;</button>
+                        <input type="submit" class="btn btn-success"><span class="glyphicon glyphicon-search"></span>&nbsp;</input>
                     </span>
                 </div>
             </div>
@@ -33,8 +33,8 @@
             <a href="{% url "add-person" %}" class="btn btn-success btn-sm"><span class="glyphicon glyphicon-plus"></span>Add Person</a>
         </div>
     </div>
-
-
+</form>
+<form>
     <div class="collapse" id="filters">
         <div class="clearfix">
             {% for field in persons.form %}
