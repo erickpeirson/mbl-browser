@@ -42,7 +42,7 @@ def get_affiliation(person, year):
 
 @register.filter
 def get_affiliations(person):
-    return person.affiliation_set.distinct('year', 'institution_id').order_by('year')
+    return person.affiliation_set.distinct('year').order_by('year')
 
 
 @register.filter
@@ -74,7 +74,6 @@ def get_affiliation_count(course):
     Calculate the number of :class:`.Institution`\s associated with a
     ``course``.
     """
-
     return Affiliation.objects.filter(
             person__in=course.attendees.distinct('id')
         ).filter(

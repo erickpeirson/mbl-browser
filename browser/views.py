@@ -718,8 +718,12 @@ def edit_affiliation(request, person_id, affiliation_id):
     person = get_object_or_404(Person, pk=person_id)
     affiliation = get_object_or_404(Affiliation, pk=affiliation_id)
     template = "browser/affiliation_edit.html"
+    institution_id = None
+    if affiliation.institution:
+        institution_id = affiliation.institution.id
     form = EditAffiliationForm(initial={'institution': affiliation.institution,
-                                        'position': affiliation.position, 'institution_id': affiliation.institution.id})
+                                        'position': affiliation.position, 'institution_id': institution_id})
+    institution = None
     context = {
         'form': form,
         'person': person
@@ -735,8 +739,7 @@ def edit_affiliation(request, person_id, affiliation_id):
                     if not form.cleaned_data.get('create_institution'):
                         messages.add_message(request, messages.ERROR,
                                              'The above institute does not exist in the database. '
-                                             'Please check the checkbox below to create '
-                                             'information about the institute.')
+                                             'Please check the checkbox below to create new institute')
                         context.update({'form': form})
                         return render(request, template, context)
                     else:
@@ -745,13 +748,15 @@ def edit_affiliation(request, person_id, affiliation_id):
                             changed_by=request.user
                         )
                         form.cleaned_data["institution_id"] = institution.id
-            # If no institution is given, then get id of institute with None as name
-            if not form.cleaned_data.get('institution_id') and not form.cleaned_data.get('institution'):
-                form.cleaned_data["institution_id"] = \
-                                Institution.objects.get(name=form.cleaned_data.get('institution')).id
+
+            if form.cleaned_data.get('institution'):
+                institution = Institution.objects.get(id=form.cleaned_data.get('institution_id'))
+            else:
+                institution = None
+
             Affiliation.objects.select_related().filter(person_id=affiliation.person_id, year=affiliation.year,
                         institution=affiliation.institution).update(position=form.cleaned_data.get('position'),
-                                        institution=Institution.objects.get(id=form.cleaned_data.get('institution_id')))
+                                        institution=institution)
             return HttpResponseRedirect(reverse('person', args=(person_id,)))
 
     return render(request, template, context)

@@ -98,10 +98,13 @@
 <div class="container">
 <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
-        {% if person.number_of_affiliations > 0 %}<li role="presentation" class="active"><a href="#person-affiliations" aria-controls="affiliations" role="tab" data-toggle="tab">Affiliations</a></li>{% endif %}
-        {% if person.number_of_courses > 0 %}<li role="presentation"{% if person.number_of_affiliations == 0 %} class="active"{% endif %}><a href="#person-courses" aria-controls="courses" role="tab" data-toggle="tab">Courses</a></li>{% endif %}
-        {% if person.is_investigator %}<li role="presentation"{% if person.number_of_courses == 0 and person.number_of_affiliations == 0 %} class="active"{% endif %}><a href="#person-investigations" aria-controls="research" role="tab" data-toggle="tab">Research</a></li>{% endif %}
-        {% if person.number_of_locations > 0 %}<li role="presentation">{% if person.number_of_courses == 0 and person.number_of_affiliations == 0 and not person.is_investigator %} class="active"{% endif %}<a href="#person-locations" aria-controls="locations" role="tab" data-toggle="tab">Locations</a></li>{% endif %}
+        {% with person|get_affiliations as affiliations %}
+        {% if affiliations|length > 0 %}
+        <li role="presentation" class="active"><a href="#person-affiliations" aria-controls="affiliations" role="tab" data-toggle="tab">Affiliations</a></li>{% endif %}
+        {% if person.number_of_courses > 0 %}<li role="presentation"{% if affiliations|length == 0 %} class="active"{% endif %}><a href="#person-courses" aria-controls="courses" role="tab" data-toggle="tab">Courses</a></li>{% endif %}
+        {% if person.is_investigator %}<li role="presentation"{% if person.number_of_courses == 0 and affiliations|length == 0 %} class="active"{% endif %}><a href="#person-investigations" aria-controls="research" role="tab" data-toggle="tab">Research</a></li>{% endif %}
+        {% if person.number_of_locations > 0 %}<li role="presentation">{% if person.number_of_courses == 0 and affiliations|length == 0 and not person.is_investigator %} class="active"{% endif %}<a href="#person-locations" aria-controls="locations" role="tab" data-toggle="tab">Locations</a></li>{% endif %}
+        {% endwith %}
         {% with person|get_positions as positions %}
         {% if positions|length > 0 %}
         <li role="presentation"><a href="#person-positions" aria-controls="positions" role="tab" data-toggle="tab">Positions</a></li>
@@ -133,7 +136,6 @@
                 </thead>
                 <tbody>
                     {% for affiliation in affiliations %}
-
                     <tr>
                         {% if user.is_staff %}
                         <td>
@@ -146,7 +148,9 @@
                         <td>{{ affiliation.year }}</td>
                         <td>{{ affiliation.position }}</td>
                         <td>
-                            <a href="{% url "institution" affiliation.institution.id %}">{{ affiliation.institution.name }}</a>
+                            {% if affiliation.institution %}
+                                <a href="{% url "institution" affiliation.institution.id %}">{{ affiliation.institution.name }}</a>
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}
@@ -155,13 +159,12 @@
         </div>
     </div>
     {% endif %}
-    {% endwith %}
 
     <!-- Courses -->
     {% with person|get_attendance as attendances %}
     {% if attendances|length > 0 %}
 
-    <div role="tabpanel" class="tab-pane {% if person.number_of_affiliations == 0 %}active{% endif %}" id="person-courses">
+    <div role="tabpanel" class="tab-pane {% if affiliations|length == 0 %}active{% endif %}" id="person-courses">
         <div class="panel panel-mbl">
             <div class="panel-heading">
                 <h3>Courses</h3>
@@ -191,10 +194,11 @@
     {% endif %}
     {% endwith %}
 
+
     <!-- Research -->
     {% with person|get_researches as researches %}
     {% if researches|length > 0 %}
-    <div role="tabpanel" class="tab-pane {% if person.number_of_courses == 0 and person.number_of_affiliations == 0 %}active{% endif %}" id="person-investigations">
+    <div role="tabpanel" class="tab-pane {% if person.number_of_courses == 0 and affiliations|length == 0 %}active{% endif %}" id="person-investigations">
         <div class="panel panel-mbl">
             <div class="panel-heading">
                 <h3>Research at the MBL</h3>
@@ -282,7 +286,7 @@
 
     {% with person|get_localizations as localizations %}
     {% if localizations|length > 0 %}
-    <div role="tabpanel" class="tab-pane {% if person.number_of_courses == 0 and person.number_of_affiliations == 0 and not person.is_investigator %}active{% endif %}" id="person-locations">
+    <div role="tabpanel" class="tab-pane {% if person.number_of_courses == 0 and affiliations|length == 0 and not person.is_investigator %}active{% endif %}" id="person-locations">
 
         <!-- Locations -->
 
@@ -390,6 +394,7 @@
 
     </div>
     {% endif %}
+    {% endwith %}
     {% endwith %}
 
     </div>
