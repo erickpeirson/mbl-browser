@@ -718,12 +718,11 @@ def edit_affiliation(request, person_id, affiliation_id):
     person = get_object_or_404(Person, pk=person_id)
     affiliation = get_object_or_404(Affiliation, pk=affiliation_id)
     template = "browser/affiliation_edit.html"
-    institution_id = None
-    if affiliation.institution:
-        institution_id = affiliation.institution.id
-    form = EditAffiliationForm(initial={'institution': affiliation.institution,
-                                        'position': affiliation.position, 'institution_id': institution_id})
     institution = None
+
+    form = EditAffiliationForm(initial={'institution': affiliation.institution,
+                                        'position': affiliation.position,
+                                        'institution_id': affiliation.institution.id if affiliation.institution else None})
     context = {
         'form': form,
         'person': person
@@ -747,19 +746,25 @@ def edit_affiliation(request, person_id, affiliation_id):
                             name=form.cleaned_data.get('institution'),
                             changed_by=request.user
                         )
-                        form.cleaned_data["institution_id"] = institution.id
-
-            if form.cleaned_data.get('institution'):
-                institution = Institution.objects.get(id=form.cleaned_data.get('institution_id'))
-            else:
-                institution = None
+                else:
+                    institution = Institution.objects.get(id=form.cleaned_data.get('institution_id'))
 
             Affiliation.objects.select_related().filter(person_id=affiliation.person_id, year=affiliation.year,
-                        institution=affiliation.institution).update(position=form.cleaned_data.get('position'),
+                                                        institution=affiliation.institution).update(position=form.cleaned_data.get('position'),
                                         institution=institution)
             return HttpResponseRedirect(reverse('person', args=(person_id,)))
 
     return render(request, template, context)
+
+
+@staff_member_required
+def delete_affiliation_record(request, person_id, affiliation_id):
+    affiliation = get_object_or_404(Affiliation, pk=affiliation_id)
+    if request.method == 'POST':
+        Affiliation.objects.select_related().filter(person_id=affiliation.person_id, year=affiliation.year
+                                                    , institution=affiliation.institution).delete()
+
+    return HttpResponseRedirect(reverse('person', args=(person_id,)))
 
 
 @staff_member_required
