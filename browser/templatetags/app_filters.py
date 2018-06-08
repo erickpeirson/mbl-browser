@@ -150,3 +150,11 @@ def get_positions(person):
 @register.simple_tag
 def get_roles_of_positions():
     return [i for i in Position.role_choices]
+
+
+@register.filter
+def get_count_of_affiliations(affiliation):
+    return Affiliation.objects.filter(person_id=affiliation.person_id, year=affiliation.year,
+                                      institution=affiliation.institution).count()
+
+

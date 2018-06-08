@@ -730,41 +730,41 @@ def edit_affiliation(request, person_id, affiliation_id):
 
     if request.method == 'POST':
         form = EditAffiliationForm(request.POST, instance=person)
-        if form.is_valid():
-            if form.cleaned_data.get('institution'):
-                # If institution_id is not populated then create the institution before updating affiliation
-                if not form.cleaned_data.get('institution_id'):
-                    # Checking if create institution radio button has been checked
-                    if not form.cleaned_data.get('create_institution'):
-                        messages.add_message(request, messages.ERROR,
-                                             'The above institute does not exist in the database. '
-                                             'Please check the checkbox below to create new institute')
-                        context.update({'form': form})
-                        return render(request, template, context)
-                    else:
-                        institution = Institution.objects.create(
-                            name=form.cleaned_data.get('institution'),
-                            changed_by=request.user
-                        )
-                else:
-                    institution = Institution.objects.get(id=form.cleaned_data.get('institution_id'))
-
-            Affiliation.objects.select_related().filter(person_id=affiliation.person_id, year=affiliation.year,
-                                                        institution=affiliation.institution).update(position=form.cleaned_data.get('position'),
-                                        institution=institution)
-            return HttpResponseRedirect(reverse('person', args=(person_id,)))
+        handle_affiliation(form, )
 
     return render(request, template, context)
 
 
 @staff_member_required
 def delete_affiliation_record(request, person_id, affiliation_id):
-    affiliation = get_object_or_404(Affiliation, pk=affiliation_id)
     if request.method == 'POST':
-        Affiliation.objects.select_related().filter(person_id=affiliation.person_id, year=affiliation.year
-                                                    , institution=affiliation.institution).delete()
+        Affiliation.objects.filter(id=affiliation_id).delete()
 
     return HttpResponseRedirect(reverse('person', args=(person_id,)))
+
+
+def handle_affiliation(form, institution, request, template, context, id, person_id):
+    if form.is_valid():
+        if form.cleaned_data.get('institution'):
+            # If institution_id is not populated then create the institution before updating affiliation
+            if not form.cleaned_data.get('institution_id'):
+                # Checking if create institution radio button has been checked
+                if not form.cleaned_data.get('create_institution'):
+                    messages.add_message(request, messages.ERROR,
+                                         'The above institute does not exist in the database. '
+                                         'Please check the checkbox below to create new institute')
+                    context.update({'form': form})
+                    return render(request, template, context)
+                else:
+                    institution = Institution.objects.create(
+                        name=form.cleaned_data.get('institution'),
+                        changed_by=request.user
+                    )
+            else:
+                institution = Institution.objects.get(id=form.cleaned_data.get('institution_id'))
+
+        Affiliation.objects.filter(id=id).update(position=form.cleaned_data.get('position'), institution=institution)
+        return HttpResponseRedirect(reverse('person', args=(person_id,)))
 
 
 @staff_member_required
