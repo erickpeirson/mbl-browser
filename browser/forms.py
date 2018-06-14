@@ -335,6 +335,11 @@ class SplitPersonForm(forms.Form):
 
 
 class InvestigatorForm(forms.ModelForm):
+    institution = forms.CharField(label='Institute', required=False,
+                                         widget=forms.TextInput(attrs={'autocomplete': 'off'}))
+    create_institution = forms.BooleanField(required=False, label='Create',
+                                            help_text="Create a new institution record using the name entered above.")
+    institution_id = forms.CharField(required=False, widget=forms.HiddenInput())
 
     class Meta:
         model = Investigator
