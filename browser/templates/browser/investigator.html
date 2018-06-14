@@ -81,7 +81,7 @@
     </div>
     {% endwith %}
 
-    {% with form.institution_search as field %}
+    {% with form.institution as field %}
     <div class="row">
         <div class="col-xs-12">
             <div class="form-group">
@@ -127,7 +127,7 @@
     </form>
 
 <script>
-var institution_search = $('#id_institution_search');
+var institution_search = $('#id_institution');
 var institution_container = $('#institution-results-container');
 var institution_id = $('#id_institution_id');
 

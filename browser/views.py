@@ -655,7 +655,6 @@ def add_investigator_record(request, person_id):
     person = get_object_or_404(Person, pk=person_id)
     template = "browser/investigator.html"
     form = InvestigatorForm()
-    institution = None
 
     context = {
         'form': form,
@@ -664,33 +663,21 @@ def add_investigator_record(request, person_id):
 
     if request.method == 'POST':
         form = InvestigatorForm(request.POST, instance=person)
-        if form.is_valid():
-            context.update({
-                'form': form
-            })
-            if form.cleaned_data.get('institution_search'):
-                if not form.cleaned_data.get('institution_id'):
-                    # Check if the checkbox is checked
-                    if form.cleaned_data.get('create_institution'):
-                        institution = Institution.objects.create(
-                            name=form.cleaned_data.get('institution_search'),
-                            changed_by=request.user
-                        )
-                    else:
-                        messages.add_message(request, messages.ERROR,
-                                             'The above institute does not exist in the database. '
-                                             'Please check the checkbox below to create a new institute')
-                        return render(request, template, context)
-                else:
-                    institution = Institution.objects.get(id=form.cleaned_data.get('institution_id'))
-
+        check_handle_affiliation = handle_institution(form, None, request)
+        if check_handle_affiliation['status']:
             investigator = Investigator(subject=form.cleaned_data.get('subject'),
-                                            role=form.cleaned_data.get('role'),
-                                            person_id=person_id, year=form.cleaned_data.get('year'),
-                                            changed_by=request.user,
-                                            institution=institution)
+                                        role=form.cleaned_data.get('role'),
+                                        person_id=person_id, year=form.cleaned_data.get('year'),
+                                        changed_by=request.user,
+                                        institution=check_handle_affiliation['institution'])
             investigator.save()
             return HttpResponseRedirect(reverse('person', args=(person.id,)))
+        else:
+            messages.add_message(request, messages.ERROR,
+                                 'The above institute does not exist in the database. '
+                                 'Please check the checkbox below to create new institute')
+            context.update({'form': form})
+            return render(request, template, context)
 
     return render(request, template, context)
 
@@ -701,7 +688,6 @@ def edit_investigator_record(request, person_id, research_id):
     research = get_object_or_404(Investigator, pk=research_id)
     template = "browser/investigator.html"
     institution_id = research.institution.id if research.institution else None
-    institution = research.institution
 
     context = {
         'person': person,
@@ -710,37 +696,23 @@ def edit_investigator_record(request, person_id, research_id):
 
     if request.method == 'POST':
         form = InvestigatorForm(request.POST, instance=person)
-        context.update({
-            'form': form
-        })
-        if form.is_valid():
-            if form.cleaned_data.get('institution_search'):
-                if not form.cleaned_data.get('institution_id'):
-                    # Check if the checkbox is checked
-                    if form.cleaned_data.get('create_institution'):
-                        institution = Institution.objects.create(
-                            name=form.cleaned_data.get('institution_search'),
-                            changed_by=request.user
-                        )
-                    else:
-                        messages.add_message(request, messages.ERROR,
-                                             'The above institute does not exist in the database. '
-                                             'Please check the checkbox below to create a new institute.')
-                        return render(request, template, context)
-                else:
-                    institution = Institution.objects.get(id=form.cleaned_data.get('institution_id'))
-            else:
-                institution = None
-
-            research.institution = institution
+        check_handle_affiliation = handle_institution(form, None, request)
+        if check_handle_affiliation['status']:
+            research.institution = check_handle_affiliation['institution']
             research.subject = form.cleaned_data.get('subject')
             research.role = form.cleaned_data.get('role')
             research.year = form.cleaned_data.get('year')
             research.save()
             return HttpResponseRedirect(reverse('person', args=(person.id,)))
+        else:
+            messages.add_message(request, messages.ERROR,
+                                 'The above institute does not exist in the database. '
+                                 'Please check the checkbox below to create new institute')
+            context.update({'form': form})
+            return render(request, template, context)
     else:
         form = InvestigatorForm(initial={'subject': research.subject, 'role': research.role,
-                                         'year': research.year, 'institution_search': research.institution,
+                                         'year': research.year, 'institution': research.institution,
                                          'institution_id': institution_id})
         context.update({
             'form': form
@@ -755,6 +727,25 @@ def delete_investigator_record(request, person_id, research_id):
         Investigator.objects.filter(id=research_id).delete()
 
     return HttpResponseRedirect(reverse('person', args=(person_id,)))
+
+
+# This helper checks if an institution is to be created or an existing institution is to be retrieved
+def handle_institution(form, institution, request):
+    if form.is_valid():
+        if form.cleaned_data.get('institution'):
+            # If institution_id is not populated then create the institution before updating affiliation
+            if not form.cleaned_data.get('institution_id'):
+                # Checking if create institution radio button has been checked
+                if not form.cleaned_data.get('create_institution'):
+                    return {'status': False, 'institution': institution}
+                else:
+                    institution = Institution.objects.create(
+                        name=form.cleaned_data.get('institution'),
+                        changed_by=request.user
+                    )
+            else:
+                institution = Institution.objects.get(id=form.cleaned_data.get('institution_id'))
+        return {'status': True, 'institution': institution}
 
 
 @staff_member_required
