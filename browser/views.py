@@ -718,7 +718,6 @@ def edit_affiliation(request, person_id, affiliation_id):
     person = get_object_or_404(Person, pk=person_id)
     affiliation = get_object_or_404(Affiliation, pk=affiliation_id)
     template = "browser/affiliation_edit.html"
-    institution = None
 
     form = EditAffiliationForm(initial={'institution': affiliation.institution,
                                         'position': affiliation.position,
@@ -731,14 +730,14 @@ def edit_affiliation(request, person_id, affiliation_id):
     if request.method == 'POST':
         form = EditAffiliationForm(request.POST, instance=person)
         check_handle_affiliation = handle_institution(form, None, request)
-        if check_handle_affiliation['status']:
+        if check_handle_affiliation[0]:
             Affiliation.objects.filter(id=affiliation_id).update(position=form.cleaned_data.get('position'),
-                                                     institution=check_handle_affiliation['institution'])
+                                                     institution=check_handle_affiliation[1])
             return HttpResponseRedirect(reverse('person', args=(person_id,)))
         else:
             messages.add_message(request, messages.ERROR,
-                                 'The above institute does not exist in the database. '
-                                 'Please check the checkbox below to create new institute')
+                                 'The above institution does not exist in the database. '
+                                 'Please check the checkbox below to create a new institution')
             context.update({'form': form})
             return render(request, template, context)
 
@@ -753,15 +752,17 @@ def delete_affiliation_record(request, person_id, affiliation_id):
     return HttpResponseRedirect(reverse('person', args=(person_id,)))
 
 
-# This helper checks if an institution is to be created or an existing institution is to be retrieved
 def handle_institution(form, institution, request):
+    """
+    Checks if an institution is to be created or an existing institution is to be retrieved
+    """
     if form.is_valid():
         if form.cleaned_data.get('institution'):
             # If institution_id is not populated then create the institution before updating affiliation
             if not form.cleaned_data.get('institution_id'):
                 # Checking if create institution radio button has been checked
                 if not form.cleaned_data.get('create_institution'):
-                    return {'status': False, 'institution': institution}
+                    return False, institution
                 else:
                     institution = Institution.objects.create(
                         name=form.cleaned_data.get('institution'),
@@ -769,7 +770,7 @@ def handle_institution(form, institution, request):
                     )
             else:
                 institution = Institution.objects.get(id=form.cleaned_data.get('institution_id'))
-        return {'status': True, 'institution': institution}
+        return True, institution
 
 
 @staff_member_required
