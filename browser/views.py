@@ -729,10 +729,10 @@ def edit_affiliation(request, person_id, affiliation_id):
 
     if request.method == 'POST':
         form = EditAffiliationForm(request.POST, instance=person)
-        check_handle_affiliation = handle_institution(form, None, request)
-        if check_handle_affiliation[0]:
+        success, institution = _handle_institution(form, request)
+        if success:
             Affiliation.objects.filter(id=affiliation_id).update(position=form.cleaned_data.get('position'),
-                                                     institution=check_handle_affiliation[1])
+                                                     institution=institution)
             return HttpResponseRedirect(reverse('person', args=(person_id,)))
         else:
             messages.add_message(request, messages.ERROR,
@@ -752,10 +752,11 @@ def delete_affiliation_record(request, person_id, affiliation_id):
     return HttpResponseRedirect(reverse('person', args=(person_id,)))
 
 
-def handle_institution(form, institution, request):
+def _handle_institution(form, request):
     """
     Checks if an institution is to be created or an existing institution is to be retrieved
     """
+    institution = None
     if form.is_valid():
         if form.cleaned_data.get('institution'):
             # If institution_id is not populated then create the institution before updating affiliation
