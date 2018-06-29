@@ -731,8 +731,10 @@ def edit_affiliation(request, person_id, affiliation_id):
         form = EditAffiliationForm(request.POST, instance=person)
         success, institution = _handle_institution(form, request)
         if success:
-            Affiliation.objects.filter(id=affiliation_id).update(position=form.cleaned_data.get('position'),
-                                                     institution=institution)
+            affiliation = Affiliation.objects.get(id=affiliation_id)
+            affiliation.position = form.cleaned_data.get('position')
+            affiliation.institution = institution
+            affiliation.save()
             return HttpResponseRedirect(reverse('person', args=(person_id,)))
         else:
             messages.add_message(request, messages.ERROR,
