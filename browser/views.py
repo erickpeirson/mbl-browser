@@ -729,6 +729,7 @@ def edit_affiliation(request, person_id, affiliation_id):
 
     if request.method == 'POST':
         form = EditAffiliationForm(request.POST, instance=person)
+        context.update({'form': form})
         if form.is_valid():
             success, institution = _handle_institution(form, request)
             if success:
