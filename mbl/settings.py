@@ -22,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = eval(os.environ.get('DEBUG', 'True'))
+DEBUG = eval(os.environ.get('DEBUG', 'False'))
 
 ALLOWED_HOSTS = ['*']
 IMPORT_USER = os.environ.get('IMPORT_USER', '')
