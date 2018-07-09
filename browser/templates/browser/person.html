@@ -5,7 +5,6 @@
 {% load staticfiles %}
 {% block main %}
 <script>
-//@ sourceURL=position.js
         $(document).ready(function() {
 
             {% if request.GET.tab %}
@@ -37,6 +36,12 @@
                 $('#DeletePositionModal').modal('show');
            });
 
+            $(".DeleteAffiliation").click(function(){
+                $('#DeleteAffiliationModalForm').attr('action', $(this).attr("data-url"));
+                $(".modal-body #DeleteAffiliationModalPosition").text($(this).attr("data-position"));
+                $(".modal-body #DeleteAffiliationModalInstitution").text($(this).attr("data-institution"));
+                $('#DeleteAffiliationModal').modal('show');
+           });
 
         });
 </script>
@@ -99,10 +104,13 @@
 <div class="container">
 <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
-        {% if person.number_of_affiliations > 0 %}<li role="presentation" class="active"><a href="#person-affiliations" aria-controls="affiliations" role="tab" data-toggle="tab">Affiliations</a></li>{% endif %}
-        {% if person.number_of_courses > 0 %}<li role="presentation"{% if person.number_of_affiliations == 0 %} class="active"{% endif %}><a href="#person-courses" aria-controls="courses" role="tab" data-toggle="tab">Courses</a></li>{% endif %}
-        {% if person.is_investigator %}<li role="presentation"{% if person.number_of_courses == 0 and person.number_of_affiliations == 0 %} class="active"{% endif %}><a href="#person-investigations" aria-controls="research" role="tab" data-toggle="tab">Research</a></li>{% endif %}
-        {% if person.number_of_locations > 0 %}<li role="presentation">{% if person.number_of_courses == 0 and person.number_of_affiliations == 0 and not person.is_investigator %} class="active"{% endif %}<a href="#person-locations" aria-controls="locations" role="tab" data-toggle="tab">Locations</a></li>{% endif %}
+        {% with person|get_affiliations as affiliations %}
+        {% if affiliations|length > 0 %}
+        <li role="presentation" class="active"><a href="#person-affiliations" aria-controls="affiliations" role="tab" data-toggle="tab">Affiliations</a></li>{% endif %}
+        {% if person.number_of_courses > 0 %}<li role="presentation"{% if affiliations|length == 0 %} class="active"{% endif %}><a href="#person-courses" aria-controls="courses" role="tab" data-toggle="tab">Courses</a></li>{% endif %}
+        {% if person.is_investigator %}<li role="presentation"{% if person.number_of_courses == 0 and affiliations|length == 0 %} class="active"{% endif %}><a href="#person-investigations" aria-controls="research" role="tab" data-toggle="tab">Research</a></li>{% endif %}
+        {% if person.number_of_locations > 0 %}<li role="presentation">{% if person.number_of_courses == 0 and affiliations|length == 0 and not person.is_investigator %} class="active"{% endif %}<a href="#person-locations" aria-controls="locations" role="tab" data-toggle="tab">Locations</a></li>{% endif %}
+        {% endwith %}
         {% with person|get_positions as positions %}
         {% if positions|length > 0 %}
         <li role="presentation"><a href="#person-positions" aria-controls="positions" role="tab" data-toggle="tab">Positions</a></li>
@@ -124,6 +132,9 @@
             <table class="table">
                 <thead>
                     <tr>
+                        {% if user.is_staff %}
+                        <th class="col-xs-1"></th>
+                        {% endif %}
                         <td>Year</td>
                         <td>Position</td>
                         <td>Institution</td>
@@ -131,12 +142,34 @@
                 </thead>
                 <tbody>
                     {% for affiliation in affiliations %}
-
                     <tr>
+                        {% if user.is_staff %}
+                        <td>
+                            <a class=" btn btn-xs fa fa-edit"
+                               aria-hidden="true"
+                               href="{% url "edit-affiliation" person.id affiliation.id %}">
+                            </a>
+                            <a class="btn btn-sm fa fa-trash DeleteAffiliation"
+                                aria-hidden="true"
+                                data-toggle="modal"
+                                data-url="{% url "delete-affiliation" person.id affiliation.id %}"
+                                data-position = "{{affiliation.position}}"
+                                data-institution = "{{affiliation.institution}}"
+                            >
+                            </a>
+                        </td>
+                        {% endif %}
                         <td>{{ affiliation.year }}</td>
                         <td>{{ affiliation.position }}</td>
                         <td>
-                            <a href="{% url "institution" affiliation.institution.id %}">{{ affiliation.institution.name }}</a>
+                            {% if affiliation.institution %}
+                                <a href="{% url "institution" affiliation.institution.id %}">{{ affiliation.institution.name }}</a>
+                            {% endif %}
+                            {% with affiliation|get_count_of_affiliations as count_duplicates %}
+                                {% if count_duplicates > 1 %}
+                                <span class="badge" rel="tooltip" title="There are duplicate entries for this data">{{ count_duplicates }}</span>
+                                {% endif %}
+                            {% endwith %}
                         </td>
                     </tr>
                     {% endfor %}
@@ -145,13 +178,12 @@
         </div>
     </div>
     {% endif %}
-    {% endwith %}
 
     <!-- Courses -->
     {% with person|get_attendance as attendances %}
     {% if attendances|length > 0 %}
 
-    <div role="tabpanel" class="tab-pane {% if person.number_of_affiliations == 0 %}active{% endif %}" id="person-courses">
+    <div role="tabpanel" class="tab-pane {% if affiliations|length == 0 %}active{% endif %}" id="person-courses">
         <div class="panel panel-mbl">
             <div class="panel-heading">
                 <h3>Courses</h3>
@@ -181,10 +213,11 @@
     {% endif %}
     {% endwith %}
 
+
     <!-- Research -->
     {% with person|get_researches as researches %}
     {% if researches|length > 0 %}
-    <div role="tabpanel" class="tab-pane {% if person.number_of_courses == 0 and person.number_of_affiliations == 0 %}active{% endif %}" id="person-investigations">
+    <div role="tabpanel" class="tab-pane {% if person.number_of_courses == 0 and affiliations|length == 0 %}active{% endif %}" id="person-investigations">
         <div class="panel panel-mbl">
             <div class="panel-heading">
                 <h3>Research at the MBL</h3>
@@ -272,7 +305,7 @@
 
     {% with person|get_localizations as localizations %}
     {% if localizations|length > 0 %}
-    <div role="tabpanel" class="tab-pane {% if person.number_of_courses == 0 and person.number_of_affiliations == 0 and not person.is_investigator %}active{% endif %}" id="person-locations">
+    <div role="tabpanel" class="tab-pane {% if person.number_of_courses == 0 and affiliations|length == 0 and not person.is_investigator %}active{% endif %}" id="person-locations">
 
         <!-- Locations -->
 
@@ -381,6 +414,7 @@
     </div>
     {% endif %}
     {% endwith %}
+    {% endwith %}
 
     </div>
 </div>
@@ -388,6 +422,7 @@
     {% with person as instance %}
     {% include "browser/history_modal.html" %}
     {% endwith %}
+
 
 <!-- Delete Position modal section starts here -->
 <div class="modal fade" id="DeletePositionModal" tabindex="-1" role="dialog" aria-labelledby="DeletePositionModalLabel">
@@ -431,5 +466,37 @@
 </div>
 <!-- Delete Position modal section ends here -->
 
+<!-- Delete Affiliation modal section starts here -->
+<div class="modal fade" id="DeleteAffiliationModal" tabindex="-1" role="dialog" aria-labelledby="DeleteAffiliationModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="DeleteAffiliationModalLabel"><strong>Delete Affiliation</strong></h4>
+            </div>
+
+            <form id="DeleteAffiliationModalForm" action="." method="post">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <h4>
+                        Are you sure you want to delete the following affiliation record: <br><br>
+                        <div class="form-group">
+                            <strong>Position:</strong><br><label style="font-weight:normal" id="DeleteAffiliationModalPosition"/>
+                        </div>
+                        <div class="form-group">
+                            <strong>Institution:</strong><br><label style="font-weight:normal" id="DeleteAffiliationModalInstitution"/>
+                        </div>
+                    </h4>
+                </div>
+                <div class="modal-footer">
+                    <input class="btn btn-danger" type="submit" value="Delete">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+<!-- Delete Affiliation modal section ends here -->
 
 {% endblock %}

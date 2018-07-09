@@ -341,6 +341,17 @@ class InvestigatorForm(forms.ModelForm):
         fields = ['subject', 'role', 'year']
 
 
+class EditAffiliationForm(forms.ModelForm):
+    institution = forms.CharField(required=False, widget=forms.TextInput(attrs={'autocomplete': 'off'}))
+    create_institution = forms.BooleanField(required=False, label='Create',
+                                            help_text="Create a new institution record using the name entered above.")
+    institution_id = forms.CharField(required=False, widget=forms.HiddenInput())
+
+    class Meta:
+        model = Affiliation
+        fields = ['position']
+
+
 class PositionForm(forms.ModelForm):
 
     class Meta:

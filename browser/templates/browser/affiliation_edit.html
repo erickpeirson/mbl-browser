@@ -1,0 +1,129 @@
+{% extends "browser/change_base.html" %}
+{% load addcss %}
+
+{% block title %}Edit Affiliation: {{ person.name }} (Person){% endblock %}
+{% block main %}
+
+<div class="alert alert-mbl">
+    Person
+    <div>
+        <span class="h1">{{ person.name }}</span>
+
+    </div>
+    {% if person.authority %}
+    <div class="text-warning">
+        <span class="glyphicon glyphicon-barcode"></span>
+        {{ person.authority.conceptpower_uri|urlize }}
+    </div>
+    {% endif %}
+    {% if person.validated %}
+    <div>
+        <span class="glyphicon glyphicon-ok" style="color:green;"></span>&nbsp;
+        Validated by {{ person.validated_by }} on {{ person.validated_on }}.
+    </div>
+    {% endif %}
+</div>
+
+<div class="container">
+    <p class="text-info">
+        The below form will edit this <strong>Affiliation</strong> record for <strong>{{ person.name }}</strong>.
+    </p>
+
+    <form action="." method="post" id="EditAffiliationForm">
+    {% csrf_token %}
+    {% block form_fields %}
+    {% with form.position as field %}
+    <div class="row">
+        <div class="col-xs-6">
+        <div class="form-group">
+            {% for error in field.errors %}
+            <div class="alert alert-warning">{{ error }}</div>
+            {% endfor %}
+            <label>{{ field.label }}</label>
+            {{ field|addcss:"form-control input-sm" }}
+            <p class="text-muted">{{ field.help_text }}</p>
+        </div>
+        </div>
+
+    {% endwith %}
+
+    {% with form.institution as field %}
+        <div class="col-xs-6">
+        <div class="form-group">
+            {% for error in field.errors %}
+            <div class="alert alert-warning">{{ error }}</div>
+            {% endfor %}
+            <label>{{ field.label }}</label>
+            {{ field|addcss:"form-control input-sm" }}
+            <div class="list-group" id="institution-results-container"></div>
+            <p class="text-muted">{{ field.help_text }}</p>
+            {% if messages %}
+                <div class="alert alert-danger">
+                {% for message in messages %}
+                    {{message}}
+                {% endfor %}
+                </div>
+            {% endif %}
+            <label class="control-label">{{ form.create_institution.label }} {{ form.create_institution }}</label>
+            <span class="text-muted">{{ form.create_institution.help_text }}</span>
+        </div>
+        </div>
+    </div>
+    {% endwith %}
+
+    {% with form.institution_id as field %}
+        {{ field }}
+    {% endwith %}
+
+    {% endblock %}
+
+    <div class="row">
+    <div class="text-center">
+        <input class="btn btn-success" type="submit" value="Update">
+        <a class="btn btn-danger" href="{% url "person" person.id %}">Cancel</a>
+    </div>
+    </div>
+
+    </form>
+
+<script>
+var institution_search = $('#id_institution');
+var institution_container = $('#institution-results-container');
+var institution_id = $('#id_institution_id');
+
+$(document).ready(function() {
+    $(".dropdown-toggle").dropdown();
+    $('[data-toggle="tooltip"]').tooltip();
+});
+var selectInstitutionResult = function(id, name) {
+    institution_container.empty();
+    institution_search.val(name);
+    institution_id.val(id);
+}
+var searchPromise = null;
+institution_search.on('keyup', function(e) {
+    institution_id.val('');
+    var query = $(this).val();
+    if (query.length == 0){
+        institution_container.empty();
+    } else {
+        if (searchPromise) {
+            clearTimeout(searchPromise);
+        }
+        searchPromise = setTimeout(function() {
+            $.ajax("{% url "institution-list" %}?name=" + query, {
+                success: function(result) {
+                    institution_container.empty();
+                    result.results.forEach(function(r) {
+                        institution_container.append('<a class="list-group-item search-result" id="' + r.id + '" onclick="selectInstitutionResult(' + r.id + ', \''+ r.name +'\')">' + r.name + '</a>');
+                    });
+                }
+            });
+        }, 500);
+    }
+});
+</script>
+
+{% endblock %}
+
+</div>

@@ -242,7 +242,7 @@ class Person(URIMixin, CuratedMixin, LastUpdatedMixin):
 class Affiliation(YearMixin, CuratedMixin, LastUpdatedMixin):
     history = HistoricalRecords()
     person = models.ForeignKey('Person')
-    institution = models.ForeignKey('Institution')
+    institution = models.ForeignKey('Institution', blank=True, null=True)
     position = models.CharField(max_length=255, blank=True)
 
     changed_by = models.ForeignKey('auth.User', related_name='edited_affiliations')
