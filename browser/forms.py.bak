@@ -1,5 +1,4 @@
 from __future__ import print_function
-from builtins import object
 from django import forms
 
 from browser.models import *
@@ -8,7 +7,7 @@ import datetime
 
 
 class CourseGroupForm(forms.ModelForm):
-    class Meta(object):
+    class Meta:
         model = CourseGroup
         fields = ['name', 'validated']
 
@@ -111,31 +110,31 @@ class CourseForm(forms.ModelForm):
     #                                     label='Course group/series',
     #                                     queryset=CourseGroup.objects.all())
 
-    class Meta(object):
+    class Meta:
         model = Course
         fields = ['name', 'validated']
 
 
 class InstitutionForm(forms.ModelForm):
-    class Meta(object):
+    class Meta:
         model = Institution
         fields = ['name', 'validated']
 
 
 class LocationForm(forms.ModelForm):
-    class Meta(object):
+    class Meta:
         model = Location
         fields = ['name', 'validated']
 
 
 class KnownLocationForm(forms.ModelForm):
-    class Meta(object):
+    class Meta:
         model = KnownLocation
         fields = ['external_uri', 'geo_uri']
 
 
 class KnownPersonForm(forms.ModelForm):
-    class Meta(object):
+    class Meta:
         model = KnownPerson
         fields = ['conceptpower_uri', 'description']
 
@@ -143,7 +142,7 @@ class KnownPersonForm(forms.ModelForm):
 class PersonForm(forms.ModelForm):
     conceptpower_uri = forms.CharField(widget=forms.HiddenInput(), required=False)
 
-    class Meta(object):
+    class Meta:
         model = Person
         fields = ['last_name', 'first_name', 'validated', 'changed_by']
         widgets = {
@@ -338,7 +337,7 @@ class SplitPersonForm(forms.Form):
 
 class InvestigatorForm(forms.ModelForm):
 
-    class Meta(object):
+    class Meta:
         model = Investigator
         fields = ['subject', 'role', 'year']
 
@@ -349,13 +348,13 @@ class EditAffiliationForm(forms.ModelForm):
                                             help_text="Create a new institution record using the name entered above.")
     institution_id = forms.CharField(required=False, widget=forms.HiddenInput())
 
-    class Meta(object):
+    class Meta:
         model = Affiliation
         fields = ['position']
 
 
 class PositionForm(forms.ModelForm):
 
-    class Meta(object):
+    class Meta:
         model = Position
         fields = ['subject', 'role', 'year', 'start_date', 'end_date']

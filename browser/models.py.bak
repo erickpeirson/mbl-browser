@@ -1,8 +1,6 @@
-from builtins import str
-from builtins import object
 from django.db import models
 from simple_history.models import HistoricalRecords
-from django.urls import reverse
+from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -18,7 +16,7 @@ def generate_uri(model):
 class URIMixin(models.Model):
     uri = models.CharField(max_length=255, unique=True)
 
-    class Meta(object):
+    class Meta:
         abstract = True
 
     def save(self, *args, **kwargs):
@@ -30,7 +28,7 @@ class URIMixin(models.Model):
 class YearMixin(models.Model):
     year = models.IntegerField()
 
-    class Meta(object):
+    class Meta:
         abstract = True
 
 
@@ -38,7 +36,7 @@ class LastUpdatedMixin(models.Model):
     """
     Model must aleady have an history field.
     """
-    class Meta(object):
+    class Meta:
         abstract = True
 
     last_updated = models.DateTimeField(auto_now=True)
@@ -50,7 +48,7 @@ class CuratedMixin(models.Model):
                                     " This does not necessarily mean that the"
                                     " record has been disambiguated with"
                                     " respect to an authority accord.")
-    validated_by = models.ForeignKey('auth.User', null=True, blank=True, on_delete=models.CASCADE)
+    validated_by = models.ForeignKey('auth.User', null=True, blank=True)
     validated_on = models.DateTimeField(null=True, blank=True)
 
     split_to = GenericRelation('SplitEvent',
@@ -69,14 +67,14 @@ class CuratedMixin(models.Model):
                                  content_type_field='child_type',
                                  object_id_field='child_instance_id')
 
-    class Meta(object):
+    class Meta:
         abstract = True
 
 
 class NameMixin(models.Model):
     name = models.CharField(max_length=255)
 
-    class Meta(object):
+    class Meta:
         abstract = True
 
     def __unicode__(self):
@@ -90,7 +88,7 @@ class Course(URIMixin, NameMixin, YearMixin, CuratedMixin, LastUpdatedMixin):
     is_part_of = models.ManyToManyField('CourseGroup', through='PartOf',
                                         related_name='courses')
 
-    changed_by = models.ForeignKey('auth.User', related_name='edited_courses', on_delete=models.CASCADE)
+    changed_by = models.ForeignKey('auth.User', related_name='edited_courses')
 
     @property
     def _history_user(self):
@@ -117,7 +115,7 @@ class Course(URIMixin, NameMixin, YearMixin, CuratedMixin, LastUpdatedMixin):
 
 class CourseGroup(URIMixin, NameMixin, CuratedMixin, LastUpdatedMixin):
     history = HistoricalRecords()
-    changed_by = models.ForeignKey('auth.User', related_name='edited_coursegroups', on_delete=models.CASCADE)
+    changed_by = models.ForeignKey('auth.User', related_name='edited_coursegroups')
 
     @property
     def _history_user(self):
@@ -140,9 +138,9 @@ class Institution(URIMixin, NameMixin, CuratedMixin, LastUpdatedMixin):
     authority = models.ForeignKey('KnownInstitution', blank=True, null=True,
                                   help_text="""
     Use this field to specify a known institution (i.e. a location with an entry
-    in the Conceptpower name authority).""", on_delete=models.CASCADE)
+    in the Conceptpower name authority).""")
 
-    changed_by = models.ForeignKey('auth.User', related_name='edited_institutions', on_delete=models.CASCADE)
+    changed_by = models.ForeignKey('auth.User', related_name='edited_institutions')
 
     @property
     def _history_user(self):
@@ -165,9 +163,9 @@ class Location(URIMixin, NameMixin, CuratedMixin, LastUpdatedMixin):
     authority = models.ForeignKey('KnownLocation', blank=True, null=True,
                                   help_text="""
     Use this field to specify a known location (i.e. a location with an entry
-    in the GeoNames database).""", on_delete=models.CASCADE)
+    in the GeoNames database).""")
 
-    changed_by = models.ForeignKey('auth.User', related_name='edited_locations', on_delete=models.CASCADE)
+    changed_by = models.ForeignKey('auth.User', related_name='edited_locations')
 
     @property
     def _history_user(self):
@@ -196,9 +194,9 @@ class Person(URIMixin, CuratedMixin, LastUpdatedMixin):
     authority  = models.ForeignKey('KnownPerson', blank=True, null=True,
                                    help_text="""
     Use this field to specify a known person (i.e. a person with an entry in
-    the Conceptpower name authority).""", on_delete=models.CASCADE)
+    the Conceptpower name authority).""")
 
-    changed_by = models.ForeignKey('auth.User', related_name='edited_persons', on_delete=models.CASCADE)
+    changed_by = models.ForeignKey('auth.User', related_name='edited_persons')
 
     @property
     def _history_user(self):
@@ -243,11 +241,11 @@ class Person(URIMixin, CuratedMixin, LastUpdatedMixin):
 
 class Affiliation(YearMixin, CuratedMixin, LastUpdatedMixin):
     history = HistoricalRecords()
-    person = models.ForeignKey('Person', on_delete=models.CASCADE)
-    institution = models.ForeignKey('Institution', blank=True, null=True, on_delete=models.CASCADE)
+    person = models.ForeignKey('Person')
+    institution = models.ForeignKey('Institution', blank=True, null=True)
     position = models.CharField(max_length=255, blank=True)
 
-    changed_by = models.ForeignKey('auth.User', related_name='edited_affiliations', on_delete=models.CASCADE)
+    changed_by = models.ForeignKey('auth.User', related_name='edited_affiliations')
 
     @property
     def _history_user(self):
@@ -265,12 +263,12 @@ class Affiliation(YearMixin, CuratedMixin, LastUpdatedMixin):
 
 class Attendance(YearMixin, CuratedMixin, LastUpdatedMixin):
     history = HistoricalRecords()
-    person = models.ForeignKey('Person', on_delete=models.CASCADE)
-    course = models.ForeignKey('Course', on_delete=models.CASCADE)
+    person = models.ForeignKey('Person')
+    course = models.ForeignKey('Course')
 
     role = models.CharField(max_length=255, blank=True)
 
-    changed_by = models.ForeignKey('auth.User', related_name='edited_attendances', on_delete=models.CASCADE)
+    changed_by = models.ForeignKey('auth.User', related_name='edited_attendances')
 
     @property
     def _history_user(self):
@@ -286,10 +284,10 @@ class Attendance(YearMixin, CuratedMixin, LastUpdatedMixin):
 
 class PartOf(YearMixin, CuratedMixin, LastUpdatedMixin):
     history = HistoricalRecords()
-    course = models.ForeignKey('Course', on_delete=models.CASCADE)
-    coursegroup = models.ForeignKey('CourseGroup', on_delete=models.CASCADE)
+    course = models.ForeignKey('Course')
+    coursegroup = models.ForeignKey('CourseGroup')
 
-    changed_by = models.ForeignKey('auth.User', related_name='edited_part_of', on_delete=models.CASCADE)
+    changed_by = models.ForeignKey('auth.User', related_name='edited_part_of')
 
     @property
     def _history_user(self):
@@ -302,10 +300,10 @@ class PartOf(YearMixin, CuratedMixin, LastUpdatedMixin):
 
 class Localization(YearMixin, CuratedMixin, LastUpdatedMixin):
     history = HistoricalRecords()
-    person = models.ForeignKey('Person', on_delete=models.CASCADE)
-    location = models.ForeignKey('Location', on_delete=models.CASCADE)
+    person = models.ForeignKey('Person')
+    location = models.ForeignKey('Location')
 
-    changed_by = models.ForeignKey('auth.User', related_name='edited_localizations', on_delete=models.CASCADE)
+    changed_by = models.ForeignKey('auth.User', related_name='edited_localizations')
 
     @property
     def _history_user(self):
@@ -325,11 +323,11 @@ class Localization(YearMixin, CuratedMixin, LastUpdatedMixin):
 
 class Investigator(YearMixin, CuratedMixin, LastUpdatedMixin):
     history = HistoricalRecords()
-    person = models.ForeignKey('Person', on_delete=models.CASCADE)
+    person = models.ForeignKey('Person')
     subject = models.CharField(max_length=255, blank=True)
     role = models.CharField(max_length=255, blank=True)
 
-    changed_by = models.ForeignKey('auth.User', related_name='edited_investigators', on_delete=models.CASCADE)
+    changed_by = models.ForeignKey('auth.User', related_name='edited_investigators')
 
     @property
     def _history_user(self):
@@ -395,7 +393,7 @@ class KnownLocation(NameMixin, CuratedMixin, LastUpdatedMixin):
     If the location is in the western hemisphere, and has a negative longitude,
     then the longitude cardinality is East.""")
 
-    changed_by = models.ForeignKey('auth.User', related_name='edited_known_locations', on_delete=models.CASCADE)
+    changed_by = models.ForeignKey('auth.User', related_name='edited_known_locations')
 
     @property
     def _history_user(self):
@@ -416,7 +414,7 @@ class KnownPerson(NameMixin, CuratedMixin, LastUpdatedMixin):
     conceptpower_uri = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(null=True, blank=True)
 
-    changed_by = models.ForeignKey('auth.User', related_name='edited_known_persons', on_delete=models.CASCADE)
+    changed_by = models.ForeignKey('auth.User', related_name='edited_known_persons')
 
     @property
     def _history_user(self):
@@ -436,7 +434,7 @@ class KnownInstitution(NameMixin, CuratedMixin, LastUpdatedMixin):
     conceptpower_uri = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(null=True, blank=True)
 
-    changed_by = models.ForeignKey('auth.User', related_name='edited_known_institutions', on_delete=models.CASCADE)
+    changed_by = models.ForeignKey('auth.User', related_name='edited_known_institutions')
 
     @property
     def _history_user(self):
@@ -448,16 +446,16 @@ class KnownInstitution(NameMixin, CuratedMixin, LastUpdatedMixin):
 
 
 class AlterRelationEvent(models.Model):
-    affecting_type = models.ForeignKey(ContentType, related_name='altered_by', on_delete=models.CASCADE)
+    affecting_type = models.ForeignKey(ContentType, related_name='altered_by')
     affecting_instance_id = models.PositiveIntegerField()
     affecting = GenericForeignKey('affecting_type', 'affecting_instance_id')
 
-    affected_by_type = models.ForeignKey(ContentType, related_name='altered', on_delete=models.CASCADE)
+    affected_by_type = models.ForeignKey(ContentType, related_name='altered')
     affected_by_instance_id = models.PositiveIntegerField()
     affected_by = GenericForeignKey('affected_by_type', 'affected_by_instance_id')
 
     occurred = models.DateTimeField(auto_now_add=True)
-    changed_by = models.ForeignKey('auth.User', related_name='edited_alterrelationevent', on_delete=models.CASCADE)
+    changed_by = models.ForeignKey('auth.User', related_name='edited_alterrelationevent')
 
     @property
     def _history_user(self):
@@ -480,7 +478,7 @@ class SplitEvent(models.Model):
     child = GenericForeignKey('child_type', 'child_instance_id')
 
     occurred = models.DateTimeField(auto_now_add=True)
-    changed_by = models.ForeignKey('auth.User', related_name='edited_splitevent', on_delete=models.CASCADE)
+    changed_by = models.ForeignKey('auth.User', related_name='edited_splitevent')
 
     @property
     def _history_user(self):
@@ -503,7 +501,7 @@ class MergeEvent(models.Model):
     child = GenericForeignKey('child_type', 'child_instance_id')
 
     occurred = models.DateTimeField(auto_now_add=True)
-    changed_by = models.ForeignKey('auth.User', related_name='edited_mergeevent', on_delete=models.CASCADE)
+    changed_by = models.ForeignKey('auth.User', related_name='edited_mergeevent')
 
     @property
     def _history_user(self):
@@ -516,7 +514,7 @@ class MergeEvent(models.Model):
 
 class Position(YearMixin, CuratedMixin, LastUpdatedMixin):
     history = HistoricalRecords()
-    person = models.ForeignKey('Person', on_delete=models.CASCADE)
+    person = models.ForeignKey('Person')
     subject = models.CharField(max_length=255, blank=True)
     CORPORATION_MEMBER = 'CM'
     TRUSTEE = 'TR'
@@ -527,7 +525,7 @@ class Position(YearMixin, CuratedMixin, LastUpdatedMixin):
 
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
-    changed_by = models.ForeignKey('auth.User', related_name='edited_position', on_delete=models.CASCADE)
+    changed_by = models.ForeignKey('auth.User', related_name='edited_position')
 
     @property
     def _history_user(self):

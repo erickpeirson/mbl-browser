@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='affiliation',
             name='validated_by',
-            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='attendance',
@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='attendance',
             name='validated_by',
-            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='course',
@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='course',
             name='validated_by',
-            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='coursegroup',
@@ -52,7 +52,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='coursegroup',
             name='validated_by',
-            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='historicalaffiliation',
@@ -192,7 +192,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='institution',
             name='validated_by',
-            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='investigator',
@@ -202,7 +202,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='investigator',
             name='validated_by',
-            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='knowninstitution',
@@ -212,7 +212,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='knowninstitution',
             name='validated_by',
-            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='knownlocation',
@@ -222,7 +222,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='knownlocation',
             name='validated_by',
-            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='knownperson',
@@ -232,7 +232,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='knownperson',
             name='validated_by',
-            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='localization',
@@ -242,7 +242,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='localization',
             name='validated_by',
-            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='location',
@@ -252,7 +252,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='location',
             name='validated_by',
-            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='partof',
@@ -262,7 +262,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='partof',
             name='validated_by',
-            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='person',
@@ -272,71 +272,71 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='person',
             name='validated_by',
-            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='affiliation',
             name='changed_by',
-            field=models.ForeignKey(related_name='edited_affiliations', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='edited_affiliations', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='attendance',
             name='changed_by',
-            field=models.ForeignKey(related_name='edited_attendances', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='edited_attendances', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='course',
             name='changed_by',
-            field=models.ForeignKey(related_name='edited_courses', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='edited_courses', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='coursegroup',
             name='changed_by',
-            field=models.ForeignKey(related_name='edited_coursegroups', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='edited_coursegroups', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='institution',
             name='changed_by',
-            field=models.ForeignKey(related_name='edited_institutions', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='edited_institutions', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='investigator',
             name='changed_by',
-            field=models.ForeignKey(related_name='edited_investigators', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='edited_investigators', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='knowninstitution',
             name='changed_by',
-            field=models.ForeignKey(related_name='edited_known_institutions', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='edited_known_institutions', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='knownlocation',
             name='changed_by',
-            field=models.ForeignKey(related_name='edited_known_locations', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='edited_known_locations', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='knownperson',
             name='changed_by',
-            field=models.ForeignKey(related_name='edited_known_persons', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='edited_known_persons', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='localization',
             name='changed_by',
-            field=models.ForeignKey(related_name='edited_localizations', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='edited_localizations', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='location',
             name='changed_by',
-            field=models.ForeignKey(related_name='edited_locations', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='edited_locations', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='partof',
             name='changed_by',
-            field=models.ForeignKey(related_name='edited_part_of', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='edited_part_of', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='person',
             name='changed_by',
-            field=models.ForeignKey(related_name='edited_persons', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(related_name='edited_persons', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
         ),
     ]

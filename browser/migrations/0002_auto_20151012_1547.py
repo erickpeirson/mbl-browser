@@ -29,6 +29,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='location',
             name='authority',
-            field=models.ForeignKey(blank=True, to='browser.KnownLocation', null=True),
+            field=models.ForeignKey(blank=True, to='browser.KnownLocation', null=True, on_delete=models.CASCADE),
         ),
     ]

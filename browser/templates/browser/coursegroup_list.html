@@ -1,12 +1,11 @@
 {% extends "browser/base.html" %}
 {% load app_filters %}
 {% load addcss %}
-{% load pagination_tags %}
 
 {% block title %}Course Groups{% endblock %}
 
 {% block main %}
-{% autopaginate coursegroups.qs 40 as filter_list %}
+
 
 
 <form class="form ">
@@ -31,7 +30,7 @@
             </div>
         </div>
     </div>
-
+    {% if coursegroups %}
     <div class="collapse" id="filters">
         <div class="row">
             <div class="col-sm-4">
@@ -60,11 +59,16 @@
             </div>
         </div>
     </div>
-
+    {% else %}
+    <div class="row">
+        <div class="col-sm-5">
+            <h4>No Data</h4>
+        </div>
+    </div>
+    {% endif %}
 </form>
 
 <div class="text-center">
-    {% paginate %}
 </div>
 
 <div class="panel panel-mbl">
@@ -80,7 +84,7 @@
         </thead>
         <tbody>
 
-        {% for coursegroup in filter_list %}
+        {% for coursegroup in coursegroups %}
             <tr>
 
                 <td><a href="{% url "coursegroup" coursegroup.id %}">{{ coursegroup.name }}</a></td>
@@ -106,7 +110,6 @@
     </table>
 
     <div class="panel-footer text-center">
-    {% paginate %}
     </div>
 
 

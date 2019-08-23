@@ -1,4 +1,3 @@
-from __future__ import print_function
 from django.shortcuts import render, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import logout
@@ -55,11 +54,7 @@ def course(request, course_id=None):
         })
         template = "browser/course.html"
     else:
-        courses_filtered = CourseFilter(request.GET, queryset=Course.objects.order_by('year'))
-        print(courses_filtered.qs)
-        paginator = Paginator(courses_filtered.qs, 40)
-        page = request.GET.get('page')
-        context['courses'] = paginator.get_page(page)
+        context['courses'] = CourseFilter(request.GET, queryset=Course.objects.order_by('year'))
         template = "browser/course_list.html"
     return render(request, template, context)
 
@@ -74,14 +69,8 @@ def coursegroup(request, coursegroup_id=None):
         template = "browser/coursegroup.html"
     else:
         # coursegroups = get_paginator(CourseGroup, request, order_by='name')
-        
-        if CourseGroup.objects.count():
-            coursegroups = CourseGroupFilter(request.GET, queryset=CourseGroup.objects.all())
-            paginator = Paginator(coursegroups, 40)
-            page = request.GET.get('page')
-            context['coursegroups'] = paginator.get_page(page)
-        else:
-            context['nodata'] = 'nodata'
+        coursegroups = CourseGroupFilter(request.GET, queryset=CourseGroup.objects.all())
+        context['coursegroups'] = coursegroups
         template = "browser/coursegroup_list.html"
     return render(request, template, context)
 
@@ -530,7 +519,7 @@ def course_create(request, coursegroup_id=None):
             form = GroupForCourseForm(request.POST)
             if form.is_valid():
                 group = form.cleaned_data.get('group')
-                print(form.cleaned_data)
+                print form.cleaned_data
                 create_group = form.cleaned_data.get('group_create', False)
                 group_name = form.cleaned_data.get('group_name')
                 if create_group and group_name:

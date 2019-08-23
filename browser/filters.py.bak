@@ -1,12 +1,10 @@
-from builtins import object
 import django_filters as df
 from django.db.models import Count
 from django.utils.translation import ugettext as _
 from django.db.models import Q
 from django.db.models import Max, Min
 
-#from rest_framework import filters
-from django_filters import rest_framework as filters
+from rest_framework import filters
 
 from browser.models import *
 
@@ -24,13 +22,13 @@ class CBooleanWidget(df.widgets.BooleanWidget):
 
 
 class CourseFilter(filters.FilterSet):
-    name = df.CharFilter(field_name='name', lookup_expr='icontains',
+    name = df.CharFilter(name='name', lookup_expr='icontains',
                          label='Course name')
-    occurred_from = df.NumberFilter(field_name='year', lookup_expr='gte',
+    occurred_from = df.NumberFilter(name='year', lookup_expr='gte',
                                     label='Occurred from')
-    occurred_through = df.NumberFilter(field_name='year', lookup_expr='lte',
+    occurred_through = df.NumberFilter(name='year', lookup_expr='lte',
                                        label='Occurred through')
-    last_updated = df.DateTimeFilter(field_name='last_updated', lookup_expr='gte',
+    last_updated = df.DateTimeFilter(name='last_updated', lookup_expr='gte',
                                      label='Last updated')
 
     o = df.OrderingFilter(
@@ -44,7 +42,7 @@ class CourseFilter(filters.FilterSet):
         }
     )
 
-    class Meta(object):
+    class Meta:
         model = Course
         fields = ['name', 'occurred_from', 'occurred_through',]
 
@@ -66,7 +64,7 @@ class InstitutionFilter(filters.FilterSet):
         }
     )
 
-    class Meta(object):
+    class Meta:
         model = Institution
         fields = ['name', ]
 
@@ -92,7 +90,7 @@ class CourseGroupFilter(filters.FilterSet):
         }
     )
 
-    class Meta(object):
+    class Meta:
         model = CourseGroup
         fields = ['name', ]
 
@@ -140,7 +138,7 @@ class PersonFilter(filters.FilterSet):
         }
     )
 
-    class Meta(object):
+    class Meta:
         model = Person
         fields = ['name', 'last_name', 'first_name', 'is_investigator',
                   'affiliation']
@@ -188,7 +186,7 @@ class LocationFilter(filters.FilterSet):
         }
     )
 
-    class Meta(object):
+    class Meta:
         model = Location
         fields = ['name', 'validated']
 

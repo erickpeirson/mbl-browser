@@ -51,11 +51,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='location',
             name='authority',
-            field=models.ForeignKey(blank=True, to='browser.KnownLocation', help_text=b'\n    Use this field to specify a known location (i.e. a location with an entry\n    in the GeoNames database).', null=True),
+            field=models.ForeignKey(blank=True, to='browser.KnownLocation', help_text=b'\n    Use this field to specify a known location (i.e. a location with an entry\n    in the GeoNames database).', null=True, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='person',
             name='authority',
-            field=models.ForeignKey(blank=True, to='browser.KnownPerson', help_text=b'\n    Use this field to specify a known person (i.e. a person with an entry in\n    the Conceptpower name authority).', null=True),
+            field=models.ForeignKey(blank=True, to='browser.KnownPerson', help_text=b'\n    Use this field to specify a known person (i.e. a person with an entry in\n    the Conceptpower name authority).', null=True, on_delete=models.CASCADE),
         ),
     ]

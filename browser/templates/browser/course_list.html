@@ -1,12 +1,12 @@
 {% extends "browser/base.html" %}
 {% load app_filters %}
 {% load addcss %}
-{% load pagination_tags %}
+
 
 {% block title %}Courses{% endblock %}
 
 {% block main %}
-{% autopaginate courses.qs 40 as filter_list %}
+
 
 <form class="form ">
     <div class="row">
@@ -63,7 +63,6 @@
 </form>
 
 <div class="text-center">
-    {% paginate %}
 
     {% if user.is_staff %}
     <span class="pull-right btn-group">
@@ -92,7 +91,6 @@
         </tbody>
     </table>
     <div class="panel-footer">
-        {{ paginate }}
     </div>
 </div>
 {% endblock %}

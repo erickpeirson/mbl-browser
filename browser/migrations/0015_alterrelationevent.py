@@ -18,8 +18,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('affecting_instance_id', models.PositiveIntegerField()),
                 ('affected_by_instance_id', models.PositiveIntegerField()),
-                ('affected_by_type', models.ForeignKey(related_name='altered', to='contenttypes.ContentType')),
-                ('affecting_type', models.ForeignKey(related_name='altered_by', to='contenttypes.ContentType')),
+                ('affected_by_type', models.ForeignKey(related_name='altered', to='contenttypes.ContentType', on_delete=models.CASCADE)),
+                ('affecting_type', models.ForeignKey(related_name='altered_by', to='contenttypes.ContentType', on_delete=models.CASCADE)),
             ],
         ),
     ]
