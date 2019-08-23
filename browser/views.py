@@ -55,11 +55,11 @@ def course(request, course_id=None):
         })
         template = "browser/course.html"
     else:
-        courses_filtered = CourseFilter(request.GET, queryset=Course.objects.order_by('year'))
-        print(courses_filtered.qs)
+        courses_filtered = CourseFilter(request.GET, queryset=Course.objects.order_by('year')) 
+        context['courses_filter'] = courses_filtered
         paginator = Paginator(courses_filtered.qs, 40)
         page = request.GET.get('page')
-        context['courses'] = paginator.get_page(page)
+        context['courses_paginated'] = paginator.get_page(page)
         template = "browser/course_list.html"
     return render(request, template, context)
 
@@ -73,15 +73,11 @@ def coursegroup(request, coursegroup_id=None):
         context['coursegroup'] = get_object_or_404(CourseGroup, pk=coursegroup_id)
         template = "browser/coursegroup.html"
     else:
-        # coursegroups = get_paginator(CourseGroup, request, order_by='name')
-        
-        if CourseGroup.objects.count():
-            coursegroups = CourseGroupFilter(request.GET, queryset=CourseGroup.objects.all())
-            paginator = Paginator(coursegroups, 40)
-            page = request.GET.get('page')
-            context['coursegroups'] = paginator.get_page(page)
-        else:
-            context['nodata'] = 'nodata'
+        course_groups_filtered = CourseGroupFilter(request.GET, queryset=CourseGroup.objects.all())
+        context['course_groups_filter'] = course_groups_filtered
+        paginator = Paginator(course_groups_filtered.qs, 40)
+        page = request.GET.get('page')
+        context['course_groups_paginated'] = paginator.get_page(page)
         template = "browser/coursegroup_list.html"
     return render(request, template, context)
 

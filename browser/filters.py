@@ -50,9 +50,9 @@ class CourseFilter(filters.FilterSet):
 
 
 class InstitutionFilter(filters.FilterSet):
-    name = df.CharFilter(name='name', lookup_expr='icontains',
+    name = df.CharFilter(field_name='name', lookup_expr='icontains',
                          label='Institution name')
-    last_updated = df.DateTimeFilter(name='last_updated', lookup_expr='gte',
+    last_updated = df.DateTimeFilter(field_name='last_updated', lookup_expr='gte',
                                      label='Last updated')
 
     o = df.OrderingFilter(
@@ -72,13 +72,13 @@ class InstitutionFilter(filters.FilterSet):
 
 
 class CourseGroupFilter(filters.FilterSet):
-    name = df.CharFilter(name='name', lookup_expr='icontains',
+    name = df.CharFilter(field_name='name', lookup_expr='icontains',
                          label='Course name')
     occurred_from = df.NumberFilter(method='filter_occurred_from',
                                     label='Occurred from')
     occurred_through = df.NumberFilter(method='filter_occurred_through',
                                       label='Occurred through')
-    last_updated = df.DateTimeFilter(name='last_updated', lookup_expr='gte',
+    last_updated = df.DateTimeFilter(field_name='last_updated', lookup_expr='gte',
                                      label='Last updated')
 
     o = df.OrderingFilter(
@@ -112,9 +112,9 @@ class CourseGroupFilter(filters.FilterSet):
 
 class PersonFilter(filters.FilterSet):
     name = df.CharFilter(method='filter_name', label='Full name')
-    last_name = df.CharFilter(name='last_name', lookup_expr='icontains',
+    last_name = df.CharFilter(field_name='last_name', lookup_expr='icontains',
                               label='Surname')
-    first_name = df.CharFilter(name='first_name', lookup_expr='icontains',
+    first_name = df.CharFilter(field_name='first_name', lookup_expr='icontains',
                                label='Forename')
     location = df.CharFilter(method='filter_location', label='Location')
     affiliation = df.CharFilter(method='filter_affiliation',
@@ -122,7 +122,7 @@ class PersonFilter(filters.FilterSet):
     is_investigator = df.BooleanFilter(method='filter_is_investigator',
                                        widget=CBooleanWidget(empty='----'),
                                        label='Is investigator?')
-    last_updated = df.DateTimeFilter(name='last_updated', lookup_expr='gte',
+    last_updated = df.DateTimeFilter(field_0name='last_updated', lookup_expr='gte',
                                      label='Last updated')
 
     o = df.OrderingFilter(

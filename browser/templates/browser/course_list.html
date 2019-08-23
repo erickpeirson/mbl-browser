@@ -30,11 +30,10 @@
             </div>
         </div>
     </div>
-
     <div class="collapse" id="filters">
         <div class="row">
             <div class="col-sm-4">
-                {% with courses.form.occurred_from as field %}
+                {% with courses_filter.form.occurred_from as field %}
                 <div class="form-group">
                     <label>{{ field.label }}</label>
                     {{ field|addcss:"form-control input-sm" }}
@@ -42,7 +41,7 @@
                 {% endwith %}
             </div>
             <div class="col-sm-4">
-                {% with courses.form.occurred_through as field %}
+                {% with courses_filter.form.occurred_through as field %}
                 <div class="form-group">
                     <label>{{ field.label }}</label>
                     {{ field|addcss:"form-control input-sm" }}
@@ -50,7 +49,7 @@
                 {% endwith %}
             </div>
             <div class="col-sm-4">
-                {% with courses.form.o as field %}
+                {% with courses_filter.form.o as field %}
                 <div class="form-group">
                     <label>{{ field.label }}</label>
                     {{ field|addcss:"form-control input-sm" }}
@@ -61,6 +60,25 @@
     </div>
 
 </form>
+<div class="row">
+    <div class="col-xs-6 col-xs-offset-3">
+        <span class="step-links">
+            <ul class="pager">
+                {% if courses_paginated.has_previous %}
+                    <li><a href="?page=1"><span aria-hidden="true">&larr;</span>  first</a></li>
+                    <li><a href="?page={{ courses_paginated.previous_page_number }}">previous</a></li>
+                {% endif %}
+                <span style="margin-left: 1%; margin-right: 1%;" class="current">
+                    Page {{ courses_paginated.number }} of {{ courses_paginated.paginator.num_pages }}
+                </span>
+                {% if courses_paginated.has_next %}
+                    <li><a href="?page={{ courses_paginated.next_page_number }}">next</a></li>
+                    <li><a href="?page={{ courses_paginated.paginator.num_pages }}">last<span aria-hidden="true">&rarr;</span></a></li>
+                {% endif %}
+            </ul>
+        </span>
+    </div>
+</div>
 
 <div class="text-center">
 
@@ -81,7 +99,7 @@
             </tr>
         </thead>
         <tbody>
-        {% for course in filter_list %}
+        {% for course in courses_paginated %}
             <tr>
                 <td><a href="{% url "course" course.id %}">{{ course.name }}</a></td>
                 <td>{{ course.year }}</td>
@@ -93,4 +111,24 @@
     <div class="panel-footer">
     </div>
 </div>
+
+    <div class="row">
+        <div class="col-xs-6 col-xs-offset-3">
+            <span class="step-links">
+                <ul class="pager">
+                    {% if courses_paginated.has_previous %}
+                        <li><a href="?page=1"><span aria-hidden="true">&larr;</span>  first</a></li>
+                        <li><a href="?page={{ courses_paginated.previous_page_number }}">previous</a></li>
+                    {% endif %}
+                    <span style="margin-left: 1%; margin-right: 1%;" class="current">
+                        Page {{ courses_paginated.number }} of {{ courses_paginated.paginator.num_pages }}
+                    </span>
+                    {% if courses_paginated.has_next %}
+                        <li><a href="?page={{ courses_paginated.next_page_number }}">next</a></li>
+                        <li><a href="?page={{ courses_paginated.paginator.num_pages }}">last<span aria-hidden="true">&rarr;</span></a></li>
+                    {% endif %}
+                </ul>
+            </span>
+        </div>
+    </div>
 {% endblock %}
