@@ -107,8 +107,11 @@ def person(request, person_id=None):
         })
         template = "browser/person.html"
     else:
-        context['persons'] = PersonFilter(request.GET, queryset=Person.objects.order_by('last_name').filter(merge_from=None))
-        # context['persons'] = get_paginator(Person, request, 'last_name', 100)
+        persons_filtered = PersonFilter(request.GET, queryset=Person.objects.order_by('last_name').filter(merge_from=None))
+        context['persons_filter'] = persons_filtered
+        paginator = Paginator(persons_filtered.qs, 40)
+        page = request.GET.get('page')
+        context['persons_paginated'] = paginator.get_page(page)
         template = "browser/person_list.html"
 
     return render(request, template, context)
@@ -126,7 +129,11 @@ def institution(request, institution_id=None):
         })
         template = "browser/institution.html"
     else:
-        context['institutions'] = InstitutionFilter(request.GET, queryset=Institution.objects.order_by('name'))
+        institutions_filtered = InstitutionFilter(request.GET, queryset=Institution.objects.order_by('name'))
+        context['institutions_filter'] = institutions_filtered
+        paginator = Paginator(institutions_filtered.qs, 40)
+        page = request.GET.get('page')
+        context['institutions_paginated'] = paginator.get_page(page)
         template = "browser/institution_list.html"
     return render(request, template, context)
 
@@ -143,7 +150,7 @@ def location(request, location_id=None):
         })
         template = "browser/location.html"
     else:
-        context['locations'] = LocationFilter(request.GET, queryset=Location.objects.order_by('name'))
+        context['locations_filter'] = LocationFilter(request.GET, queryset=Location.objects.order_by('name'))
         template = "browser/location_list.html"
     return render(request, template, context)
 

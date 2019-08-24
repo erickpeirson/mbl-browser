@@ -1,12 +1,10 @@
 {% extends "browser/base.html" %}
 {% load app_filters %}
 {% load addcss %}
-<!--{% load pagination_tags %}-->
 
 {% block title %}People{% endblock %}
 
 {% block main %}
-{% autopaginate persons.qs 40 as filter_list %}
 
 <form class="form ">
     <div class="row">
@@ -37,7 +35,7 @@
 <form>
     <div class="collapse" id="filters">
         <div class="clearfix">
-            {% for field in persons.form %}
+            {% for field in persons_filter.form %}
             {% if field.label != 'Name' %}
             <div class="form-group">
                 <label>{{ field.label }}</label>
@@ -52,11 +50,6 @@
     </div>
 
 </form>
-
-<div class="text-center">
-    {% paginate %}
-</div>
-
 <div class="panel panel-mbl">
     {% if user.is_staff %}
     <form class="form" id="action_form" method="POST" action="{% url "bulk-action" "person" %}">
@@ -86,8 +79,27 @@
         });
         </script>
         {% endif %}
+        <div class="row">
+            <div class="col-xs-6 col-xs-offset-3">
+                <span class="step-links">
+                    <ul class="pager">
+                        {% if persons_paginated.has_previous %}
+                            <li><a href="?page=1"><span aria-hidden="true">&larr;</span>  first</a></li>
+                            <li><a href="?page={{ persons_paginated.previous_page_number }}">previous</a></li>
+                        {% endif %}
+                        <span style="margin-left: 1%; margin-right: 1%;" class="current">
+                            Page {{ persons_paginated.number }} of {{ persons_paginated.paginator.num_pages }}
+                        </span>
+                        {% if persons_paginated.has_next %}
+                            <li><a href="?page={{ persons_paginated.next_page_number }}">next</a></li>
+                            <li><a href="?page={{ persons_paginated.paginator.num_pages }}">last<span aria-hidden="true">&rarr;</span></a></li>
+                        {% endif %}
+                    </ul>
+                </span>
+            </div>
+        </div>
         <ul class="list-group">
-            {% for person in filter_list %}
+            {% for person in persons_paginated %}
             <li class="list-group-item">
                 {% if user.is_staff %}
                 <div class="checkbox-inline">
@@ -142,9 +154,24 @@
             {% endfor %}
         </ul>
     {% if user.is_staff %}</form>{% endif %}
-
-    <div class="panel-footer text-center">
-        {% paginate %}
+    <div class="row">
+        <div class="col-xs-6 col-xs-offset-3">
+            <span class="step-links">
+                <ul class="pager">
+                    {% if persons_paginated.has_previous %}
+                        <li><a href="?page=1"><span aria-hidden="true">&larr;</span>  first</a></li>
+                        <li><a href="?page={{ persons_paginated.previous_page_number }}">previous</a></li>
+                    {% endif %}
+                    <span style="margin-left: 1%; margin-right: 1%;" class="current">
+                        Page {{ persons_paginated.number }} of {{ persons_paginated.paginator.num_pages }}
+                    </span>
+                    {% if persons_paginated.has_next %}
+                        <li><a href="?page={{ persons_paginated.next_page_number }}">next</a></li>
+                        <li><a href="?page={{ persons_paginated.paginator.num_pages }}">last<span aria-hidden="true">&rarr;</span></a></li>
+                    {% endif %}
+                </ul>
+            </span>
+        </div>
     </div>
 </div>
 

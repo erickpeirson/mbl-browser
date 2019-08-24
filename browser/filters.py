@@ -122,7 +122,7 @@ class PersonFilter(filters.FilterSet):
     is_investigator = df.BooleanFilter(method='filter_is_investigator',
                                        widget=CBooleanWidget(empty='----'),
                                        label='Is investigator?')
-    last_updated = df.DateTimeFilter(field_0name='last_updated', lookup_expr='gte',
+    last_updated = df.DateTimeFilter(field_name='last_updated', lookup_expr='gte',
                                      label='Last updated')
 
     o = df.OrderingFilter(
