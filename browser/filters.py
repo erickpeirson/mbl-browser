@@ -173,7 +173,7 @@ class PersonFilter(filters.FilterSet):
 
 
 class LocationFilter(filters.FilterSet):
-    last_updated = df.DateTimeFilter(name='last_updated', lookup_expr='gte',
+    last_updated = df.DateTimeFilter(field_name='last_updated', lookup_expr='gte',
                                      label='Last updated')
     name = df.CharFilter(lookup_expr='icontains')
                                      

@@ -151,6 +151,9 @@ def location(request, location_id=None):
         template = "browser/location.html"
     else:
         context['locations_filter'] = LocationFilter(request.GET, queryset=Location.objects.order_by('name'))
+        paginator = Paginator(context['locations_filter'].qs, 40)
+        page = request.GET.get('page')
+        context['locations_paginated'] = paginator.get_page(page)
         template = "browser/location_list.html"
     return render(request, template, context)
 
