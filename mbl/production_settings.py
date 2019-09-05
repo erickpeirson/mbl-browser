@@ -25,7 +25,7 @@ SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 DEBUG = eval(os.environ.get('DEBUG', 'False'))
 BASE_URL = os.environ.get('BASE_URL', '/')
 
-ALLOWED_HOSTS = ['.herokuapp.com']
+ALLOWED_HOSTS = ['*']
 
 IMPORT_USER = os.environ.get('IMPORT_USER', '')
 
@@ -142,7 +142,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 
-GIT_REVISION = os.environ['HEAD_HASH']
+
 
 
 REST_FRAMEWORK = {
@@ -157,4 +157,7 @@ REST_FRAMEWORK = {
 
 PAGINATION_DEFAULT_PAGINATION = 20
 PAGINATION_DEFAULT_WINDOW = 5
+SOCIAL_AUTH_GITHUB_KEY = os.environ.get('SOCIAL_AUTH_GITHUB_KEY', None)
+SOCIAL_AUTH_GITHUB_SECRET = os.environ.get('SOCIAL_AUTH_GITHUB_SECRET', None)
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = BASE_URL
 URI_NAMESPACE = os.environ.get('URI_NAMESPACE',BASE_URL)

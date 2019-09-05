@@ -22,10 +22,11 @@ RUN pip install -r requirements.txt
 ENV DJANGO_SECRET_KEY=lk&b)9bfq@5kxb_c*zrko-g-de8gm9mwpucjq1^z=1o2u!-3a)
 ENV DATABASE_URL=postgres://mbl:mbl@host.docker.internal:5432/mbl
 ENV DEBUG=True
+ENV DJANGO_SETTINGS_MODULE=mbl.production_settings
 RUN python manage.py migrate
 
 EXPOSE 8000
 STOPSIGNAL SIGINT
-ENTRYPOINT ["python", "manage.py"]
-CMD ["runserver", "0.0.0.0:8000"]
+RUN gunicorn mbl.wsgi
+
 
