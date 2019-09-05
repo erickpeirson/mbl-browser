@@ -142,7 +142,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 
-
+GIT_REVISION = os.environ.get('HEAD_HASH', '')
 
 
 REST_FRAMEWORK = {
