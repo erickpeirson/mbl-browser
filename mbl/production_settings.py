@@ -25,7 +25,7 @@ SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 DEBUG = eval(os.environ.get('DEBUG', 'False'))
 BASE_URL = os.environ.get('BASE_URL', '/')
 
-ALLOWED_HOSTS = ['.herokuapp.com']
+ALLOWED_HOSTS = ['*']
 
 IMPORT_USER = os.environ.get('IMPORT_USER', '')
 
@@ -39,25 +39,22 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'crispy_forms',
-    'pagination',
     'rest_framework',
     'browser',
     'social.apps.django_app.default',
     'simple_history',
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'pagination.middleware.PaginationMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',
-)
+]
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend', # default
@@ -80,17 +77,17 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                "django.contrib.auth.context_processors.auth",
+               "django.contrib.auth.context_processors.auth",
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
-                "django.core.context_processors.static",
-                "django.core.context_processors.i18n",
-                "django.core.context_processors.media",
+                "django.template.context_processors.static",
+                "django.template.context_processors.i18n",
+                "django.template.context_processors.media",
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'browser.context_processors.git_revision',
-                "django.core.context_processors.request",
-                "django.core.context_processors.tz",
+                "django.template.context_processors.request",
+                "django.template.context_processors.tz",
                 'social.apps.django_app.context_processors.backends',
                 'social.apps.django_app.context_processors.login_redirect',
             ],
@@ -145,7 +142,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 
-GIT_REVISION = os.environ['HEAD_HASH']
+GIT_REVISION = os.environ.get('HEAD_HASH', '')
 
 
 REST_FRAMEWORK = {
@@ -160,4 +157,7 @@ REST_FRAMEWORK = {
 
 PAGINATION_DEFAULT_PAGINATION = 20
 PAGINATION_DEFAULT_WINDOW = 5
+SOCIAL_AUTH_GITHUB_KEY = os.environ.get('SOCIAL_AUTH_GITHUB_KEY', None)
+SOCIAL_AUTH_GITHUB_SECRET = os.environ.get('SOCIAL_AUTH_GITHUB_SECRET', None)
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = BASE_URL
 URI_NAMESPACE = os.environ.get('URI_NAMESPACE',BASE_URL)

@@ -1,4 +1,3 @@
-from builtins import range
 from django.template import Library
 from browser.models import *
 
@@ -9,7 +8,7 @@ register = Library()
 
 @register.filter(name="get_range")
 def get_range(value, offset=0):
-    return list(range(offset, value+offset))
+    return range(offset, value+offset)
 
 
 @register.filter

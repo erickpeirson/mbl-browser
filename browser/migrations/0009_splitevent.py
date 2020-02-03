@@ -20,9 +20,9 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('original_instance_id', models.PositiveIntegerField()),
                 ('child_instance_id', models.PositiveIntegerField()),
-                ('changed_by', models.ForeignKey(related_name='edited_splitevent', to=settings.AUTH_USER_MODEL)),
-                ('child_type', models.ForeignKey(related_name='split_from', to='contenttypes.ContentType')),
-                ('original_type', models.ForeignKey(related_name='split_to', to='contenttypes.ContentType')),
+                ('changed_by', models.ForeignKey(related_name='edited_splitevent', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
+                ('child_type', models.ForeignKey(related_name='split_from', to='contenttypes.ContentType', on_delete=models.CASCADE)),
+                ('original_type', models.ForeignKey(related_name='split_to', to='contenttypes.ContentType', on_delete=models.CASCADE)),
             ],
         ),
     ]

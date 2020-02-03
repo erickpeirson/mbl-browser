@@ -1,12 +1,10 @@
 {% extends "browser/base.html" %}
 {% load app_filters %}
 {% load addcss %}
-{% load pagination_tags %}
 
 {% block title %}Locations{% endblock %}
 
 {% block main %}
-{% autopaginate locations.qs 40 as filter_list %}
 
 
 <form class="form ">
@@ -35,7 +33,7 @@
     <div class="collapse" id="filters">
         <div class="row">
             <div class="col-sm-6">
-                {% with locations.form.validated as field %}
+                {% with locations_filter.form.validated as field %}
                 <div class="form-group">
                     <label>{{ field.label }}</label>
                     {{ field|addcss:"form-control input-sm" }}
@@ -43,7 +41,7 @@
                 {% endwith %}
             </div>
             <div class="col-sm-6">
-                {% with locations.form.o as field %}
+                {% with locations_filter.form.o as field %}
                 <div class="form-group">
                     <label>{{ field.label }}</label>
                     {{ field|addcss:"form-control input-sm" }}
@@ -56,7 +54,7 @@
 </form>
 
 <div class="text-center">
-    {% paginate %}
+    
 </div>
 
 <div class="panel panel-mbl">
@@ -88,8 +86,27 @@
         });
         </script>
         {% endif %}
+        <div class="row">
+            <div class="col-xs-6 col-xs-offset-3">
+                <span class="step-links">
+                    <ul class="pager">
+                        {% if locations_paginated.has_previous %}
+                            <li><a href="?page=1"><span aria-hidden="true">&larr;</span>  first</a></li>
+                            <li><a href="?page={{ locations_paginated.previous_page_number }}">previous</a></li>
+                        {% endif %}
+                        <span style="margin-left: 1%; margin-right: 1%;" class="current">
+                            Page {{ locations_paginated.number }} of {{locations_paginated.paginator.num_pages }}
+                        </span>
+                        {% if locations_paginated.has_next %}
+                            <li><a href="?page={{ locations_paginated.next_page_number }}">next</a></li>
+                            <li><a href="?page={{locations_paginated.paginator.num_pages }}">last<span aria-hidden="true">&rarr;</span></a></li>
+                        {% endif %}
+                    </ul>
+                </span>
+            </div>
+        </div>
         <ul class="list-group">
-            {% for location in filter_list %}
+            {% for location in locations_paginated %}
             {% if location.name|length > 0 %}
             <li class="list-group-item">
                 <span class="pull-right">
@@ -140,7 +157,7 @@
     {% if user.is_staff %}</form>{% endif %}
 
         <div class="panel-footer text-center">
-        {% paginate %}
+        
         </div>
 
 </div>

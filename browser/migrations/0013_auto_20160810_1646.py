@@ -18,8 +18,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('parent_instance_id', models.PositiveIntegerField()),
                 ('child_instance_id', models.PositiveIntegerField()),
-                ('child_type', models.ForeignKey(related_name='merged_to', to='contenttypes.ContentType')),
-                ('parent_type', models.ForeignKey(related_name='merged_from', to='contenttypes.ContentType')),
+                ('child_type', models.ForeignKey(related_name='merged_to', to='contenttypes.ContentType', on_delete=models.CASCADE)),
+                ('parent_type', models.ForeignKey(related_name='merged_from', to='contenttypes.ContentType', on_delete=models.CASCADE)),
             ],
         ),
         migrations.AlterField(

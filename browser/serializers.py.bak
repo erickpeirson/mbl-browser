@@ -1,4 +1,3 @@
-from builtins import object
 from rest_framework import serializers
 
 from browser.models import *
@@ -22,7 +21,7 @@ class MockObject(dict):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    class Meta(object):
+    class Meta:
         model = User
         fields = ('username', )
 
@@ -30,7 +29,7 @@ class UserSerializer(serializers.ModelSerializer):
 class KnownPersonSerializer(serializers.ModelSerializer):
     changed_by = UserSerializer()
 
-    class Meta(object):
+    class Meta:
         model = KnownPerson
         fields = ('conceptpower_uri', 'description', 'changed_by',
                   'last_updated')
@@ -39,7 +38,7 @@ class KnownPersonSerializer(serializers.ModelSerializer):
 class KnownLocationSerializer(serializers.ModelSerializer):
     changed_by = UserSerializer()
 
-    class Meta(object):
+    class Meta:
         model = KnownLocation
         fields = ('external_uri', 'geo_uri', 'description', 'changed_by',
                   'last_updated')
@@ -48,7 +47,7 @@ class KnownLocationSerializer(serializers.ModelSerializer):
 class KnownInstitutionSerializer(serializers.ModelSerializer):
     changed_by = UserSerializer()
 
-    class Meta(object):
+    class Meta:
         model = KnownInstitution
         fields = ('conceptpower_uri', 'description', 'changed_by',
                   'last_updated')
@@ -69,7 +68,7 @@ class DenizenSerializer(serializers.Serializer):
 
 
 class LocationListSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta(object):
+    class Meta:
         model = Location
         fields = ('name', 'url', 'number_of_denizens', 'last_updated',
                   'validated', 'validated_by', 'validated_on')
@@ -83,7 +82,7 @@ class LocationDetailSerializer(serializers.HyperlinkedModelSerializer):
     validated_by = serializers.CharField()
     validated_on = serializers.DateTimeField()
 
-    class Meta(object):
+    class Meta:
         model = Location
         fields = ('name', 'url', 'denizens', 'number_of_denizens',
                   'last_updated', 'validated', 'validated_by', 'validated_on',
@@ -159,7 +158,7 @@ class InstitutionDetailSerializer(serializers.HyperlinkedModelSerializer):
     validated_by = serializers.CharField()
     validated_on = serializers.DateTimeField()
 
-    class Meta(object):
+    class Meta:
         model = Institution
         fields = ('name', 'url', 'affiliates', 'number_of_affiliates',
                   'last_updated', 'id', 'validated', 'validated_by',
@@ -201,7 +200,7 @@ class InstitutionListSerializer(serializers.HyperlinkedModelSerializer):
     validated_by = serializers.CharField()
     validated_on = serializers.DateTimeField()
 
-    class Meta(object):
+    class Meta:
         model = Institution
         fields = ('name', 'url', 'number_of_affiliates', 'last_updated', 'id',
                   'validated', 'validated_by', 'validated_on')
@@ -242,7 +241,7 @@ class PersonDetailSerializer(serializers.HyperlinkedModelSerializer):
     validated_by = serializers.CharField()
     validated_on = serializers.DateTimeField()
 
-    class Meta(object):
+    class Meta:
         model = Person
         fields = ('last_name', 'first_name', 'url', 'number_of_courses',
                   'is_investigator', 'number_of_affiliations', 'affiliations',
@@ -354,7 +353,7 @@ class PersonListSerializer(serializers.HyperlinkedModelSerializer):
     validated_by = serializers.CharField()
     validated_on = serializers.DateTimeField()
 
-    class Meta(object):
+    class Meta:
         model = Person
         fields = ('last_name', 'first_name', 'url', 'number_of_courses',
                   'is_investigator', 'number_of_affiliations', 'uri',
@@ -406,7 +405,7 @@ class CourseDetailSerializer(serializers.HyperlinkedModelSerializer):
     validated_by = serializers.CharField()
     validated_on = serializers.DateTimeField()
 
-    class Meta(object):
+    class Meta:
         model = Course
         fields = ('name', 'url', 'is_part_of', 'attendees',
                   'number_of_attendees', 'year', 'last_updated',
@@ -453,7 +452,7 @@ class CourseListSerializer(serializers.HyperlinkedModelSerializer):
     validated_by = serializers.CharField()
     validated_on = serializers.DateTimeField()
 
-    class Meta(object):
+    class Meta:
         model = Course
         fields = ('name', 'url', 'number_of_attendees', 'year', 'last_updated',
                   'validated', 'validated_by', 'validated_on')
@@ -464,7 +463,7 @@ class CourseGroupListSerializer(serializers.HyperlinkedModelSerializer):
     validated_by = serializers.CharField()
     validated_on = serializers.DateTimeField()
 
-    class Meta(object):
+    class Meta:
         model = CourseGroup
         fields = ('id', 'name', 'url', 'number_of_courses', 'last_updated',
                   'validated', 'validated_by', 'validated_on')
@@ -476,7 +475,7 @@ class CourseGroupDetailSerializer(serializers.HyperlinkedModelSerializer):
     validated_by = serializers.CharField()
     validated_on = serializers.DateTimeField()
 
-    class Meta(object):
+    class Meta:
         model = CourseGroup
         fields = ('id', 'name', 'url', 'number_of_courses', 'courses',
                   'last_updated', 'validated', 'validated_by', 'validated_on')

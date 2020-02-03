@@ -1,4 +1,3 @@
-from __future__ import print_function
 from django.shortcuts import render, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import logout
@@ -55,11 +54,7 @@ def course(request, course_id=None):
         })
         template = "browser/course.html"
     else:
-        courses_filtered = CourseFilter(request.GET, queryset=Course.objects.order_by('year')) 
-        context['courses_filter'] = courses_filtered
-        paginator = Paginator(courses_filtered.qs, 40)
-        page = request.GET.get('page')
-        context['courses_paginated'] = paginator.get_page(page)
+        context['courses'] = CourseFilter(request.GET, queryset=Course.objects.order_by('year'))
         template = "browser/course_list.html"
     return render(request, template, context)
 
@@ -73,11 +68,9 @@ def coursegroup(request, coursegroup_id=None):
         context['coursegroup'] = get_object_or_404(CourseGroup, pk=coursegroup_id)
         template = "browser/coursegroup.html"
     else:
-        course_groups_filtered = CourseGroupFilter(request.GET, queryset=CourseGroup.objects.all())
-        context['course_groups_filter'] = course_groups_filtered
-        paginator = Paginator(course_groups_filtered.qs, 40)
-        page = request.GET.get('page')
-        context['course_groups_paginated'] = paginator.get_page(page)
+        # coursegroups = get_paginator(CourseGroup, request, order_by='name')
+        coursegroups = CourseGroupFilter(request.GET, queryset=CourseGroup.objects.all())
+        context['coursegroups'] = coursegroups
         template = "browser/coursegroup_list.html"
     return render(request, template, context)
 
@@ -107,11 +100,8 @@ def person(request, person_id=None):
         })
         template = "browser/person.html"
     else:
-        persons_filtered = PersonFilter(request.GET, queryset=Person.objects.order_by('last_name').filter(merge_from=None))
-        context['persons_filter'] = persons_filtered
-        paginator = Paginator(persons_filtered.qs, 40)
-        page = request.GET.get('page')
-        context['persons_paginated'] = paginator.get_page(page)
+        context['persons'] = PersonFilter(request.GET, queryset=Person.objects.order_by('last_name').filter(merge_from=None))
+        # context['persons'] = get_paginator(Person, request, 'last_name', 100)
         template = "browser/person_list.html"
 
     return render(request, template, context)
@@ -129,11 +119,7 @@ def institution(request, institution_id=None):
         })
         template = "browser/institution.html"
     else:
-        institutions_filtered = InstitutionFilter(request.GET, queryset=Institution.objects.order_by('name'))
-        context['institutions_filter'] = institutions_filtered
-        paginator = Paginator(institutions_filtered.qs, 40)
-        page = request.GET.get('page')
-        context['institutions_paginated'] = paginator.get_page(page)
+        context['institutions'] = InstitutionFilter(request.GET, queryset=Institution.objects.order_by('name'))
         template = "browser/institution_list.html"
     return render(request, template, context)
 
@@ -150,10 +136,7 @@ def location(request, location_id=None):
         })
         template = "browser/location.html"
     else:
-        context['locations_filter'] = LocationFilter(request.GET, queryset=Location.objects.order_by('name'))
-        paginator = Paginator(context['locations_filter'].qs, 40)
-        page = request.GET.get('page')
-        context['locations_paginated'] = paginator.get_page(page)
+        context['locations'] = LocationFilter(request.GET, queryset=Location.objects.order_by('name'))
         template = "browser/location_list.html"
     return render(request, template, context)
 
@@ -536,7 +519,7 @@ def course_create(request, coursegroup_id=None):
             form = GroupForCourseForm(request.POST)
             if form.is_valid():
                 group = form.cleaned_data.get('group')
-                print(form.cleaned_data)
+                print form.cleaned_data
                 create_group = form.cleaned_data.get('group_create', False)
                 group_name = form.cleaned_data.get('group_name')
                 if create_group and group_name:

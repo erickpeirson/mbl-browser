@@ -26,6 +26,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='institution',
             name='authority',
-            field=models.ForeignKey(blank=True, to='browser.KnownInstitution', help_text=b'\n    Use this field to specify a known institution (i.e. a location with an entry\n    in the Conceptpower name authority).', null=True),
+            field=models.ForeignKey(blank=True, to='browser.KnownInstitution', help_text=b'\n    Use this field to specify a known institution (i.e. a location with an entry\n    in the Conceptpower name authority).', null=True, on_delete=models.CASCADE),
         ),
     ]

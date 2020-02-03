@@ -1,12 +1,10 @@
 {% extends "browser/base.html" %}
 {% load app_filters %}
 {% load addcss %}
-{% load pagination_tags %}
 
 {% block title %}Institutions{% endblock %}
 
 {% block main %}
-{% autopaginate institutions.qs 40 as filter_list %}
 
 <form class="form">
     <div class="row">
@@ -14,7 +12,7 @@
             {% with persons.form.name as field %}
             <div class="form-group">
                 <div class="input-group">
-                    <input type="text" class="form-control" name="name" id="id_name" autofocus placeholder="Search by name"{% if institutions.form.name.value %} value="{{ institutions.form.name.value }}"{% endif %}>
+                    <input type="text" class="form-control" name="name" id="id_name" autofocus placeholder="Search by name"{% if institutions_filter.form.name.value %} value="{{ institutions_filter.form.name.value }}"{% endif %}>
                     <span class="input-group-btn">
                         <button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-search"></span>&nbsp;</button>
                     </span>
@@ -52,13 +50,30 @@
     {% endcomment %}
 </form>
 
-<div class="text-center">
-    {% paginate %}
+<div class="row">
+    <div class="col-xs-6 col-xs-offset-3">
+        <span class="step-links">
+            <ul class="pager">
+                {% if institutions_paginated.has_previous %}
+                    <li><a href="?page=1"><span aria-hidden="true">&larr;</span>  first</a></li>
+                    <li><a href="?page={{ institutions_paginated.previous_page_number }}">previous</a></li>
+                {% endif %}
+                <span style="margin-left: 1%; margin-right: 1%;" class="current">
+                    Page {{ institutions_paginated.number }} of {{ institutions_paginated.paginator.num_pages }}
+                </span>
+                {% if institutions_paginated.has_next %}
+                    <li><a href="?page={{ institutions_paginated.next_page_number }}">next</a></li>
+                    <li><a href="?page={{ institutions_paginated.paginator.num_pages }}">last<span aria-hidden="true">&rarr;</span></a></li>
+                {% endif %}
+            </ul>
+        </span>
+    </div>
 </div>
+
 
 <div class="panel panel-mbl">
     <ul class="list-group">
-        {% for institution in filter_list %}
+        {% for institution in institutions_paginated %}
         {% if institution.name|length > 0 %}
         <li class="list-group-item">
             <a href="{% url "institution" institution.id %}">{{ institution.name }}</a>
@@ -76,11 +91,24 @@
 
         {% endfor %}
     </ul>
-
-    <div class="panel-footer text-center">
-    {% paginate %}
+</div>
+<div class="row">
+    <div class="col-xs-6 col-xs-offset-3">
+        <span class="step-links">
+            <ul class="pager">
+                {% if institutions_paginated.has_previous %}
+                    <li><a href="?page=1"><span aria-hidden="true">&larr;</span>  first</a></li>
+                    <li><a href="?page={{ institutions_paginated.previous_page_number }}">previous</a></li>
+                {% endif %}
+                <span style="margin-left: 1%; margin-right: 1%;" class="current">
+                    Page {{ institutions_paginated.number }} of {{ institutions_paginated.paginator.num_pages }}
+                </span>
+                {% if institutions_paginated.has_next %}
+                    <li><a href="?page={{ institutions_paginated.next_page_number }}">next</a></li>
+                    <li><a href="?page={{ institutions_paginated.paginator.num_pages }}">last<span aria-hidden="true">&rarr;</span></a></li>
+                {% endif %}
+            </ul>
+        </span>
     </div>
-
-
 </div>
 {% endblock %}
