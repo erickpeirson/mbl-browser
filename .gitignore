@@ -58,7 +58,8 @@ target/
 
 staticfiles
 browser/static
-venv
+venv/
+.vscode
 
 *.csv
 *.xml
