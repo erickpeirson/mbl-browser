@@ -9,7 +9,7 @@ django-simple-history==2.7.3
 djangorestframework==3.10.2
 gitdb==0.6.4
 GitPython==1.0.1
-gunicorn==19.3.0
+gunicorn==19.5.0
 heroku==0.1.4
 Markdown==2.6.6
 oauthlib==2.0.2
