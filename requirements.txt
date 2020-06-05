@@ -1,7 +1,7 @@
 defusedxml==0.6.0
 dj-database-url==0.3.0
 dj-static==0.0.6
-Django==2.2.4
+Django==2.2.13
 django-crispy-forms==1.7.2
 django-filter==2.2.0
 django-gitrevision==0.1.5
